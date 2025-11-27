@@ -20,11 +20,12 @@ jobs:
       uses: actions/setup-go@v4
       with:
         go-version: '1.25.4'
+
     - name: Dependencies
       run: go mod tidy
 
-    - name: Build Protobuf
-      run:  ./build.sh
+#    - name: Build Protobuf
+#      run:  ./build.sh
 
     - name: Build
       run: go build -v ./cmd/.
