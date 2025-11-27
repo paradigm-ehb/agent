@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package agent;
+
+option go_package = "paradigm-ehb/agent/internal/connection/pb";
+
+service Greeter {
+  rpc SayHello (HelloRequest) returns (HelloReply) {}
+}
+
+message HelloRequest {
+  string name = 1;
+}
+
+message HelloReply {
+  string message = 1;
+}
