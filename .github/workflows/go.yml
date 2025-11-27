@@ -28,7 +28,7 @@ jobs:
 #      run:  ./build.sh
 
     - name: Build
-      run: go build -v ./cmd/main.go
+      run: go build -v ./cmd
 
     - name: Test
-      run: go test -v ./cmd/main_test.go
+      run: go test -v ./test
