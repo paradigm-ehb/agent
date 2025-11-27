@@ -5,7 +5,7 @@ name: Go
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "*" ]
   pull_request:
     branches: [ "main" ]
 
@@ -19,10 +19,13 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
-        go-version: '1.20'
+        go-version: '1.25.4'
+
+    - name: Build Protobuf
+      run:  ./build.sh
 
     - name: Build
-      run: go build -v ./...
+      run: go build -v ./cmd/.
 
     - name: Test
-      run: go test -v ./...
+      run: go test -v ./test
