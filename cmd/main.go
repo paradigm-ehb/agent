@@ -9,6 +9,8 @@ import (
 
 	"google.golang.org/grpc"
 	pb "paradigm-ehb/agent/internal/connection/pb"
+
+	"google.golang.org/grpc/reflection"
 )
 
 var (
@@ -34,6 +36,7 @@ func main() {
 	}
 	s := grpc.NewServer()
 	pb.RegisterGreeterServer(s, &server{})
+	reflection.Register(s)
 	log.Printf("server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
