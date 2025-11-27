@@ -5,7 +5,7 @@ option go_package = "paradigm-ehb/agent/internal/connection/pb";
 option java_package = "io.grpc.examples.helloworld";
 option java_outer_classname = "HelloWorldProto";
 
-package agent;
+// package agent;
 
 // The greeting service definition.
 service Greeter {
