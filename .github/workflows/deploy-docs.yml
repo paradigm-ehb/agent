@@ -38,10 +38,10 @@ jobs:
       - name: Generate docs
         run: |
           cd docs
-          sabledocs --descriptor=descriptor.pb --output=./site
+          sabledocs --descriptor=descriptor.pb
           
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/site
+          publish_dir: ./docs/sabledocs_output
