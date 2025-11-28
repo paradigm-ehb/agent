@@ -30,7 +30,7 @@ jobs:
 
       - name: Generate descriptor.pb
         run: |
-          protoc internal/connection/*.proto -o docs/descriptor.pb --include_source_info --proto_path=internal/connection
+          protoc internal/connection/*.proto -o ./docs/descriptor.pb --include_source_info --proto_path=./internal/connection
 
       - name: Install sabledocs
         run: pip install sabledocs
@@ -38,10 +38,10 @@ jobs:
       - name: Generate docs
         run: |
           cd docs
-          sabledocs --descriptor=descriptor.pb --output=../docs
+          sabledocs --descriptor=descriptor.pb --output=./site
           
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs
+          publish_dir: ./docs/site
