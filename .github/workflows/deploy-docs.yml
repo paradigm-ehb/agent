@@ -30,7 +30,7 @@ jobs:
 
       - name: Generate descriptor.pb
         run: |
-          protoc internal/connection/*.proto -o descriptor.pb --include_source_info --proto_path=internal/connection
+          protoc internal/connection/*.proto -o docs/descriptor.pb --include_source_info --proto_path=internal/connection
 
       - name: Install sabledocs
         run: pip install sabledocs
