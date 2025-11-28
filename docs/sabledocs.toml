@@ -1,0 +1,29 @@
+# Configures the main title of the documentation site.
+# Default value: "Protobuf module documentation"
+module-title = "paradigm-ehb Agent"
+
+# The output folder to which the documentation is generated.
+# Default value: "sabledocs_output"
+output-dir = "../../docs"
+
+# Copyright message displayed in the footer.
+# Default value: ""
+footer-content = "© 2025 paradigm-ehb. All rights reserved."
+
+# The following 3 fields configure the source control repository of the project.
+# They are used to generate deeplinks for the members of the Proto model pointing to the original source
+# code. By default these fields are not configured, and source code links are not included in the docs.
+# The repository-type field supports the following possible values, "github", "bitbucket", "bitbucket-data-center" and "gitlab".
+# The fields repository-url and repository-branch should be configured to point to the correct repository.
+# repository-dir should be set only if the root of your Protobuf module is in a specific directory inside your repository.
+repository-type = "github"
+repository-url = "https://github.com/paradigm-ehb/agent"
+repository-branch = "main"
+repository-dir = "internal/connection" # TODO: update dir
+
+# In each comment, ignore everything that comes after (until end of the comment) one of the keywords.
+# Default value: []
+ignore-comments-after = ["@exclude"]
+# In each comment, ignore all lines that contain at least one keyword from the following list.
+# Default value: []
+ignore-comment-lines-containing = ["buf:lint"]
