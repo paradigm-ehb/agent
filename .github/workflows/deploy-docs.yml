@@ -1,0 +1,46 @@
+name: Deploy Docs
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'internal/connection/**'
+      - '.github/workflows/deploy-docs.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'  # Uses the latest stable Python 3
+
+      - name: Download latest protoc
+        run: |
+          # Fetch the latest release tag from GitHub API
+          LATEST_RELEASE=$(curl -s https://api.github.com/repos/protocolbuffers/protobuf/releases/latest | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
+          PROTOC_ZIP="protoc-${LATEST_RELEASE}-linux-x86_64.zip"
+          echo "Downloading protoc v${LATEST_RELEASE}..."
+          curl -OL "https://github.com/protocolbuffers/protobuf/releases/download/v${LATEST_RELEASE}/${PROTOC_ZIP}"
+          unzip -o "$PROTOC_ZIP" -d "$HOME/.local"
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Generate descriptor.pb
+        run: |
+          cd docs
+          protoc internal/connection/*.proto -o descriptor.pb --include_source_info --proto_path=internal/connection
+
+      - name: Install sabledocs
+        run: pip install sabledocs
+
+      - name: Generate docs
+        run: sabledocs --descriptor=descriptor.pb --output=docs
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs
