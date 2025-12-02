@@ -26,11 +26,10 @@ cd $srcdir/proto
 for dir in *;
 do
     echo "Found Service Dir: $dir"
-    cd $dir
-    if ls $srcdir/*proto; then
-        protoc --go_out=$outdir --go_opt=paths=source_relative \
-            --go-grpc_out=$outdir --go-grpc_opt=paths=source_relative \
-            $dir/*.proto
+    if ls $srcdir/$dir/*proto; then
+        protoc --go_out=../$outdir --go_opt=paths=source_relative \
+            --go-grpc_out=../$outdir --go-grpc_opt=paths=source_relative \
+            $srcdir/$dir/*.proto
     else
         echo "Geen proto file gevonden in $dir :("
         exit 1
