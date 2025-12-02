@@ -31,8 +31,8 @@ jobs:
       - name: Dependencies
         run: go mod tidy
 
-        # - name: Build Protobuf
-        #   run: ./build.sh
+      - name: Build Protobuf
+        run: ./build.sh
 
       - name: Build
         run: go build -v ./...

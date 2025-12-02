@@ -1,16 +1,16 @@
-package connection 
+package connection
 
 import (
-
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	"context"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
-	pb "paradigm-ehb/agent/internal/connection/pb"
-	"context"
-)
 
+	pb "paradigm-ehb/agent/gen/greet"
+
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+)
 
 const (
 	// Verify that this generated code is sufficiently up-to-date.
@@ -18,7 +18,6 @@ const (
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
-
 
 type HelloRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -32,10 +31,9 @@ type server struct {
 	pb.UnimplementedGreeterServer
 }
 
-func (s *server) SayHelloAgain(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) { 
+func (s *server) SayHelloAgain(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
 	return &pb.HelloReply{Message: "Hello again " + in.GetName()}, nil
 }
-
 
 func (x *HelloRequest) Reset() {
 	*x = HelloRequest{}
@@ -181,4 +179,3 @@ func file_agent_proto_init() {
 	file_agent_proto_goTypes = nil
 	file_agent_proto_depIdxs = nil
 }
-

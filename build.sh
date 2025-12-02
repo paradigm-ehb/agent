@@ -20,14 +20,20 @@ export PATH="$PATH:$(go env GOPATH)/bin"
 
 # compile protoc files
 srcdir="."
-outdir="internal/connection/pb"
+outdir="gen/"
 
-if ls $srcdir/internal/connection/*proto; then
-    protoc --go_out=. --go_opt=paths=source_relative \
-        --go-grpc_out=. --go-grpc_opt=paths=source_relative \
-        $srcdir/internal/connection/*.proto
-else
-    echo "Geen proto file gevonden :("
-    exit 1
+cd $srcdir/proto
+for dir in *;
+do
+    echo "Found Service Dir: $dir"
+    if ls $srcdir/$dir/*proto; then
+        protoc --go_out=../$outdir --go_opt=paths=source_relative \
+            --go-grpc_out=../$outdir --go-grpc_opt=paths=source_relative \
+            $srcdir/$dir/*.proto
+    else
+        echo "Geen proto file gevonden in $dir :("
+        exit 1
 fi
+cd ..
+done
 

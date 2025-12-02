@@ -1,11 +1,8 @@
 syntax = "proto3";
 
-option java_multiple_files = true;
-option go_package = "paradigm-ehb/agent/internal/connection/pb";
-option java_package = "io.grpc.examples.helloworld";
-option java_outer_classname = "HelloWorldProto";
+option go_package = "paradigm-ehb/agent/proto/greet";
 
-// package agent;
+package greet;
 
 // The greeting service definition.
 service Greeter {
