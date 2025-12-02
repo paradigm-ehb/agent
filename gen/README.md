@@ -8,6 +8,6 @@ protoc --go_out=.../gen --go_opt=paths=source_relative \
     greet/*.proto
 ```
 > [!WARNING]
-> You need to be inside of the folder `/proto`
+> You need to be inside of `/proto`
 
-Or just use [build.sh](/build.sh)
+Or just use [`build.sh`](/build.sh)
