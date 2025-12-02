@@ -22,7 +22,8 @@ export PATH="$PATH:$(go env GOPATH)/bin"
 srcdir="."
 outdir="gen/"
 
-for dir in proto/*;
+cd $srcdir/proto
+for dir in *;
 do
     echo "Found Service Dir: $dir"
     cd $dir
