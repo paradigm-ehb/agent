@@ -24,6 +24,7 @@ outdir="gen/"
 
 for dir in proto/*;
 do
+    echo "Found Service Dir: $dir"
     cd $dir
     if ls $srcdir/*proto; then
         protoc --go_out=$outdir --go_opt=paths=source_relative \
