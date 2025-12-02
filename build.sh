@@ -25,7 +25,7 @@ outdir="gen/"
 for dir in proto/*;
 do
 cd $srcdir/proto
-if ls $dir/*proto; then
+if ls $srcdir/*proto; then
     protoc --go_out=$outdir --go_opt=paths=source_relative \
         --go-grpc_out=$outdir --go-grpc_opt=paths=source_relative \
         $dir/*.proto
