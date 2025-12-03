@@ -11,6 +11,8 @@ import (
 
 	pb_greeter "paradigm-ehb/agent/gen/greet"
 	"paradigm-ehb/agent/pkg/service"
+
+	manager "paradigm-ehb/agent/internal/svcmanager"
 )
 
 var (
@@ -18,6 +20,8 @@ var (
 )
 
 func main() {
+	fmt.Println(manager.ListDbusObject())
+
 	flag.Parse()
 	lis, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%d", *port))
 	if err != nil {
