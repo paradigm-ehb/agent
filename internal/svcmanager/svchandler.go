@@ -33,8 +33,6 @@ func CreateDbusSession() (*dbus.Conn, error) {
 		return nil, fmt.Errorf("failed to make DBus connection for health check")
 	}
 
-	defer conn.Close()
-
 	return conn, nil
 } 
 

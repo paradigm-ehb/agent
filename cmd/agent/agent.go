@@ -45,6 +45,8 @@ ___________ ____________     __| _/|__| ____   _____           _____     ____   
 		log.Panic("failed to create a dbus session")
 	}
 
+	defer conn.Close()
+
 	list, err := manager.GetDbusObjectList(conn)
 	if err != nil {
 		fmt.Println("list object error")
