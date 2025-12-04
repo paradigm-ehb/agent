@@ -45,6 +45,7 @@ ___________ ____________     __| _/|__| ____   _____           _____     ____   
 		fmt.Println("list object error")
 	} else  {
 		fmt.Println("list objects: ", list)
+	}
 
 	dp, err := manager.GetDisplayManager()
 	if err != nil {
