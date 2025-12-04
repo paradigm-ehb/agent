@@ -84,7 +84,7 @@ func dbusConnectionHealth(*dbus.Conn) (bool, error) {
 * and how the units are handled
 *
 * */
-func getDisplayManagerk() ([]string, error)  {
+func GetDisplayManager() ([]string, error)  {
 
 	var result []string
 

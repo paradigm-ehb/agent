@@ -41,6 +41,7 @@ ___________ ____________     __| _/|__| ____   _____           _____     ____   
 
 	// TODO: replace with actual services
 	fmt.Println(manager.ListDbusObject())
+	fmt.Println(manager.GetDisplayManager())
 
 	flag.Parse()
 	lis, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%d", *port))
