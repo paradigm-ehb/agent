@@ -80,6 +80,9 @@ func Init() error {
 		fmt.Println("No display manager found")
 	}
 
+
+	// TODO: add error handling in some way to this
+
 	// DBG: testing this
 	sysConn.Hello()
 		
@@ -214,5 +217,29 @@ func getUnits(conn *dbus.Conn, names []string) error {
 
 }
 
+/*
 
-// sudo dbus-send --system --print-reply --dest=org.freedesktop.systemd1 /org/freedesktop/systemd1 org.freedesktop.systemd1.Manager.StopUnit string:"nginx.service" string:"replace"
+      GetUnitFileState(in  s file,
+                       out s state);
+      EnableUnitFiles(in  as files,
+                      in  b runtime,
+                      in  b force,
+                      out b carries_install_info,
+                      out a(sss) changes);
+      DisableUnitFiles(in  as files,
+                       in  b runtime,
+                       out a(sss) changes);
+
+					   */
+
+func stopUnit(conn *dbus.Conn, name string) {
+	
+	obj := conn.Object("org.freedesktop.systemd1", "/org/freedekstop/systemd1/unit")
+	obj.Call("org.freedesktop.systemd1,Manager.StopUnit", dbus.FlagAllowInteractiveAuthorization, name)
+
+}
+
+/**
+* sudo dbus-send --system --print-reply --dest=org.freedesktop.systemd1 /org/freedesktop/systemd1 org.freedesktop.systemd1.Manager.StopUnit
+* string:"nginx.service" string:"replace"
+*/
