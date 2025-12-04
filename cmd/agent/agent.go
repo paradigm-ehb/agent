@@ -13,7 +13,6 @@ import (
 	pb_greeter "paradigm-ehb/agent/gen/greet"
 	"paradigm-ehb/agent/pkg/service"
 
-	manager "paradigm-ehb/agent/internal/svcmanager"
 	tools "paradigm-ehb/agent/tools"
 )
 
@@ -37,28 +36,6 @@ ___________ ____________     __| _/|__| ____   _____           _____     ____   
 	if err != nil {
 		fmt.Println("Operating system is currently not supported. Come back in .... never! Imagine not using Linux. Not worthy.")
 		os.Exit(4)
-	}
-
-
-	conn, err := manager.CreateDbusSession()
-	if err != nil {
-		log.Panic("failed to create a dbus session")
-	}
-
-	defer conn.Close()
-
-	list, err := manager.GetDbusObjectList(conn)
-	if err != nil {
-		fmt.Println("list object error")
-	} else  {
-		fmt.Println("list objects: ", list)
-	}
-
-	dp, err := manager.GetDPObject(conn)
-	if err != nil {
-		fmt.Println("dp manager error")
-	} else  {
-		fmt.Println("display manager: ", dp)
 	}
 
 	flag.Parse()

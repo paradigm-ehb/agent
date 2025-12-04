@@ -1,18 +1,52 @@
 package svcmanager 
 
 import (
-
 	"fmt"
 	"github.com/godbus/dbus"
-	// "github.com/coreos/go-systemd"
+	"log"
 )
 
-type Process struct {
 
-	name []byte 
+type process struct {
+
+	// TODO: Get all running processes
+
+}
+
+type System struct {
+
+	os string
+	processes []process
+	services  []service
+}
+
+type service struct {
+
+	name string 
 	procId uint32
 	owner string
 
+}
+
+
+func Init() error {
+
+	var sys System
+
+
+	conn, err := CreateDbusSession()
+	if err != nil {
+		log.Panic("failed to create a dbus session")
+	}
+
+	defer conn.Close()
+
+	err = sys.GetProcesses(conn)
+	if err != nil {
+		fmt.Println("list object error")
+	} 
+
+	return nil
 }
 
 /**
@@ -27,7 +61,6 @@ type Process struct {
 
 func CreateDbusSession() (*dbus.Conn, error) {
 
-
 	conn, err := dbus.SessionBus()
 	if err != nil {
 		return nil, fmt.Errorf("failed to make DBus connection for health check")
@@ -38,27 +71,33 @@ func CreateDbusSession() (*dbus.Conn, error) {
 
 /**
 *
-* Returns a list of all running DBus objects on a server
+* Saves a list of all running processes on a server
+* to the System reference 
+* By getting all running DBus names
 * @return 
-* []string, error
+*   error
 *
 * */
 
 
-func GetDbusObjectList(conn *dbus.Conn) ([]string, error) {
+func (sys *System) GetProcesses(conn *dbus.Conn) (error) {
 
-	var result []string
-
+	var output []string
 
 	obj := conn.Object("org.freedesktop.DBus", "/")
-	obj.Call("org.freedesktop.DBus.ListNames", 0).Store(&result)
+	obj.Call("org.freedesktop.DBus.ListNames", 0).Store(&output)
 
-	return result, nil 
+
+	for i := range len(output) {
+
+		var ser service
+		ser.name = output[i]
+		sys.services = append(sys.services, ser)
+
+	}
+
+	return nil 
 }
-
-func (*Process) formatDBusObjectList(list []string)  {
-
-} 
 
 
 /**
@@ -82,11 +121,10 @@ func GetDPObject(conn *dbus.Conn) ([]string, error)  {
 }
 
 
-func StartService(proc Process) uint32 {
+func StartService(proc process) uint32 {
 
 
 	// TODO: starting a service using StartServiceByName
-
 
 	return 33 
 }
