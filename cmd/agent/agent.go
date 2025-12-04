@@ -11,6 +11,7 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	pb_greeter "paradigm-ehb/agent/gen/greet"
+	manager "paradigm-ehb/agent/internal/svcmanager"
 	"paradigm-ehb/agent/pkg/service"
 
 	tools "paradigm-ehb/agent/tools"
@@ -37,6 +38,9 @@ ___________ ____________     __| _/|__| ____   _____           _____     ____   
 		fmt.Println("Operating system is currently not supported. Come back in .... never! Imagine not using Linux. Not worthy.")
 		os.Exit(4)
 	}
+
+	manager.Init()
+
 
 	flag.Parse()
 	lis, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%d", *port))
