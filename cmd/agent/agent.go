@@ -39,23 +39,25 @@ ___________ ____________     __| _/|__| ____   _____           _____     ____   
 		os.Exit(4)
 	}
 
-	// TODO: replace with actual services
-	list, err := manager.ListDbusObject()
+
+	conn, err := manager.CreateDbusSession()
+	if err != nil {
+		log.Panic("failed to create a dbus session")
+	}
+
+	list, err := manager.GetDbusObjectList(conn)
 	if err != nil {
 		fmt.Println("list object error")
 	} else  {
 		fmt.Println("list objects: ", list)
 	}
 
-	dp, err := manager.GetDisplayManager()
+	dp, err := manager.GetDPObject(conn)
 	if err != nil {
 		fmt.Println("dp manager error")
 	} else  {
 		fmt.Println("display manager: ", dp)
 	}
-
-
-
 
 	flag.Parse()
 	lis, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%d", *port))
