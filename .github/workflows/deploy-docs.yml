@@ -30,7 +30,9 @@ jobs:
 
       - name: Generate descriptor.pb
         run: |
-          protoc internal/connection/*.proto -o ./docs/descriptor.pb --include_source_info --proto_path=./internal/connection
+          # Find all .proto files under the `proto/` directory and pass them to protoc
+          PROTO_FILES=$(find proto -name '*.proto' -print | tr '\n' ' ')
+          protoc $PROTO_FILES -o ./docs/descriptor.pb --include_source_info --proto_path=./proto
 
       - name: Install sabledocs
         run: pip install sabledocs
