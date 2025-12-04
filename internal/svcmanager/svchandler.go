@@ -6,6 +6,7 @@ import (
 	"log"
 )
 
+// TODO: decide on using log or fmt for once :) 
 
 type process struct {
 
@@ -18,6 +19,7 @@ type System struct {
 	os string
 	processes []process
 	services  []service
+	displayManager string
 }
 
 type service struct {
@@ -33,18 +35,19 @@ func Init() error {
 
 	var sys System
 
-
-	conn, err := CreateDbusSession()
+	conn, err := createSession()
 	if err != nil {
 		log.Panic("failed to create a dbus session")
 	}
 
 	defer conn.Close()
 
-	err = sys.GetProcesses(conn)
+	err = sys.getProcesses(conn)
 	if err != nil {
 		fmt.Println("list object error")
 	} 
+
+	err = sys.getDP(conn)
 
 	return nil
 }
@@ -59,7 +62,7 @@ func Init() error {
 *
 * */
 
-func CreateDbusSession() (*dbus.Conn, error) {
+func createSession() (*dbus.Conn, error) {
 
 	conn, err := dbus.SessionBus()
 	if err != nil {
@@ -80,7 +83,7 @@ func CreateDbusSession() (*dbus.Conn, error) {
 * */
 
 
-func (sys *System) GetProcesses(conn *dbus.Conn) (error) {
+func (sys *System) getProcesses(conn *dbus.Conn) (error) {
 
 	var output []string
 
@@ -109,15 +112,21 @@ func (sys *System) GetProcesses(conn *dbus.Conn) (error) {
 * returns an empty string if no Display Managers are available
 * */
 
-func GetDPObject(conn *dbus.Conn) ([]string, error)  {
+func (sys *System) getDP(conn *dbus.Conn) error  {
 
 	var result []string
 
 	obj := conn.Object("org.freedesktop.DisplayManager", "/")
 	obj.Call("org.freedesktop.DBus.ListNames", 0).Store(&result)
 
+	if len(result) > 0 {
 
-	return result, nil
+		sys.displayManager = result[0]
+	} else {
+		fmt.Errorf("no error found")
+	}
+
+	return nil
 }
 
 
