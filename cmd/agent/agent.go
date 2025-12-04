@@ -40,8 +40,21 @@ ___________ ____________     __| _/|__| ____   _____           _____     ____   
 	}
 
 	// TODO: replace with actual services
-	fmt.Println(manager.ListDbusObject())
-	fmt.Println(manager.GetDisplayManager())
+	list, err := manager.ListDbusObject()
+	if err != nil {
+		fmt.Println("list object error")
+	} else  {
+		fmt.Println("list objects: ", list)
+
+	dp, err := manager.GetDisplayManager()
+	if err != nil {
+		fmt.Println("dp manager error")
+	} else  {
+		fmt.Println("display manager: ", dp)
+	}
+
+
+
 
 	flag.Parse()
 	lis, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%d", *port))
