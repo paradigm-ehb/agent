@@ -35,24 +35,54 @@ func Init() error {
 
 	var sys System
 
-	conn, err := createSession()
+
+	/**
+	* Creating a Session Dbus Connection
+	* */
+	sesssionConn, err := createSessionBus()
 	if err != nil {
 		log.Panic("failed to create a dbus session")
 	}
 
-	defer conn.Close()
+	defer sesssionConn.Close()
 
-	err = sys.getProcesses(conn)
+	// testing this
+ 	sesssionConn.Hello()
+
+	err = sys.getServicesSessionBus(sesssionConn)
 	if err != nil {
 		fmt.Println("list object error")
 	} 
 
-	err = sys.getDP(conn)
+	err = sys.getDP(sesssionConn)
 	if err != nil {
 		fmt.Println("No display manager found")
 	}
 
-	// debug sys
+
+	/**
+	* Creating a System Dbus Connection
+	* */
+	sysConn ,err := createSystemBus()
+	if err != nil {
+	}
+	
+	defer sysConn.Close()
+
+	err = sys.getServicesSessionBus(sesssionConn)
+	if err != nil {
+		fmt.Println("list object error")
+	} 
+
+	err = sys.getDP(sesssionConn)
+	if err != nil {
+		fmt.Println("No display manager found")
+	}
+
+	// DBG: testing this
+	sysConn.Hello()
+		
+	// DBG: debug sys
 	fmt.Println(sys)	
 
 	return nil
@@ -69,15 +99,29 @@ func Init() error {
 *
 * */
 
-func createSession() (*dbus.Conn, error) {
+func createSessionBus() (*dbus.Conn, error) {
 
 	conn, err := dbus.SessionBus()
 	if err != nil {
-		return nil, fmt.Errorf("failed to make DBus connection for health check")
+		return nil, fmt.Errorf("failed to make session bus")
 	}
 
 	return conn, nil
 } 
+
+func createSystemBus() (*dbus.Conn, error) {
+
+	
+	conn, err := dbus.SystemBus()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create System bus")
+	}
+
+	return conn, nil
+
+}
+
+
 
 /**
 *
@@ -90,7 +134,7 @@ func createSession() (*dbus.Conn, error) {
 * */
 
 
-func (sys *System) getProcesses(conn *dbus.Conn) (error) {
+func (sys *System) getServicesSessionBus(conn *dbus.Conn) (error) {
 
 	var output []string
 
@@ -107,6 +151,23 @@ func (sys *System) getProcesses(conn *dbus.Conn) (error) {
 	}
 
 	return nil 
+}
+
+func (sys *System) getServicesSystemBus(conn *dbus.Conn) (error) {
+
+	var output []string
+
+	obj := conn.Object("org.freedesktop.DisplayManager", "/")
+	obj.Call("org.freedesktop.DBus.ListNames", 0).Store(&output)
+
+	for i := range len(output) {
+
+		var ser service
+		ser.name = output[i]
+		sys.services = append(sys.services, ser)
+	}
+
+	return nil
 }
 
 
@@ -137,11 +198,9 @@ func (sys *System) getDP(conn *dbus.Conn) error  {
 }
 
 
-func StartService(proc process) uint32 {
+func StartService(ser service, conn *dbus.Conn) uint32 {
 
-
-	// TODO: starting a service using StartServiceByName
-
-	return 33 
+	
+	return 1
 }
 
