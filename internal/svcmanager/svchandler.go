@@ -48,9 +48,16 @@ func Init() error {
 	} 
 
 	err = sys.getDP(conn)
+	if err != nil {
+		fmt.Println("No display manager found")
+	}
+
+	// debug sys
+	fmt.Println(sys)	
 
 	return nil
 }
+
 
 /**
 *
