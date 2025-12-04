@@ -7,13 +7,7 @@ import (
 )
 
 // TODO: decide on using log or fmt for once :) 
-
-type process struct {
-
-	// TODO: Get all running processes
-
-}
-
+//
 type System struct {
 
 	os string
@@ -21,6 +15,13 @@ type System struct {
 	services  []service
 	displayManager string
 }
+
+type process struct {
+
+	// TODO: Get all running processes
+
+}
+
 
 type service struct {
 
@@ -191,16 +192,27 @@ func (sys *System) getDP(conn *dbus.Conn) error  {
 
 		sys.displayManager = result[0]
 	} else {
-		fmt.Errorf("no error found")
+		return fmt.Errorf("no error found")
 	}
 
 	return nil
 }
 
 
-func StartService(ser service, conn *dbus.Conn) uint32 {
+func getUnits(conn *dbus.Conn, names []string) error {
 
-	
-	return 1
+	obj := conn.Object("org.freedesktop.systemd1", "/org/freedekstop/systemd1/unit")
+
+	// DEBUG: placeholders
+	fmt.Println(obj)
+	fmt.Println(names)
+
+
+	// TODO:  retrieve all units in system
+
+	return nil
+
 }
 
+
+// sudo dbus-send --system --print-reply --dest=org.freedesktop.systemd1 /org/freedesktop/systemd1 org.freedesktop.systemd1.Manager.StopUnit string:"nginx.service" string:"replace"
