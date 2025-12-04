@@ -8,6 +8,16 @@ import (
 )
 
 
+
+// define the dbus typer
+type types struct {
+
+	// TODO: create the binding types for dbus
+	
+
+}
+
+
 /**
 *
 *
@@ -66,6 +76,30 @@ func dbusConnectionHealth(*dbus.Conn) (bool, error) {
 	return true, nil
 
 
+}
+
+/**
+*
+* Method for testing how the Dbus objects work
+* and how the units are handled
+*
+* */
+func getDisplayManagerk() ([]string, error)  {
+
+	var result []string
+
+	conn, err := dbus.SessionBus()
+	if err != nil {
+		return nil, fmt.Errorf("failed to make DBus connection for health check")
+	}
+
+	defer conn.Close()
+	
+	obj := conn.Object("org.freedesktop.DisplayManager", "/")
+	obj.Call("org.freedesktop.DBus.ListNames", 0).Store(&result)
+
+
+	return result, nil
 }
 
 
