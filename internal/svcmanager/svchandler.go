@@ -46,9 +46,12 @@ func Init() error {
 
 	sysConn, err := createSystemBus()
 	if err != nil {
+		return fmt.Errorf("failed to create a systembus %v", err)
 	}
 
 	defer sysConn.Close()
+
+	obj := createSystemdObject(sysConn)
 
 	/**
 	*
@@ -57,10 +60,8 @@ func Init() error {
 	* .service, ...
 	* */
 
-	obj := createSystemdObject(sysConn)
-
 	fmt.Println("\n\n\n\n\nStopping mariadb")
-	err = handleActionOnUnit(sysConn, obj, "mariadb.service", Action(Start))
+	err = handleActionOnUnit(obj, "mariadb.service", Action(Start))
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -138,13 +139,13 @@ func (sys *System) getServicesSessionBus(conn *dbus.Conn) error {
 	return nil
 }
 
-func getStatus(conn *dbus.Conn, obj dbus.BusObject, name string) {
+func getStatus(obj dbus.BusObject, name string) {
 
 	obj.Call("org.freedesktop.systemd1.Manager.GetUnitFileState", dbus.Flags(dbus.NameFlagReplaceExisting), name)
 
 }
 
-func getUnits(conn *dbus.Conn, obj *dbus.BusObject) error {
+func getUnits(obj *dbus.BusObject) error {
 
 	// TODO
 	// GetUnitProcesses(in  s name,
@@ -152,7 +153,7 @@ func getUnits(conn *dbus.Conn, obj *dbus.BusObject) error {
 	return nil
 }
 
-func handleActionOnUnit(conn *dbus.Conn, obj dbus.BusObject, name string, action Action) error {
+func handleActionOnUnit(obj dbus.BusObject, name string, action Action) error {
 
 	switch action {
 
@@ -161,7 +162,7 @@ func handleActionOnUnit(conn *dbus.Conn, obj dbus.BusObject, name string, action
 		call := obj.Call("org.freedesktop.systemd1.Manager.StartUnit", dbus.FlagAllowInteractiveAuthorization, name, "replace")
 		if call.Err != nil {
 			fmt.Println(call.Body)
-			return fmt.Errorf("failed to disable %s, %v", name, call.Err)
+			return fmt.Errorf("failed to start %s, %v", name, call.Err)
 		}
 
 	case Action(Stop):
@@ -177,7 +178,7 @@ func handleActionOnUnit(conn *dbus.Conn, obj dbus.BusObject, name string, action
 		call := obj.Call("org.freedesktop.systemd1.Manager.RestartUnit", dbus.FlagAllowInteractiveAuthorization, name, "replace")
 		if call.Err != nil {
 			fmt.Println(call.Body)
-			return fmt.Errorf("failed to stop %s, %v", name, call.Err)
+			return fmt.Errorf("failed to restart %s, %v", name, call.Err)
 		}
 	}
 
