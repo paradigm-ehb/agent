@@ -202,9 +202,10 @@ func (sys *System) getDP(conn *dbus.Conn) error  {
 }
 
 
-func getUnits(conn *dbus.Conn, names []string) error {
+func getStatus(conn *dbus.Conn, names []string) error {
 
 	obj := conn.Object("org.freedesktop.systemd1", "/org/freedekstop/systemd1/unit")
+	obj.Call("org.freedesktop.systemd1.Manager.GetUnitFileStatus", dbus.Flags(dbus.NameFlagReplaceExisting), name)
 
 	// DEBUG: placeholders
 	fmt.Println(obj)
@@ -235,7 +236,7 @@ func getUnits(conn *dbus.Conn, names []string) error {
 func stopUnit(conn *dbus.Conn, name string) {
 	
 	obj := conn.Object("org.freedesktop.systemd1", "/org/freedekstop/systemd1/unit")
-	obj.Call("org.freedesktop.systemd1,Manager.StopUnit", dbus.FlagAllowInteractiveAuthorization, name)
+	obj.Call("org.freedesktop.systemd1.Manager.StopUnit", dbus.Flags(dbus.NameFlagReplaceExisting), name)
 
 }
 
