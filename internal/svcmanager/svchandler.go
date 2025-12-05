@@ -23,6 +23,14 @@ const (
 	Restart Action = "org.freedesktop.systemd1.Manager.RestartUnit" // restart unit
 )
 
+type SymlinkAction string
+
+const (
+	Enable  Action = "org.freedesktop.systemd1.Manager.EnableUnitFiles"  // enable unit(s)
+	Disable Action = "org.freedesktop.systemd1.Manager.DisableUnitFiles" // disable unit(s)
+
+)
+
 type System struct {
 	os        string    // os version
 	processes []process // list of processes on the server
@@ -148,8 +156,10 @@ func getStatus(obj dbus.BusObject, name string) {
 func getUnits(obj *dbus.BusObject) error {
 
 	// TODO
+	//      ListUnitFiles(out a(ss) files);
 	// GetUnitProcesses(in  s name,
 	//                  out a(sus) processes);
+	call := obj.Call("org.freedesktop.systemd1.Manager.ListUnitFiles", dbus.FlagAllowInteractiveAuthorization, name, "")
 	return nil
 }
 
@@ -180,8 +190,46 @@ func handleActionOnUnit(obj dbus.BusObject, name string, action Action) error {
 			fmt.Println(call.Body)
 			return fmt.Errorf("failed to restart %s, %v", name, call.Err)
 		}
+
+	}
+}
+
+/**
+*
+*  Enable or disable a unit file
+*
+* */
+func handleSymlinkCreationAction(obj dbus.BusObject, name string, action SymlinkAction) error {
+
+	/**
+
+	EnableUnitFiles(in  as files,
+	in  b runtime,
+	in  b force,
+	out b carries_install_info,
+	out a(sss) changes);
+
+	creates a symllink in /run or somethign
+
+	*/
+
+	switch action {
+
+	case SymlinkAction(Enable):
+		call := obj.Call("org.freedesktop.systemd1.Manager.EnableUnitFiles", dbus.FlagAllowInteractiveAuthorization, name)
+		if call.Err != nil {
+			fmt.Println(call.Body)
+			return fmt.Errorf("failed to enable a unit file %v", call.Err)
+		}
+
+	case SymlinkAction(Disable):
+		call := obj.Call("org.freedesktop.systemd1.Manager.EnableUnitFiles", dbus.FlagAllowInteractiveAuthorization, name)
+		if call.Err != nil {
+			fmt.Println(call.Body)
+			return fmt.Errorf("failed to enable a unit file %v", call.Err)
+		}
+
 	}
 
 	return nil
-
 }
