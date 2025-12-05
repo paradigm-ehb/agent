@@ -2,7 +2,6 @@ package svcmanager
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/godbus/dbus"
 )
@@ -45,32 +44,11 @@ func Init() error {
 
 	var sys System
 
-	sesssionConn, err := createSessionBus()
-	if err != nil {
-		log.Panic("failed to create a dbus session")
-	}
-
-	defer sesssionConn.Close()
-
-	err = sys.getServicesSessionBus(sesssionConn)
-	if err != nil {
-		fmt.Println("list object error")
-	}
-
 	sysConn, err := createSystemBus()
 	if err != nil {
 	}
 
 	defer sysConn.Close()
-
-	err = sys.getServicesSessionBus(sesssionConn)
-	if err != nil {
-		fmt.Println("list object error")
-	}
-
-	// DBG: debug sys
-	// TODO: add a proper way of printing stuff out
-	fmt.Println(sys)
 
 	/**
 	*
@@ -79,11 +57,17 @@ func Init() error {
 	* .service, ...
 	* */
 
+	obj := createSystemdObject(sysConn)
+
 	fmt.Println("\n\n\n\n\nStopping mariadb")
-	err = handleUnit(sysConn, "mariadb.service", Action(Start))
+	err = handleActionOnUnit(sysConn, obj, "mariadb.service", Action(Start))
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	// DBG: debug sys
+	// TODO: add a proper way of printing stuff out
+	fmt.Println(sys)
 
 	return nil
 }
@@ -119,6 +103,11 @@ func createSystemBus() (*dbus.Conn, error) {
 
 }
 
+func createSystemdObject(conn *dbus.Conn) dbus.BusObject {
+
+	return conn.Object("org.freedesktop.systemd1", "/org/freedesktop/systemd1/unit")
+}
+
 /**
 *
 * Previousl
@@ -149,33 +138,21 @@ func (sys *System) getServicesSessionBus(conn *dbus.Conn) error {
 	return nil
 }
 
-/**
-* Returns the running dislay manager
-*
-* @return
-* []string, error
-*
-* returns an empty string if no Display Managers are available
-* */
+func getStatus(conn *dbus.Conn, obj dbus.BusObject, name string) {
 
-func getStatus(conn *dbus.Conn, name string) error {
-
-	obj := conn.Object("org.freedesktop.systemd1", "/org/freedesktop/systemd1/unit")
-	obj.Call("org.freedesktop.systemd1.Manager.GetUnitFileStatus", dbus.Flags(dbus.NameFlagReplaceExisting), name)
-
-	// DEBUG: placeholders
-	fmt.Println(obj)
-	fmt.Println(name)
-
-	// TODO:  retrieve all units in system
-
-	return nil
+	obj.Call("org.freedesktop.systemd1.Manager.GetUnitFileState", dbus.Flags(dbus.NameFlagReplaceExisting), name)
 
 }
 
-func handleUnit(conn *dbus.Conn, name string, action Action) error {
+func getUnits(conn *dbus.Conn, obj *dbus.BusObject) error {
 
-	obj := conn.Object("org.freedesktop.systemd1", "/org/freedesktop/systemd1")
+	// TODO
+	// GetUnitProcesses(in  s name,
+	//                  out a(sus) processes);
+	return nil
+}
+
+func handleActionOnUnit(conn *dbus.Conn, obj dbus.BusObject, name string, action Action) error {
 
 	switch action {
 
