@@ -1,12 +1,13 @@
-package svcmanager 
+package svcmanager
 
 import (
 	"fmt"
-	"github.com/godbus/dbus"
 	"log"
+
+	"github.com/godbus/dbus"
 )
 
-// TODO: decide on using log or fmt for once :) 
+// TODO: decide on using log or fmt for once :)
 //
 type System struct {
 
@@ -64,6 +65,7 @@ func Init() error {
 	/**
 	* Creating a System Dbus Connection
 	* */
+
 	sysConn ,err := createSystemBus()
 	if err != nil {
 	}
@@ -88,6 +90,21 @@ func Init() error {
 		
 	// DBG: debug sys
 	fmt.Println(sys)	
+
+
+	/**
+	*  
+	* Stop mariadb
+	* when passing a service you must add the extension
+	* .service, ...
+	* */
+
+
+	fmt.Println("\n\n\n\n\nStopping mariadb")
+	err = stopUnit(sysConn, "mariadb.service")
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	return nil
 }
@@ -202,14 +219,14 @@ func (sys *System) getDP(conn *dbus.Conn) error  {
 }
 
 
-func getStatus(conn *dbus.Conn, names []string) error {
+func getStatus(conn *dbus.Conn, name string) error {
 
-	obj := conn.Object("org.freedesktop.systemd1", "/org/freedekstop/systemd1/unit")
+	obj := conn.Object("org.freedesktop.systemd1", "/org/freedesktop/systemd1/unit")
 	obj.Call("org.freedesktop.systemd1.Manager.GetUnitFileStatus", dbus.Flags(dbus.NameFlagReplaceExisting), name)
 
 	// DEBUG: placeholders
 	fmt.Println(obj)
-	fmt.Println(names)
+	fmt.Println(name)
 
 
 	// TODO:  retrieve all units in system
@@ -233,10 +250,24 @@ func getStatus(conn *dbus.Conn, names []string) error {
 
 					   */
 
-func stopUnit(conn *dbus.Conn, name string) {
+func stopUnit(conn *dbus.Conn, name string) error {
 	
-	obj := conn.Object("org.freedesktop.systemd1", "/org/freedekstop/systemd1/unit")
-	obj.Call("org.freedesktop.systemd1.Manager.StopUnit", dbus.Flags(dbus.NameFlagReplaceExisting), name)
+	// bugfix -> 
+	// failed to disable mariadb, Unknown method StopUnit or interface org.freedesktop.systemd1.Manager.  
+	//
+	// Failed to disable mariadb.service, Access denied as the requested operation requires interactive authentication. Howev│
+	// er, interactive authentication has not been enabled by the calling program. 
+	obj := conn.Object("org.freedesktop.systemd1", "/org/freedesktop/systemd1")
+	call := obj.Call("org.freedesktop.systemd1.Manager.StopUnit", dbus.FlagAllowInteractiveAuthorization, name, "replace")
+	if call.Err != nil {
+		return fmt.Errorf("failed to disable %s, %v",name, call.Err)
+	}
+
+
+	fmt.Println(call.Body)
+
+	return nil
+
 
 }
 
