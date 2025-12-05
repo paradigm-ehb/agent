@@ -61,6 +61,13 @@ func Init() error {
 
 	obj := createSystemdObject(sysConn)
 
+	arr, err := getUnits(obj)
+	if err != nil {
+		fmt.Println("failed to get array of units")
+	} else {
+		fmt.Println("array of units", arr)
+	}
+
 	/**
 	*
 	* Stop mariadb
@@ -68,10 +75,20 @@ func Init() error {
 	* .service, ...
 	* */
 
+	name := "mariadb.service"
+
 	fmt.Println("\n\n\n\n\nStopping mariadb")
-	err = handleActionOnUnit(obj, "mariadb.service", Action(Start))
+	err = handleActionOnUnit(obj, name, Action(Start))
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("failed upper layer starting the service, will try to enable the service before starting it", err)
+		// try to enable or disable the service!!
+		//
+		err = handleSymlinkCreationAction(obj, name, SymlinkAction(Enable))
+		if err != nil {
+			fmt.Println("failed upper layer enabling the service, will try to enable the service before starting it", err)
+		} else {
+			fmt.Println("\n\nlist of unit files: ", arr)
+		}
 	}
 
 	// DBG: debug sys
@@ -153,14 +170,16 @@ func getStatus(obj dbus.BusObject, name string) {
 
 }
 
-func getUnits(obj *dbus.BusObject) error {
+func getUnits(obj dbus.BusObject) ([]string, error) {
 
-	// TODO
-	//      ListUnitFiles(out a(ss) files);
-	// GetUnitProcesses(in  s name,
-	//                  out a(sus) processes);
-	call := obj.Call("org.freedesktop.systemd1.Manager.ListUnitFiles", dbus.FlagAllowInteractiveAuthorization, name, "")
-	return nil
+	var result []string
+	call := obj.Call("org.freedesktop.systemd1.Manager.ListUnitFiles", dbus.FlagAllowInteractiveAuthorization, 0)
+	if call.Err != nil {
+		return nil, fmt.Errorf("failed to list unit files %v", call.Err)
+	}
+	call.Store(&result)
+
+	return result, nil
 }
 
 func handleActionOnUnit(obj dbus.BusObject, name string, action Action) error {
@@ -192,6 +211,7 @@ func handleActionOnUnit(obj dbus.BusObject, name string, action Action) error {
 		}
 
 	}
+	return nil
 }
 
 /**
