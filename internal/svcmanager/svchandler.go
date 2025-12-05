@@ -7,8 +7,15 @@ import (
 	"github.com/godbus/dbus"
 )
 
+
+
+/**
+*  TODO: create enums  to describe the state of a unit 
+*
+* */
+
+
 // TODO: decide on using log or fmt for once :)
-//
 type System struct {
 
 	os string
@@ -250,7 +257,8 @@ func getStatus(conn *dbus.Conn, name string) error {
 
 					   */
 
-func stopUnit(conn *dbus.Conn, name string) error {
+
+func handleUnit(conn *dbus.Conn, name string, action string) error {
 	
 	// bugfix -> 
 	// failed to disable mariadb, Unknown method StopUnit or interface org.freedesktop.systemd1.Manager.  
@@ -264,12 +272,14 @@ func stopUnit(conn *dbus.Conn, name string) error {
 	}
 
 
+	// DEBUG: printing DBUS reply
 	fmt.Println(call.Body)
 
 	return nil
 
 
 }
+
 
 /**
 * sudo dbus-send --system --print-reply --dest=org.freedesktop.systemd1 /org/freedesktop/systemd1 org.freedesktop.systemd1.Manager.StopUnit
