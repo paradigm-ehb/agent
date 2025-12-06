@@ -76,6 +76,10 @@ func Init() error {
 	* */
 
 	name := "mariadb.service"
+	namesList := []string{"mariadb.service"}
+
+	enableForRunTime := true
+	replaceExistingSynmlink := true
 
 	fmt.Println("\n\n\n\n\nStopping mariadb")
 	err = handleActionOnUnit(obj, name, Action(Start))
@@ -83,7 +87,7 @@ func Init() error {
 		fmt.Println("failed upper layer starting the service, will try to enable the service before starting it", err)
 		// try to enable or disable the service!!
 		//
-		err = handleSymlinkCreationAction(obj, name, SymlinkAction(Enable))
+		err = handleSymlinkCreationAction(obj, namesList, SymlinkAction(Enable), enableForRunTime, replaceExistingSynmlink)
 		if err != nil {
 			fmt.Println("failed upper layer enabling the service, will try to enable the service before starting it", err)
 		} else {
@@ -219,7 +223,7 @@ func handleActionOnUnit(obj dbus.BusObject, name string, action Action) error {
 *  Enable or disable a unit file
 *
 * */
-func handleSymlinkCreationAction(obj dbus.BusObject, name string, action SymlinkAction) error {
+func handleSymlinkCreationAction(obj dbus.BusObject, name []string, action SymlinkAction, enableForRunTime bool, replaceExistingSynmlink bool) error {
 
 	/**
 
@@ -236,7 +240,7 @@ func handleSymlinkCreationAction(obj dbus.BusObject, name string, action Symlink
 	switch action {
 
 	case SymlinkAction(Enable):
-		call := obj.Call("org.freedesktop.systemd1.Manager.EnableUnitFiles", dbus.FlagAllowInteractiveAuthorization, name)
+		call := obj.Call("org.freedesktop.systemd1.Manager.EnableUnitFiles", dbus.FlagAllowInteractiveAuthorization, name, enableForRunTime, replaceExistingSynmlink)
 		if call.Err != nil {
 			fmt.Println(call.Body)
 			return fmt.Errorf("failed to enable a unit file %v", call.Err)
