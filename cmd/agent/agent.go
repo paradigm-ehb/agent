@@ -3,14 +3,17 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"net"
+	"os"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
 	pb_greeter "paradigm-ehb/agent/gen/greet"
+	manager "paradigm-ehb/agent/internal/svcmanager"
 	"paradigm-ehb/agent/pkg/service"
+
+	tools "paradigm-ehb/agent/tools"
 )
 
 var (
@@ -18,10 +21,23 @@ var (
 )
 
 func main() {
+	fmt.Println("started")
+
+	err := tools.CheckOSUser()
+	if err != nil {
+		fmt.Println("Operating system is currently not supported. Come back in .... never! Imagine not using Linux. Not worthy.")
+		os.Exit(4)
+	}
+
+	err = manager.Run()
+	if err != nil {
+		fmt.Println("failed to initialize service manager")
+	}
+
 	flag.Parse()
 	lis, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%d", *port))
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		fmt.Println("failed to listen: ", err)
 	}
 
 	server := grpc.NewServer()
@@ -31,8 +47,8 @@ func main() {
 
 	reflection.Register(server)
 
-	log.Printf("server listening at %v", lis.Addr())
+	fmt.Printf("server listening at %v", lis.Addr())
 	if err := server.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+		fmt.Println("failed to serve: ", err)
 	}
 }
