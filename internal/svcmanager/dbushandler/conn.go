@@ -6,6 +6,10 @@ import (
 	"github.com/godbus/dbus"
 )
 
+// Creates a global session bus connection
+// Session bus is bound to the user session
+// @return *dbus.Conn, error
+// @param none
 func CreateSessionBus() (*dbus.Conn, error) {
 
 	conn, err := dbus.SessionBus()
@@ -16,6 +20,10 @@ func CreateSessionBus() (*dbus.Conn, error) {
 	return conn, nil
 }
 
+// Creates a global session bus connection
+// Session bus is bound to the user session
+// @return *dbus.Conn, error
+// @param none
 func CreateSystemBus() (*dbus.Conn, error) {
 
 	conn, err := dbus.SystemBus()

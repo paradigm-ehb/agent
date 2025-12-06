@@ -15,12 +15,7 @@ import (
 
 func GetLoadedUnits(obj dbus.BusObject) any {
 
-	// ListUnits(out a(ssssssouso) units);
-	// crazy return type hhhhhhh
-	// going to any this for now
-	// TODO: fix the return type to something explicit
-	// HOW: create a giant struct that handles everything
-
+	// TODO: replace any with unit interface
 	var result any
 	// takes no in
 	call := obj.Call("org.freedesktop.systemd1.Manager.ListUnits", 0)

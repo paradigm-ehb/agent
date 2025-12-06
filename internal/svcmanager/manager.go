@@ -4,10 +4,11 @@ import (
 	"fmt"
 
 	dh "paradigm-ehb/agent/internal/svcmanager/dbushandler"
-	// svc "paradigm-ehb/agent/internal/svcmanager/servicecontrol"
+	svc "paradigm-ehb/agent/internal/svcmanager/servicecontrol"
 )
 
-func Run() error {
+// @param, action [start, stop, restart], symLinkAction [enable, disable], service name format "example.service"
+func Run(action svc.Action, symLinkAction svc.SymlinkAction, name string) error {
 
 	sysConn, err := dh.CreateSystemBus()
 	if err != nil {
@@ -16,5 +17,6 @@ func Run() error {
 
 	defer sysConn.Close()
 
+	// TODO: introduce control flow to enable disable start restart stop
 	return nil
 }
