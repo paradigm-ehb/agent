@@ -4,11 +4,12 @@ import (
 	"fmt"
 
 	dh "paradigm-ehb/agent/internal/svcmanager/dbushandler"
-	svc "paradigm-ehb/agent/internal/svcmanager/servicecontrol"
+	// svc "paradigm-ehb/agent/internal/svcmanager/servicecontrol"
 )
 
 // @param, action [start, stop, restart], symLinkAction [enable, disable], service name format "example.service"
-func Run(action svc.Action, symLinkAction svc.SymlinkAction, name string) error {
+// TODO: add parameters and handling
+func Run() error {
 
 	sysConn, err := dh.CreateSystemBus()
 	if err != nil {
