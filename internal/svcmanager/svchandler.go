@@ -59,14 +59,21 @@ func Init() error {
 
 	defer sysConn.Close()
 
+	// DEBUG
+	fmt.Println(sysConn.Names())
+
 	obj := createSystemdObject(sysConn)
 
-	arr, err := getUnits(obj)
+	arrOnRam := getCurrentlyLoadedUnits(obj)
+	// DEBUG
+	fmt.Println("array of units", arrOnRam)
+
+	arrOnDisk, err := getAllUnitsOnDisk(obj)
 	if err != nil {
-		fmt.Println("failed to get array of units: ", err)
-	} else {
-		fmt.Println("array of units", arr)
+		return nil
 	}
+
+	fmt.Println("printing unit files that are on the disk", arrOnDisk)
 
 	name := "mariadb.service"
 	namesList := []string{"mariadb.service"}
@@ -74,16 +81,20 @@ func Init() error {
 	enableForRunTime := true
 	replaceExistingSynmlink := true
 
+	// DEBUG
 	fmt.Println("\n\n\n\n\nStopping mariadb")
 	err = handleActionOnUnit(obj, name, Action(Start))
 	if err != nil {
+		// DEBUG
 		fmt.Println("failed to start the unit: ", err)
 		err = handleSymlinkCreationAction(obj, namesList, SymlinkAction(Enable), enableForRunTime, replaceExistingSynmlink)
 		if err != nil {
+			// DEBUG
 			fmt.Println("failed to enable the unit: ", err)
 		}
 	}
 
+	// DEBUG
 	fmt.Println(sys)
 
 	return nil
@@ -157,20 +168,58 @@ func (sys *System) getServicesSessionBus(conn *dbus.Conn) error {
 
 func getStatus(obj dbus.BusObject, name string) {
 
-	obj.Call("org.freedesktop.systemd1.Manager.GetUnitFileState", dbus.Flags(dbus.NameFlagReplaceExisting), name)
+	call := obj.Call("org.freedesktop.systemd1.Manager.GetUnitFileState", dbus.Flags(dbus.NameFlagReplaceExisting), name)
+	// DEBUG
+	call.Path.IsValid()
 
 }
 
-func getUnits(obj dbus.BusObject) ([]string, error) {
+// ListUnitFiles() returns an array of unit names plus their enablement status.
+// Note that ListUnit() returns a list of units currently loaded into memory, while ListUnitFiles()
+// returns a list of unit files that could be found on disk. Note that while most units are read directly from a
+// unit file with the same name some units are not backed by files, and some
+// files (templates) cannot directly be loaded as units but need to be instantiated.
+// ---------------------------------------------------------------------------------------
+// Method returns an array of all currently loaded units,
+func getCurrentlyLoadedUnits(obj dbus.BusObject) any {
 
-	var result []string
-	call := obj.Call("org.freedesktop.systemd1.Manager.ListUnitFiles", dbus.FlagAllowInteractiveAuthorization, 0)
+	// ListUnits(out a(ssssssouso) units);
+	// crazy return type hhhhhhh
+	// going to any this for now
+	// TODO: fix the return type to something explicit
+	// HOW: create a giant struct that handles everything
+
+	var result any
+	// takes no in
+	call := obj.Call("org.freedesktop.systemd1.Manager.ListUnits", 0)
 	if call.Err != nil {
-		return nil, fmt.Errorf("failed to list unit files %v", call.Err)
+		fmt.Printf("failed to list unit files that are loaded in memory %v", call.Err)
+		return nil
 	}
+
+	call.Store(&result)
+
+	return result
+}
+
+func getAllUnitsOnDisk(obj dbus.BusObject) ([][]string, error) {
+
+	// ListUnitFiles(out a(ss) files);
+	// an array of struct string string
+	// i think
+
+	var result [][]string
+
+	// takes no in either
+	call := obj.Call("org.freedesktop.systemd1.Manager.ListUnitsFiles", 0)
+	if call.Err != nil {
+		return nil, fmt.Errorf("failed to list unit files that on disk %v", call.Err)
+	}
+
 	call.Store(&result)
 
 	return result, nil
+
 }
 
 func handleActionOnUnit(obj dbus.BusObject, name string, action Action) error {
@@ -181,6 +230,7 @@ func handleActionOnUnit(obj dbus.BusObject, name string, action Action) error {
 
 		call := obj.Call("org.freedesktop.systemd1.Manager.StartUnit", dbus.FlagAllowInteractiveAuthorization, name, "replace")
 		if call.Err != nil {
+			// DEBUG
 			fmt.Println(call.Body)
 			return fmt.Errorf("failed to start %s, %v", name, call.Err)
 		}
@@ -189,6 +239,7 @@ func handleActionOnUnit(obj dbus.BusObject, name string, action Action) error {
 
 		call := obj.Call("org.freedesktop.systemd1.Manager.StopUnit", dbus.FlagAllowInteractiveAuthorization, name, "replace")
 		if call.Err != nil {
+			// DEBUG
 			fmt.Println(call.Body)
 			return fmt.Errorf("failed to stop %s, %v", name, call.Err)
 		}
@@ -197,6 +248,7 @@ func handleActionOnUnit(obj dbus.BusObject, name string, action Action) error {
 
 		call := obj.Call("org.freedesktop.systemd1.Manager.RestartUnit", dbus.FlagAllowInteractiveAuthorization, name, "replace")
 		if call.Err != nil {
+			// DEBUG
 			fmt.Println(call.Body)
 			return fmt.Errorf("failed to restart %s, %v", name, call.Err)
 		}
@@ -227,20 +279,25 @@ func handleSymlinkCreationAction(obj dbus.BusObject, name []string, action Symli
 	switch action {
 
 	case SymlinkAction(Enable):
-		call := obj.Call("org.freedesktop.systemd1.Manager.EnableUnitFiles", dbus.FlagAllowInteractiveAuthorization, name, enableForRunTime, replaceExistingSynmlink)
+		call := obj.Call("org.freedesktop.systemd1.Manager.EnableUnitFiles", dbus.Flags(dbus.NameFlagReplaceExisting), name, enableForRunTime, replaceExistingSynmlink)
 		if call.Err != nil {
-			fmt.Println(call.Body)
+			// DEBUG
+			fmt.Println("response body", call.Body)
 			return fmt.Errorf("failed to enable a unit file %v", call.Err)
 		}
 
 	case SymlinkAction(Disable):
-		call := obj.Call("org.freedesktop.systemd1.Manager.EnableUnitFiles", dbus.FlagAllowInteractiveAuthorization, name)
+		call := obj.Call("org.freedesktop.systemd1.Manager.DisableUnitFiles", dbus.Flags(dbus.NameFlagReplaceExisting), name, enableForRunTime)
 		if call.Err != nil {
-			fmt.Println(call.Body)
-			return fmt.Errorf("failed to enable a unit file %v", call.Err)
+			// DEBUG
+			fmt.Println("response body", call.Body)
+			return fmt.Errorf("failed to disable a unit file %v", call.Err)
 		}
-
 	}
 
 	return nil
 }
+
+// TODO: get unit object path using GetUnit() may be used to get the unit object path for a unit name.
+// It takes the unit name and returns the object path. If a unit has not been loaded yet by this name this call will fail.
+// doing this will allow us to get all units running, get their object path and do handles on them
