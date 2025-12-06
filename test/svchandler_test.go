@@ -1,12 +1,3 @@
-pacakge test
+package test
 
-import (
-
-	"testing"
-)
-
-func testFormatting() {
-
-
-	return 
-}
+import ()

@@ -1,9 +1,21 @@
 package servicecontrol
 
-// TODO: get unit object path using GetUnit() may be used to get the unit object path for a unit name.
-// It takes the unit name and returns the object path. If a unit has not been loaded yet by this name this call will fail.
-// doing this will allow us to get all units running, get their object path and do handles on them
+import (
+	"github.com/godbus/dbus"
+)
 
-func GetUnit() {
+/*
+* GetUnit(in  s name,
+* out o unit);
+*
+* Retrieves the object path of a unit
+*
+* @return dbus.ObjectPath
+ */
+func GetUnit(obj dbus.BusObject, name string) dbus.ObjectPath {
 
+	var result dbus.ObjectPath
+	obj.Call("org.freedesktop.systemd1.Manager.GetUnit", 0, name).Store(&result)
+
+	return result
 }

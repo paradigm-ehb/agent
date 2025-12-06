@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"net"
 	"os"
 
@@ -22,16 +21,7 @@ var (
 )
 
 func main() {
-	fmt.Println(`
-                               .___.__                                                       __   
-___________ ____________     __| _/|__| ____   _____           _____     ____   ____   _____/  |_ 
-\____ \__  \\_  __ \__  \   / __ | |  |/ ___\ /     \   ______ \__  \   / ___\_/ __ \ /    \   __\
-|  |_> > __ \|  | \// __ \_/ /_/ | |  / /_/  >  Y Y  \ /_____/  / __ \_/ /_/  >  ___/|   |  \  |  
-|   __(____  /__|  (____  /\____ | |__\___  /|__|_|  /         (____  /\___  / \___  >___|  /__|  
-|__|       \/           \/      \/   /_____/       \/               \//_____/      \/     \/      
-
-
-	`)
+	fmt.Println("started")
 
 	err := tools.CheckOSUser()
 	if err != nil {
@@ -39,12 +29,15 @@ ___________ ____________     __| _/|__| ____   _____           _____     ____   
 		os.Exit(4)
 	}
 
-	manager.Init()
+	err = manager.Run()
+	if err != nil {
+		fmt.Println("failed to initialize service manager")
+	}
 
 	flag.Parse()
 	lis, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%d", *port))
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		fmt.Println("failed to listen: ", err)
 	}
 
 	server := grpc.NewServer()
@@ -54,8 +47,8 @@ ___________ ____________     __| _/|__| ____   _____           _____     ____   
 
 	reflection.Register(server)
 
-	log.Printf("server listening at %v", lis.Addr())
+	fmt.Printf("server listening at %v", lis.Addr())
 	if err := server.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+		fmt.Println("failed to serve: ", err)
 	}
 }
