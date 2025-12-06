@@ -63,17 +63,10 @@ func Init() error {
 
 	arr, err := getUnits(obj)
 	if err != nil {
-		fmt.Println("failed to get array of units")
+		fmt.Println("failed to get array of units: ", err)
 	} else {
 		fmt.Println("array of units", arr)
 	}
-
-	/**
-	*
-	* Stop mariadb
-	* when passing a service you must add the extension
-	* .service, ...
-	* */
 
 	name := "mariadb.service"
 	namesList := []string{"mariadb.service"}
@@ -84,19 +77,13 @@ func Init() error {
 	fmt.Println("\n\n\n\n\nStopping mariadb")
 	err = handleActionOnUnit(obj, name, Action(Start))
 	if err != nil {
-		fmt.Println("failed upper layer starting the service, will try to enable the service before starting it", err)
-		// try to enable or disable the service!!
-		//
+		fmt.Println("failed to start the unit: ", err)
 		err = handleSymlinkCreationAction(obj, namesList, SymlinkAction(Enable), enableForRunTime, replaceExistingSynmlink)
 		if err != nil {
-			fmt.Println("failed upper layer enabling the service, will try to enable the service before starting it", err)
-		} else {
-			fmt.Println("\n\nlist of unit files: ", arr)
+			fmt.Println("failed to enable the unit: ", err)
 		}
 	}
 
-	// DBG: debug sys
-	// TODO: add a proper way of printing stuff out
 	fmt.Println(sys)
 
 	return nil
