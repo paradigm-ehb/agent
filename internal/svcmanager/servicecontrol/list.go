@@ -29,7 +29,7 @@ func GetLoadedUnits(obj dbus.BusObject) any {
 	return result
 }
 
-func GetAllUnits(obj dbus.BusObject) ([][]string, error) {
+func GetAllUnits(obj dbus.BusObject, ch chan [][]string) <-chan [][]string {
 
 	// ListUnitFiles(out a(ss) files);
 	// an array of struct string string
@@ -37,14 +37,21 @@ func GetAllUnits(obj dbus.BusObject) ([][]string, error) {
 
 	var result [][]string
 
-	// takes no in either
-	call := obj.Call("org.freedesktop.systemd1.Manager.ListUnitsFiles", 0)
+	go func(in [][]string) {
+
+		call := obj.Call("org.freedesktop.systemd1.Manager.ListUnitFiles", 0)
+
+	}()
+
 	if call.Err != nil {
-		return nil, fmt.Errorf("failed to list unit files that on disk %v", call.Err)
+
+		fmt.Println("failed to retrieve unit files")
+		return
 	}
 
 	call.Store(&result)
 
-	return result, nil
+	ch <- result
 
+	return ch
 }
