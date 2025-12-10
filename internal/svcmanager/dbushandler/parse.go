@@ -2,6 +2,7 @@
 package dbushandler
 
 import (
+	"fmt"
 	svctypes "paradigm-ehb/agent/internal/svcmanager/system"
 )
 
@@ -9,17 +10,16 @@ import (
 // ListUnits(out a(ssssssouso) units);
 
 // Method
-// parses
-// @return [][]string
-func Parse(in chan svctypes.Ass, out chan svctypes.Ass) {
+// @param chan a(ss), chan a(ss)
+// @return nil
+func Parse(in chan []svctypes.Ass, out chan []svctypes.Ass) {
 
 	input := <-in
-	// for i := range input {
-	// 	for j := range input {
-	//
-	// 		input[i][j] += "\n"
-	// 	}
-	// }
 
+	for i := range input {
+
+		fmt.Println(input[i].Name)
+	}
 	out <- input
+
 }

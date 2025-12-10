@@ -21,14 +21,15 @@ func Run(a svc.Action, s svc.SymlinkAction, service string) error {
 
 	obj := dh.CreateSystemdObject(conn)
 
-	ch := make(chan svctypes.Ass)
-	parse := make(chan svctypes.Ass)
+	ch := make(chan []svctypes.Ass)
+	parse := make(chan []svctypes.Ass)
 
 	go svc.GetAllUnits(obj, ch)
 	// svc.GetAllUnits(obj, nil)
 	go dh.Parse(ch, parse)
 
-	fmt.Println(<-parse)
+	// fmt.Println(<-parse)
+	<-parse
 
 	return nil
 }

@@ -31,13 +31,13 @@ func GetLoadedUnits(obj dbus.BusObject) any {
 	return result
 }
 
-func GetAllUnits(obj dbus.BusObject, out chan svctypes.Ass) {
+func GetAllUnits(obj dbus.BusObject, out chan []svctypes.Ass) {
 
 	// ListUnitFiles(out a(ss) files);
 	// an array of struct string string
 	// i think
 
-	var result svctypes.Ass
+	var result []svctypes.Ass
 
 	call := obj.Call("org.freedesktop.systemd1.Manager.ListUnitFiles", 0)
 

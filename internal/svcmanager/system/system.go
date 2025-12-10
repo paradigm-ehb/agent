@@ -40,7 +40,7 @@ type Service struct {
 }
 
 // type a(ss)
-type Ass []struct {
+type Ass struct {
 	Name  string
 	State string
 }
