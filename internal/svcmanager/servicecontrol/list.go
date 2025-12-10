@@ -15,20 +15,20 @@ import (
 // ---------------------------------------------------------------------------------------
 // Method returns an array of all currently loaded units,
 
-func GetLoadedUnits(obj dbus.BusObject) any {
+func GetLoadedUnits(obj dbus.BusObject, out chan []svctypes.Assssssouso) {
 
-	// TODO: replace any with unit interface
-	var result any
-	// takes no in
+	var result []svctypes.Assssssouso
+
 	call := obj.Call("org.freedesktop.systemd1.Manager.ListUnits", 0)
 	if call.Err != nil {
 		fmt.Printf("failed to list unit files that are loaded in memory %v", call.Err)
-		return nil
+		return
 	}
 
 	call.Store(&result)
 
-	return result
+	out <- result
+
 }
 
 func GetAllUnits(obj dbus.BusObject, out chan []svctypes.Ass) {

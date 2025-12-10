@@ -44,3 +44,17 @@ type Ass struct {
 	Name  string
 	State string
 }
+
+// type a(ssssssouso)
+type Assssssouso struct {
+	Name        string
+	Description string
+	LoadState   string
+	SubState    string
+	ActiveState string
+	DepUnit     string
+	ObjectPath  dbus.ObjectPath
+	QueudJob    uint32
+	JobType     string
+	JobPath     dbus.ObjectPath
+}

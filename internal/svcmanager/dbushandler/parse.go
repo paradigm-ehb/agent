@@ -6,13 +6,12 @@ import (
 	svctypes "paradigm-ehb/agent/internal/svcmanager/system"
 )
 
-// TODO: fix the return type to something explicit
-// ListUnits(out a(ssssssouso) units);
+// TODO: implement interfaces maybe
 
 // Method
 // @param chan a(ss), chan a(ss)
 // @return nil
-func Parse(in chan []svctypes.Ass, out chan []svctypes.Ass) {
+func ParseAllUnits(in chan []svctypes.Ass, out chan []svctypes.Ass) {
 
 	input := <-in
 
@@ -27,6 +26,19 @@ func Parse(in chan []svctypes.Ass, out chan []svctypes.Ass) {
 			fmt.Println(input[i].Name)
 		}
 	}
+	out <- input
+
+}
+
+func ParseLoadedUnits(in chan []svctypes.Assssssouso, out chan []svctypes.Assssssouso) {
+
+	input := <-in
+
+	for i := range input {
+
+		fmt.Println(input[i])
+	}
+
 	out <- input
 
 }

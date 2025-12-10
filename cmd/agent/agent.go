@@ -30,7 +30,12 @@ func main() {
 		os.Exit(4)
 	}
 
-	err = manager.Run(servicecontrol.Start, servicecontrol.Enable, "nginx.service")
+	// err = manager.RunRetrieval(true)
+	// if err != nil {
+	// 	fmt.Println("failed to do this")
+	// }
+
+	err = manager.RunAction(servicecontrol.Start, servicecontrol.Disable, "nginx.service")
 	if err != nil {
 		fmt.Println("failed to initialize service manager")
 	}
@@ -52,4 +57,5 @@ func main() {
 	if err := server.Serve(lis); err != nil {
 		fmt.Println("failed to serve: ", err)
 	}
+
 }
