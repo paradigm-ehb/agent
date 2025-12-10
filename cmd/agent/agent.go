@@ -15,6 +15,8 @@ import (
 	"paradigm-ehb/agent/pkg/service"
 
 	tools "paradigm-ehb/agent/tools"
+
+	dh "paradigm-ehb/agent/internal/svcmanager/dbushandler"
 )
 
 var (
@@ -30,18 +32,25 @@ func main() {
 		os.Exit(4)
 	}
 
-	err = manager.RunAction(servicecontrol.Stop, "nginx.service")
+	conn, err := dh.CreateSystemBus()
 	if err != nil {
-		fmt.Println("failed to perform action on nginx")
+		fmt.Println("failed to create shared systembus")
 	}
 
-	err = manager.RunSymlinkAction(servicecontrol.Disable, true, true, []string{"nginx.service"})
-	if err != nil {
+	defer conn.Close()
 
-		fmt.Println("failed to perform symlink action on nginx")
+	err = manager.RunAction(conn, servicecontrol.Stop, "mariadb.service")
+	if err != nil {
+		fmt.Println("failed to perform action on mariadb")
 	}
 
-	err = manager.RunRetrieval(true)
+	err = manager.RunSymlinkAction(conn, servicecontrol.Disable, true, true, []string{"mariadb.service"})
+	if err != nil {
+
+		fmt.Println("failed to perform symlink action on mariadb")
+	}
+
+	err = manager.RunRetrieval(conn, true)
 	if err != nil {
 		fmt.Println("failed to do this")
 	}

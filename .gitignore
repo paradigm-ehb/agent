@@ -33,3 +33,5 @@ go.work.sum
 
 # Generated proto files
 gen/
+.idea
+debug

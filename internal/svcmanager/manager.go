@@ -11,14 +11,7 @@ import (
 
 // @param, action [start, stop, restart], symLinkAction [enable, disable], service name format "example.service"
 // TODO: add parameters and handling
-func RunAction(ac svc.Action, service string) error {
-
-	conn, err := dh.CreateSystemBus()
-	if err != nil {
-		return fmt.Errorf("failed to create a systembus %v", err)
-	}
-
-	defer conn.Close()
+func RunAction(conn *dbus.Conn, ac svc.Action, service string) error {
 
 	obj := dh.CreateSystemdObject(conn)
 
@@ -32,14 +25,7 @@ func RunAction(ac svc.Action, service string) error {
 }
 
 // @param, action [start, stop, restart], symLinkAction [enable, disable], service name format "example.service"
-func RunSymlinkAction(sc svc.SymlinkAction, enableForRunTime bool, enableForce bool, service []string) error {
-
-	conn, err := dh.CreateSystemBus()
-	if err != nil {
-		return fmt.Errorf("failed to create a systembus %v", err)
-	}
-
-	defer conn.Close()
+func RunSymlinkAction(conn *dbus.Conn, sc svc.SymlinkAction, enableForRunTime bool, enableForce bool, service []string) error {
 
 	obj := dh.CreateSystemdObject(conn)
 
@@ -76,14 +62,7 @@ func RunSymlinkAction(sc svc.SymlinkAction, enableForRunTime bool, enableForce b
 }
 
 // @param, true for all on disk, false for loaded units
-func RunRetrieval(all bool) error {
-
-	conn, err := dh.CreateSystemBus()
-	if err != nil {
-		return fmt.Errorf("failed to create systembus %v", err)
-	}
-
-	defer conn.Close()
+func RunRetrieval(conn *dbus.Conn, all bool) error {
 
 	obj := dh.CreateSystemdObject(conn)
 
