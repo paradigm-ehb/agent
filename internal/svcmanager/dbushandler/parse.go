@@ -18,7 +18,14 @@ func Parse(in chan []svctypes.Ass, out chan []svctypes.Ass) {
 
 	for i := range input {
 
-		fmt.Println(input[i].Name)
+		if input[i].State == "enabled" {
+			fmt.Println("==================Enabled======================")
+			fmt.Println(input[i].Name)
+		} else {
+
+			fmt.Println("==================Disabled======================")
+			fmt.Println(input[i].Name)
+		}
 	}
 	out <- input
 
