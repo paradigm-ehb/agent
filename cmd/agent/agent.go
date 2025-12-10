@@ -30,14 +30,20 @@ func main() {
 		os.Exit(4)
 	}
 
-	// err = manager.RunRetrieval(true)
-	// if err != nil {
-	// 	fmt.Println("failed to do this")
-	// }
-
-	err = manager.RunAction(servicecontrol.Start, servicecontrol.Disable, "nginx.service")
+	err = manager.RunAction(servicecontrol.Stop, "nginx.service")
 	if err != nil {
-		fmt.Println("failed to initialize service manager")
+		fmt.Println("failed to perform action on nginx")
+	}
+
+	err = manager.RunSymlinkAction(servicecontrol.Disable, true, true, []string{"nginx.service"})
+	if err != nil {
+
+		fmt.Println("failed to perform symlink action on nginx")
+	}
+
+	err = manager.RunRetrieval(true)
+	if err != nil {
+		fmt.Println("failed to do this")
 	}
 
 	flag.Parse()

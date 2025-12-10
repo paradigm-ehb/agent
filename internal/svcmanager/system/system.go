@@ -58,3 +58,10 @@ type Assssssouso struct {
 	JobType     string
 	JobPath     dbus.ObjectPath
 }
+
+// type a(sss)
+type Asss struct {
+	TypeOfChange       string
+	FileNameSymLink    string
+	DestinationSymLink string
+}
