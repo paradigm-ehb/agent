@@ -2,6 +2,8 @@ package servicecontrol
 
 import (
 	"fmt"
+	svctypes "paradigm-ehb/agent/internal/svcmanager/system"
+
 	"github.com/godbus/dbus"
 )
 
@@ -29,29 +31,21 @@ func GetLoadedUnits(obj dbus.BusObject) any {
 	return result
 }
 
-func GetAllUnits(obj dbus.BusObject, ch chan [][]string) <-chan [][]string {
+func GetAllUnits(obj dbus.BusObject, out chan svctypes.Ass) {
 
 	// ListUnitFiles(out a(ss) files);
 	// an array of struct string string
 	// i think
 
-	var result [][]string
+	var result svctypes.Ass
 
-	go func(in [][]string) {
-
-		call := obj.Call("org.freedesktop.systemd1.Manager.ListUnitFiles", 0)
-
-	}()
+	call := obj.Call("org.freedesktop.systemd1.Manager.ListUnitFiles", 0)
 
 	if call.Err != nil {
-
-		fmt.Println("failed to retrieve unit files")
+		fmt.Println("failed to call all units loaded on disk")
 		return
 	}
 
 	call.Store(&result)
-
-	ch <- result
-
-	return ch
+	out <- result
 }

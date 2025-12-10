@@ -5,12 +5,12 @@ import (
 
 	dh "paradigm-ehb/agent/internal/svcmanager/dbushandler"
 	svc "paradigm-ehb/agent/internal/svcmanager/servicecontrol"
-	"sync"
+	svctypes "paradigm-ehb/agent/internal/svcmanager/system"
 )
 
 // @param, action [start, stop, restart], symLinkAction [enable, disable], service name format "example.service"
 // TODO: add parameters and handling
-func Run() error {
+func Run(a svc.Action, s svc.SymlinkAction, service string) error {
 
 	conn, err := dh.CreateSystemBus()
 	if err != nil {
@@ -21,20 +21,14 @@ func Run() error {
 
 	obj := dh.CreateSystemdObject(conn)
 
-	var wg sync.WaitGroup
-	ch := make(chan [][]string, 1)
-
-	wg.Add(2)
+	ch := make(chan svctypes.Ass)
+	parse := make(chan svctypes.Ass)
 
 	go svc.GetAllUnits(obj, ch)
+	// svc.GetAllUnits(obj, nil)
+	go dh.Parse(ch, parse)
 
-	go dh.Parse(ch)
+	fmt.Println(<-parse)
 
-	wg.Wait()
-
-	result := <-ch
-	fmt.Println(result)
-
-	// TODO: introduce control flow to enable disable start restart stop
 	return nil
 }

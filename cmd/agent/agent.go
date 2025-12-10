@@ -11,6 +11,7 @@ import (
 
 	pb_greeter "paradigm-ehb/agent/gen/greet"
 	manager "paradigm-ehb/agent/internal/svcmanager"
+	"paradigm-ehb/agent/internal/svcmanager/servicecontrol"
 	"paradigm-ehb/agent/pkg/service"
 
 	tools "paradigm-ehb/agent/tools"
@@ -29,7 +30,7 @@ func main() {
 		os.Exit(4)
 	}
 
-	err = manager.Run()
+	err = manager.Run(servicecontrol.Start, servicecontrol.Enable, "nginx.service")
 	if err != nil {
 		fmt.Println("failed to initialize service manager")
 	}
