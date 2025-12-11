@@ -36,18 +36,8 @@ func RunSymlinkAction(conn *dbus.Conn, sc svc.UnitFileAction, enableForRunTime b
 		fmt.Println("invalid systemd path")
 	}
 
-	/* EnableUnitFiles(in  as files,
-	*                 in  b runtime,
-	*                 in  b force,
-	*                 out b carries_install_info,
-	*			      out a(sss) changes);
-	 */
-
-	/**
-	 * DisableUnitFiles(in  as files,
-	 *                  in  b runtime,
-	 *                  out a(sss) changes);
-	 */
+	/** EnableUnitFiles(in  as files, in  b runtime, in  b force, out b carries_install_info, out a(sss) changes); */
+	/** DisableUnitFiles(in  as files, in  b runtime, out a(sss) changes); */
 
 	switch sc {
 
