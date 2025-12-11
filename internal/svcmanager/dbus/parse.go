@@ -3,15 +3,16 @@ package dbushandler
 
 import (
 	"fmt"
-	svctypes "paradigm-ehb/agent/internal/svcmanager/system"
+	svctypes "paradigm-ehb/agent/internal/svcmanager/types"
 )
 
 // TODO: implement interfaces maybe
 
 // Method
 // @param chan a(ss), chan a(ss)
+// @param chan UnitFileEntry, chan UnitFileEntry
 // @return nil
-func ParseAllUnits(in chan []svctypes.Ass, out chan []svctypes.Ass) {
+func ParseUnitFileEntries(in chan []svctypes.UnitFileEntry, out chan []svctypes.UnitFileEntry) {
 
 	input := <-in
 
@@ -30,7 +31,7 @@ func ParseAllUnits(in chan []svctypes.Ass, out chan []svctypes.Ass) {
 
 }
 
-func ParseLoadedUnits(in chan []svctypes.Assssssouso, out chan []svctypes.Assssssouso) {
+func ParseLoadedUnits(in chan []svctypes.LoadedUnit, out chan []svctypes.LoadedUnit) {
 
 	input := <-in
 

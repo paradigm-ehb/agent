@@ -2,7 +2,7 @@ package servicecontrol
 
 import (
 	"fmt"
-	svctypes "paradigm-ehb/agent/internal/svcmanager/system"
+	svctypes "paradigm-ehb/agent/internal/svcmanager/types"
 
 	"github.com/godbus/dbus"
 )
@@ -15,9 +15,9 @@ import (
 // ---------------------------------------------------------------------------------------
 // Method returns an array of all currently loaded units,
 
-func GetLoadedUnits(obj dbus.BusObject, out chan []svctypes.Assssssouso) {
+func GetLoadedUnits(obj dbus.BusObject, out chan []svctypes.LoadedUnit) {
 
-	var result []svctypes.Assssssouso
+	var result []svctypes.LoadedUnit
 
 	call := obj.Call("org.freedesktop.systemd1.Manager.ListUnits", 0)
 	if call.Err != nil {
@@ -31,13 +31,13 @@ func GetLoadedUnits(obj dbus.BusObject, out chan []svctypes.Assssssouso) {
 
 }
 
-func GetAllUnits(obj dbus.BusObject, out chan []svctypes.Ass) {
+func GetAllUnits(obj dbus.BusObject, out chan []svctypes.UnitFileEntry) {
 
 	// ListUnitFiles(out a(ss) files);
 	// an array of struct string string
 	// i think
 
-	var result []svctypes.Ass
+	var result []svctypes.UnitFileEntry
 
 	call := obj.Call("org.freedesktop.systemd1.Manager.ListUnitFiles", 0)
 

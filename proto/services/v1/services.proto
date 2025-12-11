@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package services.v1;
+
+option go_package = "paradigm-ehb/agent/proto/services";
+
+service HandlerService {
+
+  rpc Action (ServiceActionRequest) returns (ServiceActionReply) {}
+
+}
+
+message ServiceActionRequest  {
+
+  string service_name = 1;
+
+  enum UnitAction {
+
+    // Default place holder do not use
+    UNIT_ACTION_UNSPECIFIED = 0;
+    UNIT_ACTION_START = 1;
+    UNIT_ACTION_STOP = 2;
+    UNIT_ACTION_RESTART = 3;
+  }
+
+  enum UnitFileAction {
+
+    // Default place holder do not use
+    UNIT_FILE_ACTION_UNSPECIFIED  = 0;
+    UNIT_FILE_ACTION_ENABLE  = 1;
+    UNIT_FILE_ACTION_DISABLE = 2;
+  }
+
+  optional UnitAction unit_action = 2;
+  optional UnitFileAction unit_file_action = 3;
+
+}
+
+message ServiceActionReply {
+
+  string status = 1;
+}
+

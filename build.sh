@@ -19,21 +19,26 @@ go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 export PATH="$PATH:$(go env GOPATH)/bin"
 
 # compile protoc files
-srcdir="."
-outdir="gen/"
+SRCDIR="."
+OUTDIR="gen/"
 
-cd $srcdir/proto
-for dir in *;
-do
-    echo "Found Service Dir: $dir"
-    if ls $srcdir/$dir/*proto; then
-        protoc --go_out=../$outdir --go_opt=paths=source_relative \
-            --go-grpc_out=../$outdir --go-grpc_opt=paths=source_relative \
-            $srcdir/$dir/*.proto
-    else
-        echo "Geen proto file gevonden in $dir :("
+cd "$SRCDIR/proto"
+
+for DIR in */; do
+    DIR=${DIR%/}   
+
+	PROTOS=$(find "$DIR" -type f -name "*.proto") 
+
+# check length of protos
+   if [ -z "$PROTOS" ]; then
+        echo "tsjoe nothing in here ,  $DIR :("
         exit 1
-fi
-cd ..
-done
+    fi
 
+    protoc --go_out=../$OUTDIR --go_opt=paths=source_relative \
+           --go-grpc_out=../$OUTDIR --go-grpc_opt=paths=source_relative \
+           $PROTOS
+
+	echo "yahoooo yippie yay $PROTOS"
+
+done
