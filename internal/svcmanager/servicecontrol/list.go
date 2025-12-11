@@ -2,6 +2,8 @@ package servicecontrol
 
 import (
 	"fmt"
+	svctypes "paradigm-ehb/agent/internal/svcmanager/system"
+
 	"github.com/godbus/dbus"
 )
 
@@ -13,38 +15,37 @@ import (
 // ---------------------------------------------------------------------------------------
 // Method returns an array of all currently loaded units,
 
-func GetLoadedUnits(obj dbus.BusObject) any {
+func GetLoadedUnits(obj dbus.BusObject, out chan []svctypes.Assssssouso) {
 
-	// TODO: replace any with unit interface
-	var result any
-	// takes no in
+	var result []svctypes.Assssssouso
+
 	call := obj.Call("org.freedesktop.systemd1.Manager.ListUnits", 0)
 	if call.Err != nil {
 		fmt.Printf("failed to list unit files that are loaded in memory %v", call.Err)
-		return nil
+		return
 	}
 
 	call.Store(&result)
 
-	return result
+	out <- result
+
 }
 
-func GetAllUnits(obj dbus.BusObject) ([][]string, error) {
+func GetAllUnits(obj dbus.BusObject, out chan []svctypes.Ass) {
 
 	// ListUnitFiles(out a(ss) files);
 	// an array of struct string string
 	// i think
 
-	var result [][]string
+	var result []svctypes.Ass
 
-	// takes no in either
-	call := obj.Call("org.freedesktop.systemd1.Manager.ListUnitsFiles", 0)
+	call := obj.Call("org.freedesktop.systemd1.Manager.ListUnitFiles", 0)
+
 	if call.Err != nil {
-		return nil, fmt.Errorf("failed to list unit files that on disk %v", call.Err)
+		fmt.Println("failed to call all units loaded on disk")
+		return
 	}
 
 	call.Store(&result)
-
-	return result, nil
-
+	out <- result
 }

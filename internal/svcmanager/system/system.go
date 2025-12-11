@@ -1,4 +1,4 @@
-package svcmanager
+package svctypes
 
 import (
 	"github.com/godbus/dbus"
@@ -37,4 +37,31 @@ type Service struct {
 	name  string // unit file name
 	id    uint32 // service PID
 	owner string // unit file owner
+}
+
+// type a(ss)
+type Ass struct {
+	Name  string
+	State string
+}
+
+// type a(ssssssouso)
+type Assssssouso struct {
+	Name        string
+	Description string
+	LoadState   string
+	SubState    string
+	ActiveState string
+	DepUnit     string
+	ObjectPath  dbus.ObjectPath
+	QueudJob    uint32
+	JobType     string
+	JobPath     dbus.ObjectPath
+}
+
+// type a(sss)
+type Asss struct {
+	TypeOfChange       string
+	FileNameSymLink    string
+	DestinationSymLink string
 }

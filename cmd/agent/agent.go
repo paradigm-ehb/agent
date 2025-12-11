@@ -11,9 +11,12 @@ import (
 
 	pb_greeter "paradigm-ehb/agent/gen/greet"
 	manager "paradigm-ehb/agent/internal/svcmanager"
+	"paradigm-ehb/agent/internal/svcmanager/servicecontrol"
 	"paradigm-ehb/agent/pkg/service"
 
 	tools "paradigm-ehb/agent/tools"
+
+	dh "paradigm-ehb/agent/internal/svcmanager/dbushandler"
 )
 
 var (
@@ -29,9 +32,27 @@ func main() {
 		os.Exit(4)
 	}
 
-	err = manager.Run()
+	conn, err := dh.CreateSystemBus()
 	if err != nil {
-		fmt.Println("failed to initialize service manager")
+		fmt.Println("failed to create shared systembus")
+	}
+
+	defer conn.Close()
+
+	err = manager.RunAction(conn, servicecontrol.Stop, "mariadb.service")
+	if err != nil {
+		fmt.Println("failed to perform action on mariadb")
+	}
+
+	err = manager.RunSymlinkAction(conn, servicecontrol.Disable, true, true, []string{"mariadb.service"})
+	if err != nil {
+
+		fmt.Println("failed to perform symlink action on mariadb")
+	}
+
+	err = manager.RunRetrieval(conn, true)
+	if err != nil {
+		fmt.Println("failed to do this")
 	}
 
 	flag.Parse()
@@ -51,4 +72,5 @@ func main() {
 	if err := server.Serve(lis); err != nil {
 		fmt.Println("failed to serve: ", err)
 	}
+
 }
