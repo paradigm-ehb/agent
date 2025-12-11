@@ -14,6 +14,9 @@ import (
 func RunAction(conn *dbus.Conn, ac svc.Action, service string) error {
 
 	obj := dh.CreateSystemdObject(conn)
+	if !obj.Path().IsValid() {
+		fmt.Println("invalid systemd path")
+	}
 
 	call := obj.Call(string(ac), 0, service, "replace")
 
@@ -28,6 +31,10 @@ func RunAction(conn *dbus.Conn, ac svc.Action, service string) error {
 func RunSymlinkAction(conn *dbus.Conn, sc svc.SymlinkAction, enableForRunTime bool, enableForce bool, service []string) error {
 
 	obj := dh.CreateSystemdObject(conn)
+
+	if !obj.Path().IsValid() {
+		fmt.Println("invalid systemd path")
+	}
 
 	/* EnableUnitFiles(in  as files,
 	*                 in  b runtime,
