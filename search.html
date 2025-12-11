@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>paradigm-ehb Agent</title>
+    <link rel="stylesheet" href="static/mystyles.css" />
+    <script src="static/fontawesome.js"></script>
+    <script src="static/lunr.js"></script>
+    <script src="static/theme.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <nav class="level pt-6 mb-5 pb-2 bottom-border">
+        <div class="level-left">
+          <p class="level-item has-text-centered is-size-3 has-text-weight-medium">
+            <a class="link is-info" href="index.html">
+              paradigm-ehb Agent
+            </a>
+          </p>
+        </div>
+
+        <div class="level-right">
+          
+          <form action="search.html" class="mr-2 has-text-centered">
+            <input type="text" name="query" class="input mr-3 navbar-search-query-input" placeholder="Search">
+            <input type="submit" class="button is-primary mr-5" value="Search" />
+          </form>
+          
+
+          <p class="level-item has-text-centered is-size-5">
+            <a href="https://github.com/paradigm-ehb/agent" class="link is-info mr-5" target="_blank">
+              
+              <span class="icon">
+                <i class="fa-brands fa-github"></i>
+              </span>
+              
+              <span>Source</span>
+            </a>
+
+            <button class="theme-toggle" id="theme-toggle" title="Toggles light & dark" aria-label="auto" aria-live="polite" type="button">
+              <svg class="sun-and-moon" aria-hidden="true" width="24" height="24" viewBox="0 0 24 24">
+                <mask class="moon" id="moon-mask">
+                  <rect x="0" y="0" width="100%" height="100%" fill="white" />
+                  <circle cx="24" cy="10" r="6" fill="black" />
+                </mask>
+                <circle class="sun" cx="12" cy="12" r="6" mask="url(#moon-mask)" fill="currentColor" />
+                <g class="sun-beams" stroke="currentColor">
+                  <line x1="12" y1="1" x2="12" y2="3" />
+                  <line x1="12" y1="21" x2="12" y2="23" />
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                  <line x1="1" y1="12" x2="3" y2="12" />
+                  <line x1="21" y1="12" x2="23" y2="12" />
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                </g>
+              </svg>
+            </button>
+          </p>
+        </div>
+      </nav>
+    </div>
+
+    <div id="main-content" class="container mb-6">
+<script>
+    const searchDocuments =  {"greet": {"package": "greet", "url": "greet.html", "content": "greet\n\ngreet\nGreeter\nThe greeting service definition.\nSayHello\nSends a greeting\ngreet\nHelloRequest\ngreet\nHelloReply\ngreet\nHelloReply\nmessage\n\ngreet\nHelloRequest\nname\n\n"}, "services.v1": {"package": "services.v1", "url": "services.v1.html", "content": "services.v1\n\nservices\nv1\nHandlerService\n\nAction\n\nservices\nv1\nServiceActionRequest\nservices\nv1\nServiceActionReply\nservices\nv1\nServiceActionReply\nstatus\n\nservices\nv1\nServiceActionRequest\nservice_name\n\nunit_action\n\nunit_file_action\n\nservices\nv1\nServiceActionRequest\nUnitAction\n\nUNIT_ACTION_UNSPECIFIED\nDefault place holder do not use\nUNIT_ACTION_START\n\nUNIT_ACTION_STOP\n\nUNIT_ACTION_RESTART\n\nservices\nv1\nServiceActionRequest\nUnitFileAction\n\nUNIT_FILE_ACTION_UNSPECIFIED\nDefault place holder do not use\nUNIT_FILE_ACTION_ENABLE\n\nUNIT_FILE_ACTION_DISABLE\n\n"}};
+    const searchIndex = {"version": "2.3.9", "fields": ["content", "url"], "fieldVectors": [["content/greet", [0, 1.38, 1, 0.827, 2, 0.218, 3, 0.827, 4, 0.827, 5, 0.827, 6, 1.073, 7, 1.073, 8, 0.827, 9, 0.827]], ["url/greet", [10, 0.693]], ["content/services.v1", [2, 0.328, 11, 0.596, 12, 1.247, 13, 0.596, 14, 0.596, 15, 1.098, 16, 0.857, 17, 0.596, 18, 0.596, 19, 0.596, 20, 0.596, 21, 0.596, 22, 0.596, 23, 0.857, 24, 0.857, 25, 0.857, 26, 0.857, 27, 0.596, 28, 0.596, 29, 0.596, 30, 0.596, 31, 0.596, 32, 0.596, 33, 0.596]], ["url/services.v1", [34, 0.693]]], "invertedIndex": [["action", {"content": {"services.v1": {}}, "url": {}, "_index": 14}], ["default", {"content": {"services.v1": {}}, "url": {}, "_index": 23}], ["definit", {"content": {"greet": {}}, "url": {}, "_index": 3}], ["greet", {"content": {"greet": {}}, "url": {}, "_index": 0}], ["greet.html", {"content": {}, "url": {"greet": {}}, "_index": 10}], ["greeter", {"content": {"greet": {}}, "url": {}, "_index": 1}], ["handlerservic", {"content": {"services.v1": {}}, "url": {}, "_index": 13}], ["hellorepli", {"content": {"greet": {}}, "url": {}, "_index": 7}], ["hellorequest", {"content": {"greet": {}}, "url": {}, "_index": 6}], ["holder", {"content": {"services.v1": {}}, "url": {}, "_index": 25}], ["messag", {"content": {"greet": {}}, "url": {}, "_index": 8}], ["name", {"content": {"greet": {}}, "url": {}, "_index": 9}], ["place", {"content": {"services.v1": {}}, "url": {}, "_index": 24}], ["sayhello", {"content": {"greet": {}}, "url": {}, "_index": 4}], ["send", {"content": {"greet": {}}, "url": {}, "_index": 5}], ["servic", {"content": {"greet": {}, "services.v1": {}}, "url": {}, "_index": 2}], ["service_nam", {"content": {"services.v1": {}}, "url": {}, "_index": 18}], ["serviceactionrepli", {"content": {"services.v1": {}}, "url": {}, "_index": 16}], ["serviceactionrequest", {"content": {"services.v1": {}}, "url": {}, "_index": 15}], ["services.v1", {"content": {"services.v1": {}}, "url": {}, "_index": 11}], ["services.v1.html", {"content": {}, "url": {"services.v1": {}}, "_index": 34}], ["statu", {"content": {"services.v1": {}}, "url": {}, "_index": 17}], ["unit_act", {"content": {"services.v1": {}}, "url": {}, "_index": 19}], ["unit_action_restart", {"content": {"services.v1": {}}, "url": {}, "_index": 29}], ["unit_action_start", {"content": {"services.v1": {}}, "url": {}, "_index": 27}], ["unit_action_stop", {"content": {"services.v1": {}}, "url": {}, "_index": 28}], ["unit_action_unspecifi", {"content": {"services.v1": {}}, "url": {}, "_index": 22}], ["unit_file_act", {"content": {"services.v1": {}}, "url": {}, "_index": 20}], ["unit_file_action_dis", {"content": {"services.v1": {}}, "url": {}, "_index": 33}], ["unit_file_action_en", {"content": {"services.v1": {}}, "url": {}, "_index": 32}], ["unit_file_action_unspecifi", {"content": {"services.v1": {}}, "url": {}, "_index": 31}], ["unitact", {"content": {"services.v1": {}}, "url": {}, "_index": 21}], ["unitfileact", {"content": {"services.v1": {}}, "url": {}, "_index": 30}], ["us", {"content": {"services.v1": {}}, "url": {}, "_index": 26}], ["v1", {"content": {"services.v1": {}}, "url": {}, "_index": 12}]], "pipeline": ["stemmer"]};
+
+    const idx = lunr.Index.load(searchIndex);
+
+    function displaySearchResults() {
+        const query = new URLSearchParams(window.location.search).get('query');
+
+        if (query) {
+            document.getElementById('mainInputQuery').value = query;
+
+            const results = idx.query(function (q) {
+              words = query.toLowerCase().split(" "); // toLowerCase() is needed to make the search case insensitive.
+              for (n in words) {
+                const word = words[n];
+
+                if (!word) {
+                  continue;
+                }
+
+                // look for an exact match and apply a large positive boost
+                q.term(word, { usePipeline: true, boost: 100 })
+
+                // look for terms that match the beginning of this queryTerm and apply a medium boost
+                q.term(word + "*", { usePipeline: false, boost: 10 })
+              }
+            });
+
+            const searchResults = document.getElementById('searchResults');
+
+            if (results.length > 0) {
+                let resultList = ''
+                for (const n in results) {
+                    // Use the unique ref from the results list to get the full item
+                    // so you can build its <li>
+                    const doc = searchDocuments[results[n].ref]
+                    resultList += '<h5 class="title is-5 mt-3"><a href="' + doc.url + '">' + doc.package + '</a></h5>'
+                    // Add a short clip of the content
+                    resultList += '<p>' + doc.content.substring(0, 150) + '...</p><hr />'
+                }
+                searchResults.innerHTML = resultList
+            } else {
+                searchResults.innerHTML = '<p>No search results.</p>';
+            }
+        }
+    }
+
+    window.addEventListener("load", displaySearchResults);
+</script>
+
+  <div>
+    <p class="block">
+      Enter a query to search this documentation.
+    </p>
+    <div class="field is-horizontal">
+      <form class="field-body">
+        <div class="field">
+          <p class="control is-expanded">
+            <input id="mainInputQuery" type="text" name="query" class="input" placeholder="Search query">
+          </p>
+        </div>
+        <div class="field">
+          <p class="control is-expanded">
+            <input type="submit" class="button is-primary" value="Search" />
+          </p>
+        </div>
+      </form>
+    </div>
+    <div class="block mt-6">
+      <div id="searchResults"></div>
+    </div>
+  </div>
+</div>
+
+    <footer class="footer">
+      <div class="content has-text-centered">
+        
+          <p>© 2025 paradigm-ehb. All rights reserved.</p>
+        
+        <p>Built with <strong><a href="https://github.com/markvincze/sabledocs" target="_blank">sabledocs</a></strong>.</p>
+      </div>
+    </footer>
+  </body>
+</html>
