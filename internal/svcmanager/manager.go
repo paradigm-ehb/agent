@@ -4,14 +4,14 @@ import (
 	"fmt"
 
 	"github.com/godbus/dbus"
-	dh "paradigm-ehb/agent/internal/svcmanager/dbushandler"
-	svc "paradigm-ehb/agent/internal/svcmanager/servicecontrol"
-	svctypes "paradigm-ehb/agent/internal/svcmanager/system"
+	dh "paradigm-ehb/agent/internal/svcmanager/dbus"
+	svc "paradigm-ehb/agent/internal/svcmanager/systemd"
+	svctypes "paradigm-ehb/agent/internal/svcmanager/types"
 )
 
 // @param, action [start, stop, restart], symLinkAction [enable, disable], service name format "example.service"
 // TODO: add parameters and handling
-func RunAction(conn *dbus.Conn, ac svc.Action, service string) error {
+func RunAction(conn *dbus.Conn, ac svc.UnitAction, service string) error {
 
 	obj := dh.CreateSystemdObject(conn)
 	if !obj.Path().IsValid() {
@@ -28,7 +28,7 @@ func RunAction(conn *dbus.Conn, ac svc.Action, service string) error {
 }
 
 // @param, action [start, stop, restart], symLinkAction [enable, disable], service name format "example.service"
-func RunSymlinkAction(conn *dbus.Conn, sc svc.SymlinkAction, enableForRunTime bool, enableForce bool, service []string) error {
+func RunSymlinkAction(conn *dbus.Conn, sc svc.UnitFileAction, enableForRunTime bool, enableForce bool, service []string) error {
 
 	obj := dh.CreateSystemdObject(conn)
 
@@ -51,13 +51,13 @@ func RunSymlinkAction(conn *dbus.Conn, sc svc.SymlinkAction, enableForRunTime bo
 
 	switch sc {
 
-	case svc.Enable:
+	case svc.UnitFileActionEnable:
 		call := obj.Call(string(sc), dbus.FlagAllowInteractiveAuthorization, service, enableForRunTime, enableForce)
 		fmt.Println(call.Body)
 		if call.Err != nil {
 			return fmt.Errorf("something happened here %v", call.Err)
 		}
-	case svc.Disable:
+	case svc.UnitFileActionDisable:
 		call := obj.Call(string(sc), dbus.FlagAllowInteractiveAuthorization, service, enableForRunTime)
 		fmt.Println(call.Body)
 		if call.Err != nil {
@@ -75,17 +75,17 @@ func RunRetrieval(conn *dbus.Conn, all bool) error {
 
 	if all {
 
-		ch := make(chan []svctypes.Ass)
-		parse := make(chan []svctypes.Ass)
+		ch := make(chan []svctypes.UnitFileEntry)
+		parse := make(chan []svctypes.UnitFileEntry)
 
 		go svc.GetAllUnits(obj, ch)
-		go dh.ParseAllUnits(ch, parse)
+		go dh.ParseUnitFileEntries(ch, parse)
 		<-parse
 
 	} else if !all {
 
-		ch := make(chan []svctypes.Assssssouso)
-		parse := make(chan []svctypes.Assssssouso)
+		ch := make(chan []svctypes.LoadedUnit)
+		parse := make(chan []svctypes.LoadedUnit)
 
 		go svc.GetLoadedUnits(obj, ch)
 		go dh.ParseLoadedUnits(ch, parse)
@@ -96,4 +96,12 @@ func RunRetrieval(conn *dbus.Conn, all bool) error {
 	}
 
 	return nil
+}
+
+func GetStatus(obj dbus.BusObject, name string) {
+
+	call := obj.Call("org.freedesktop.systemd1.Manager.GetUnitFileState", dbus.Flags(dbus.NameFlagReplaceExisting), name)
+	// DEBUG
+	call.Path.IsValid()
+
 }

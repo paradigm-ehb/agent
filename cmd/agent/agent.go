@@ -11,12 +11,12 @@ import (
 
 	pb_greeter "paradigm-ehb/agent/gen/greet"
 	manager "paradigm-ehb/agent/internal/svcmanager"
-	"paradigm-ehb/agent/internal/svcmanager/servicecontrol"
+	"paradigm-ehb/agent/internal/svcmanager/systemd"
 	"paradigm-ehb/agent/pkg/service"
 
 	tools "paradigm-ehb/agent/tools"
 
-	dh "paradigm-ehb/agent/internal/svcmanager/dbushandler"
+	dh "paradigm-ehb/agent/internal/svcmanager/dbus"
 )
 
 var (
@@ -39,12 +39,12 @@ func main() {
 
 	defer conn.Close()
 
-	err = manager.RunAction(conn, servicecontrol.Stop, "mariadb.service")
+	err = manager.RunAction(conn, servicecontrol.UnitActionStop, "mariadb.service")
 	if err != nil {
 		fmt.Println("failed to perform action on mariadb")
 	}
 
-	err = manager.RunSymlinkAction(conn, servicecontrol.Disable, true, true, []string{"mariadb.service"})
+	err = manager.RunSymlinkAction(conn, servicecontrol.UnitFileActionDisable, true, true, []string{"mariadb.service"})
 	if err != nil {
 
 		fmt.Println("failed to perform symlink action on mariadb")

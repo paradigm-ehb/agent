@@ -40,13 +40,13 @@ type Service struct {
 }
 
 // type a(ss)
-type Ass struct {
+type UnitFileEntry struct {
 	Name  string
 	State string
 }
 
 // type a(ssssssouso)
-type Assssssouso struct {
+type LoadedUnit struct {
 	Name        string
 	Description string
 	LoadState   string
@@ -60,7 +60,7 @@ type Assssssouso struct {
 }
 
 // type a(sss)
-type Asss struct {
+type UnitFileChange struct {
 	TypeOfChange       string
 	FileNameSymLink    string
 	DestinationSymLink string
