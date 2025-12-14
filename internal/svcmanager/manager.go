@@ -10,7 +10,7 @@ import (
 )
 
 // @param, action [start, stop, restart], symLinkAction [enable, disable], service name format "example.service"
-// TODO: add parameters and handling
+// TODO(nasr): add parameters and handling
 func RunAction(conn *dbus.Conn, ac svc.UnitAction, service string) error {
 
 	obj := dh.CreateSystemdObject(conn)
