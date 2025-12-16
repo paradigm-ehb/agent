@@ -3,12 +3,10 @@ package service
 import (
 	"context"
 	"fmt"
-
-	sdj "github.com/coreos/go-systemd/v22/sdjournal"
 	"paradigm-ehb/agent/gen/journal/v1"
 	j "paradigm-ehb/agent/internal/journal"
-	t "paradigm-ehb/agent/internal/journal/types"
-	"time"
+
+	sdjournal "github.com/coreos/go-systemd/v22/sdjournal"
 )
 
 type JournalService struct {
@@ -19,49 +17,35 @@ func (s *JournalService) Action(_ context.Context, in *journal.JournalRequest) (
 
 	var val string
 
-	fmt.Println(string(t.Systemd))
+	// TODO(nasr): remove the magic number enums, horrible code practice
 	switch in.Field {
 
 	case 0:
-		val = string(t.Systemd)
+		val = sdjournal.SD_JOURNAL_FIELD_SYSTEMD_UNIT
 	case 1:
-		val = string(t.PID)
+		val = sdjournal.SD_JOURNAL_FIELD_PID
 	case 2:
-		val = string(t.UID)
+		val = sdjournal.SD_JOURNAL_FIELD_UID
 	case 3:
-		val = string(t.GID)
-		break
-
+		val = sdjournal.SD_JOURNAL_FIELD_GID
 	}
 
-	m := []sdj.Match{
-		{
-			Field: val,
-			Value: in.Value,
-		},
-	}
+	m := []sdjournal.Match{{Field: val, Value: in.Value}}
 
-	fmt.Println(m)
-	duration, err := time.ParseDuration(in.Time)
+	// Generated time. testing issue
+	// TODO(nasr): fix the time
+	//sinceTime, err := time.Parse(time.RFC3339, "0")
+	//
+	//if err != nil {
+	//	fmt.Println("error parsing time:", err)
+	//	return nil, nil
+	//}
+	//
+	//duration := time.Since(sinceTime)
+
+	output, err := j.GetJournalInformation(0, in.NumFromTail, in.Cursor, m, in.Path)
 	if err != nil {
-		fmt.Println("error in parsing time")
-		return nil, nil
+		fmt.Println("error occurred when calling GetJournalInformation:", err)
 	}
-
-	fmt.Println(in)
-
-	ch := make(chan string)
-
-	go func() {
-		log, err := j.GetJournalInformation(duration, in.NumFromTail, in.Cursor, m, in.Path)
-		if err != nil {
-			fmt.Println("error occured when calling GetJournalInformation", err)
-			return
-		}
-		ch <- log
-	}()
-
-	output := <-ch
-	fmt.Println("log: ", output)
 	return &journal.JournalReply{Reply: output}, nil
 }
