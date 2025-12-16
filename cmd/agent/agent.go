@@ -29,7 +29,7 @@ func main() {
 	}
 
 	// Testing
-	logger.Run()
+	go logger.Run()
 
 	flag.Parse()
 
@@ -48,7 +48,8 @@ func main() {
 
 	reflection.Register(server)
 
-	fmt.Printf("server listening at %v", lis.Addr())
+	fmt.Println("\n============================================\n")
+	fmt.Printf("\nserver listening at %v\n", lis.Addr())
 	if err := server.Serve(lis); err != nil {
 		fmt.Println("failed to serve: ", err)
 	}

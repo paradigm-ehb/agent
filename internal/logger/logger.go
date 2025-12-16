@@ -8,9 +8,9 @@ package logger
 
 import (
 	// "C"
-	"fmt"
 	jrnl "github.com/coreos/go-systemd/v22/journal"
 	sdj "github.com/coreos/go-systemd/v22/sdjournal"
+	"log"
 )
 
 type LogLevel int
@@ -64,7 +64,7 @@ func CreateSnapshot() {
 
 func Status(freqDelta float32, usageDelta float32) LogLevel {
 
-	fmt.Println("checking if cpu is stable")
+	log.Println("checking if cpu is stable")
 	if freqDelta < 0 && usageDelta < 0 {
 		return Stable
 	}
@@ -83,40 +83,44 @@ func foo() {
 
 	j, err := sdj.NewJournal()
 	if err != nil {
-		fmt.Printf("%v->", j)
+		log.Printf("%v->", j)
 	}
 
 	bid := j.GetBootID
-	fmt.Println("output: ", bid)
+	log.Println("output: ", bid)
 
 	err = j.Close()
 	if err != nil {
-		fmt.Println("failed to close the journal")
-	}
-}
-
-func journalConfig() *sdj.JournalReaderConfig {
-
-	return &sdj.JournalReaderConfig{Since: 0, NumFromTail: 10, Matches: []sdj.Match{{Field: "_SYSTEMD_UNIT=", Value: "nginx.service"}}, Path: ""}
-}
-
-func find(config *sdj.JournalReaderConfig) {
-
-	reader, err := sdj.NewJournalReader(*config)
-	if err != nil {
-		fmt.Println("failed to make the reader")
-	}
-
-	var b []byte
-	code, err := reader.Read(b)
-	if err != nil && code != 0 {
-		fmt.Println("Hello World")
+		log.Println("failed to close the journal")
 	}
 }
 
 func Run() {
 
-	config := journalConfig()
-	find(config)
+	config := sdj.JournalReaderConfig{
+		NumFromTail: 10,
+		Matches:     []sdj.Match{{Field: "_SYSTEMD_UNIT", Value: "ssh.service"}}}
 
+	reader, err := sdj.NewJournalReader(config)
+
+	if err != nil {
+		log.Println("failed to make the reader")
+	}
+	defer reader.Close()
+
+	b := make([]byte, 4096)
+
+	for {
+		c, err := reader.Read(b)
+		if err != nil {
+			log.Printf("\nfailed when reading, %v ", err)
+			break
+		}
+		if c == 0 {
+			continue
+		}
+
+		log.Println("here: ", string(b[:]))
+		log.Println("======================")
+	}
 }
