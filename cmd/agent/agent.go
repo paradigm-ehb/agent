@@ -45,10 +45,8 @@ func main() {
 
 	reflection.Register(server)
 
-	fmt.Println("\n============================================\n")
 	fmt.Printf("\nserver listening at %v\n", lis.Addr())
 	if err := server.Serve(lis); err != nil {
 		fmt.Println("failed to serve: ", err)
 	}
-
 }

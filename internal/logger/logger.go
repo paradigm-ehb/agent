@@ -1,4 +1,4 @@
-package fmtger
+package logger
 
 import (
 	"fmt"
@@ -47,7 +47,6 @@ func systemdID() string {
 
 }
 
-// 	Matches:     []sdj.Match{{Field: "_SYSTEMD_UNIT", Value: "ssh.service"}}}
 // TODO(nasr): checkout formatters
 
 // GetJournaldInformation reads entries from the systemd journal and returns
@@ -65,6 +64,8 @@ func systemdID() string {
 // into a fixed-size buffer until no more data is available or an error occurs.
 // The caller receives raw journal output as text, without further parsing or
 // field-level decoding.
+//
+//	Example Matches:     []sdj.Match{{Field: "_SYSTEMD_UNIT", Value: "ssh.service"}}}
 func GetJournaldInformation(since time.Duration, numFromTail uint64, cursor string, matches []sdj.Match, path string) string {
 
 	config := sdj.JournalReaderConfig{
