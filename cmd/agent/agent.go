@@ -28,9 +28,6 @@ func main() {
 		fmt.Println("Operating system is currently not supported. Come back in .... never! Imagine not using Linux. Not worthy.")
 	}
 
-	// Testing
-	go logger.Run()
-
 	flag.Parse()
 
 	lis, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%d", *port))

@@ -1,126 +1,102 @@
-package logger
-
-// TODO(nasr): cflags to link to the binary
-/*
-* include <stdlib.h>
-* include agent-resources.h>
-* */
+package fmtger
 
 import (
-	// "C"
+	"fmt"
 	jrnl "github.com/coreos/go-systemd/v22/journal"
 	sdj "github.com/coreos/go-systemd/v22/sdjournal"
-	"log"
+	"time"
 )
 
-type LogLevel int
-
-// enum server healtha
-// @param
-// Healthy
-// Unhealthy
-// AttentionNeeded
-const (
-	Healthy ServerState = iota
-	Unhealthy
-	AttentionNeeded
-)
-
-type ServerState int
-
-const (
-	High LogLevel = iota
-	Medium
-	Low
-	Stable
-)
-
-// TODO(nasr): return the current cpu state
-type CpuState int
-
-// TODO(nasr): return the current memory state
-type MemoryState int
-
-// returns the delta of the cpu frquency
-// used to check if the cpu is stable
-func compareCpuFrequency(cpuFreqX float32, cpuFreqY float32) float32 {
-
-	// TODO(nasr): retrieve the data with CGO
-	return cpuFreqY / cpuFreqX
-}
-
-// returns the deleta of the cpu usage
-// used to check if the cpu is stable
-func compareCpuUsage(cpuUsageX float32, cpuUsageY float32) float32 {
-
-	// TODO(nasr): retrieve the data with CGO
-	return cpuUsageY / cpuUsageX
-}
-
-// TODO(nasr): call cgo to create a snapshot of the current system
-func CreateSnapshot() {
-
-}
-
-func Status(freqDelta float32, usageDelta float32) LogLevel {
-
-	log.Println("checking if cpu is stable")
-	if freqDelta < 0 && usageDelta < 0 {
-		return Stable
-	}
-
-	return Medium
-}
-
-// Function to check if systemd is enabled on the device
-func CheckJournal() bool {
+// checkJournal reports whether systemd’s journal is available and enabled
+// on the current system.
+//
+// It is a lightweight capability check and does not open or read the journal.
+// Internally, this relies on libsystemd to detect whether journald is usable
+// (for example, not present on non-systemd systems).
+func checkJournal() bool {
 
 	return jrnl.Enabled()
 }
 
-// Append the logs to a configuration file
-func foo() {
+// systemdID returns the boot ID associated with the currently running system.
+//
+// The boot ID uniquely identifies the current boot session and is useful for
+// correlating journal entries to a specific system start. The function opens
+// the journal, queries the boot ID, and then closes the journal handle.
+//
+// If the journal cannot be opened or the boot ID cannot be retrieved, the
+// returned string may be empty.
+func systemdID() string {
 
 	j, err := sdj.NewJournal()
 	if err != nil {
-		log.Printf("%v->", j)
+		fmt.Printf("%v->", j)
 	}
 
-	bid := j.GetBootID
-	log.Println("output: ", bid)
+	bid, err := j.GetBootID()
+	if err != nil {
+		fmt.Println("failed to get the bootd id")
+	}
 
 	err = j.Close()
 	if err != nil {
-		log.Println("failed to close the journal")
+		fmt.Println("failed to close the journal")
 	}
+
+	return bid
+
 }
 
-func Run() {
+// 	Matches:     []sdj.Match{{Field: "_SYSTEMD_UNIT", Value: "ssh.service"}}}
+// TODO(nasr): checkout formatters
+
+// GetJournaldInformation reads entries from the systemd journal and returns
+// them as a single concatenated string.
+//
+// The journal reader is configured through the provided parameters:
+//   - since:        limits entries to those newer than the given duration
+//     relative to now
+//   - numFromTail:  limits the number of entries read from the end of the journal
+//   - cursor:       reserved for future cursor-based positioning (currently unused)
+//   - matches:      filters entries using systemd journal match rules
+//   - path:         optionally specifies a custom journal path
+//
+// Internally, this function uses a JournalReader and performs sequential reads
+// into a fixed-size buffer until no more data is available or an error occurs.
+// The caller receives raw journal output as text, without further parsing or
+// field-level decoding.
+func GetJournaldInformation(since time.Duration, numFromTail uint64, cursor string, matches []sdj.Match, path string) string {
 
 	config := sdj.JournalReaderConfig{
-		NumFromTail: 10,
-		Matches:     []sdj.Match{{Field: "_SYSTEMD_UNIT", Value: "ssh.service"}}}
+		Since:       since,
+		NumFromTail: numFromTail,
+		Matches:     matches,
+		Path:        path,
+	}
 
 	reader, err := sdj.NewJournalReader(config)
 
 	if err != nil {
-		log.Println("failed to make the reader")
+		fmt.Println("Failed to open the journalctl reader")
 	}
+
 	defer reader.Close()
 
 	b := make([]byte, 4096)
+	var output string
 
 	for {
 		c, err := reader.Read(b)
 		if err != nil {
-			log.Printf("\nfailed when reading, %v ", err)
+			fmt.Printf("\nfailed when reading, %v ", err)
 			break
 		}
 		if c == 0 {
 			continue
 		}
 
-		log.Println("here: ", string(b[:]))
-		log.Println("======================")
+		output += string(b[:])
 	}
+
+	return output
 }
