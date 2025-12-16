@@ -67,7 +67,7 @@ func systemdID() (string, error) {
 // field-level decoding.
 //
 //	Example Matches:     []sdj.Match{{Field: "_SYSTEMD_UNIT", Value: "ssh.service"}}}
-func GetJournaldInformation(since time.Duration, numFromTail uint64, cursor string, matches []sdj.Match, path string) string {
+func GetJournalInformation(since time.Duration, numFromTail uint64, cursor string, matches []sdj.Match, path string) string {
 
 	config := sdj.JournalReaderConfig{
 		Since:       since,
@@ -99,6 +99,8 @@ func GetJournaldInformation(since time.Duration, numFromTail uint64, cursor stri
 
 		output += string(b[:])
 	}
+
+	fmt.Println(output)
 
 	return output
 }

@@ -9,7 +9,8 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	pbgreeter "paradigm-ehb/agent/gen/greet"
-	"paradigm-ehb/agent/gen/services/v1"
+	journal "paradigm-ehb/agent/gen/journal/v1"
+	services "paradigm-ehb/agent/gen/services/v1"
 	"paradigm-ehb/agent/pkg/service"
 
 	"paradigm-ehb/agent/tools"
@@ -38,9 +39,11 @@ func main() {
 
 	greeterServer := &service.GreeterServer{}
 	actionServer := &service.HandlerService{}
+	journalServer := &service.JournalService{}
 
 	pbgreeter.RegisterGreeterServer(server, greeterServer)
 	services.RegisterHandlerServiceServer(server, actionServer)
+	journal.RegisterJournalServiceServer(server, journalServer)
 
 	reflection.Register(server)
 

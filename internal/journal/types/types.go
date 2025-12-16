@@ -9,8 +9,3 @@ const (
 	UID     TrustedJournaldField = "_UID"
 	GID     TrustedJournaldField = "_GID"
 )
-
-type Match struct {
-	Field TrustedJournaldField
-	Value string
-}
