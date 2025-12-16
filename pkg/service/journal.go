@@ -44,9 +44,24 @@ func (s *JournalService) Action(_ context.Context, in *journal.JournalRequest) (
 	fmt.Println(m)
 	duration, err := time.ParseDuration(in.Time)
 	if err != nil {
+		fmt.Println("error in parsing time")
 		return nil, nil
 	}
-	log := j.GetJournalInformation(duration, in.NumFromTail, in.Cursor, m, in.Path)
-	fmt.Println("log: ", log)
-	return &journal.JournalReply{Reply: log}, nil
+
+	fmt.Println(in)
+
+	ch := make(chan string)
+
+	go func() {
+		log, err := j.GetJournalInformation(duration, in.NumFromTail, in.Cursor, m, in.Path)
+		if err != nil {
+			fmt.Println("error occured when calling GetJournalInformation", err)
+			return
+		}
+		ch <- log
+	}()
+
+	output := <-ch
+	fmt.Println("log: ", output)
+	return &journal.JournalReply{Reply: output}, nil
 }

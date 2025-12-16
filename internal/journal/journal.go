@@ -67,7 +67,7 @@ func systemdID() (string, error) {
 // field-level decoding.
 //
 //	Example Matches:     []sdj.Match{{Field: "_SYSTEMD_UNIT", Value: "ssh.service"}}}
-func GetJournalInformation(since time.Duration, numFromTail uint64, cursor string, matches []sdj.Match, path string) string {
+func GetJournalInformation(since time.Duration, numFromTail uint64, cursor string, matches []sdj.Match, path string) (string, error) {
 
 	config := sdj.JournalReaderConfig{
 		Since:       since,
@@ -79,7 +79,7 @@ func GetJournalInformation(since time.Duration, numFromTail uint64, cursor strin
 	reader, err := sdj.NewJournalReader(config)
 
 	if err != nil {
-		fmt.Println("Failed to open the journal reader")
+		return "failed to open a journal reader", err
 	}
 
 	defer reader.Close()
@@ -90,7 +90,7 @@ func GetJournalInformation(since time.Duration, numFromTail uint64, cursor strin
 	for {
 		c, err := reader.Read(b)
 		if err != nil {
-			fmt.Printf("\nfailed when reading, %v ", err)
+			return "failed to read the journal", err
 			break
 		}
 		if c == 0 {
@@ -100,7 +100,7 @@ func GetJournalInformation(since time.Duration, numFromTail uint64, cursor strin
 		output += string(b[:])
 	}
 
-	fmt.Println(output)
+	fmt.Println("output from function", output)
 
-	return output
+	return output, nil
 }
