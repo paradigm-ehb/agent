@@ -15,13 +15,13 @@ func RunAction(conn *dbus.Conn, ac svc.UnitAction, service string) error {
 
 	obj := dh.CreateSystemdObject(conn)
 	if !obj.Path().IsValid() {
-		fmt.Println("invalid systemd path")
+		return fmt.Errorf("object path is invalid")
 	}
 
 	call := obj.Call(string(ac), 0, service, "replace")
 
 	if call.Err != nil {
-		fmt.Println("error on action, ", call.Err)
+		return fmt.Errorf("failed to execute object on in unit action")
 	}
 
 	return nil
@@ -43,13 +43,11 @@ func RunSymlinkAction(conn *dbus.Conn, sc svc.UnitFileAction, enableForRunTime b
 
 	case svc.UnitFileActionEnable:
 		call := obj.Call(string(sc), dbus.FlagAllowInteractiveAuthorization, service, enableForRunTime, enableForce)
-		fmt.Println(call.Body)
 		if call.Err != nil {
 			return fmt.Errorf("something happened here %v", call.Err)
 		}
 	case svc.UnitFileActionDisable:
 		call := obj.Call(string(sc), dbus.FlagAllowInteractiveAuthorization, service, enableForRunTime)
-		fmt.Println(call.Body)
 		if call.Err != nil {
 			return fmt.Errorf("something happened here %v", call.Err)
 		}
