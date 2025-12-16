@@ -3,12 +3,13 @@ module paradigm-ehb/agent
 go 1.25.4
 
 require (
+	github.com/coreos/go-systemd/v22 v22.6.0
 	google.golang.org/grpc v1.77.0
 	google.golang.org/protobuf v1.36.10
 )
 
 require (
-	github.com/godbus/dbus v4.1.0+incompatible 
+	github.com/godbus/dbus v4.1.0+incompatible
 	golang.org/x/net v0.46.1-0.20251013234738-63d1a5100f82 // indirect
 	golang.org/x/sys v0.37.0 // indirect
 	golang.org/x/text v0.30.0 // indirect

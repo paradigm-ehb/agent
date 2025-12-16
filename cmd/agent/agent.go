@@ -4,13 +4,13 @@ import (
 	"flag"
 	"fmt"
 	"net"
-	"os"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
 	pb_greeter "paradigm-ehb/agent/gen/greet"
 	"paradigm-ehb/agent/gen/services/v1"
+	logger "paradigm-ehb/agent/internal/logger"
 	"paradigm-ehb/agent/pkg/service"
 
 	tools "paradigm-ehb/agent/tools"
@@ -26,8 +26,10 @@ func main() {
 	err := tools.CheckOSUser()
 	if err != nil {
 		fmt.Println("Operating system is currently not supported. Come back in .... never! Imagine not using Linux. Not worthy.")
-		os.Exit(4)
 	}
+
+	// Testing
+	logger.Run()
 
 	flag.Parse()
 
