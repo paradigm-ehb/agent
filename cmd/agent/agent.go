@@ -9,8 +9,8 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	pbgreeter "paradigm-ehb/agent/gen/greet"
-	journal "paradigm-ehb/agent/gen/journal/v1"
-	services "paradigm-ehb/agent/gen/services/v1"
+	"paradigm-ehb/agent/gen/journal/v1"
+	"paradigm-ehb/agent/gen/services/v1"
 	"paradigm-ehb/agent/pkg/service"
 
 	"paradigm-ehb/agent/tools"
