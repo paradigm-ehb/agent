@@ -1,7 +1,6 @@
 package journal
 
 import (
-	"fmt"
 	"time"
 
 	jrnl "github.com/coreos/go-systemd/v22/journal"
@@ -31,16 +30,19 @@ func systemdID() (string, error) {
 
 	j, err := sdj.NewJournal()
 	if err != nil {
+		j.Close()
 		return "not available", err
 	}
 
 	bid, err := j.GetBootID()
 	if err != nil {
+		j.Close()
 		return "not available", err
 	}
 
 	err = j.Close()
 	if err != nil {
+		j.Close()
 		return "not available", err
 	}
 
@@ -70,10 +72,13 @@ func systemdID() (string, error) {
 func GetJournalInformation(since time.Duration, numFromTail uint64, cursor string, matches []sdj.Match, path string) (string, error) {
 
 	config := sdj.JournalReaderConfig{
-		Since:       since,
+		// TODO(nasr): fix time imlementation
+		//Since:       since,
 		NumFromTail: numFromTail,
+		Cursor:      cursor,
 		Matches:     matches,
 		Path:        path,
+		Formatter:   nil,
 	}
 
 	reader, err := sdj.NewJournalReader(config)
@@ -82,7 +87,12 @@ func GetJournalInformation(since time.Duration, numFromTail uint64, cursor strin
 		return "failed to open a journal reader", err
 	}
 
-	defer reader.Close()
+	defer func(reader *sdj.JournalReader) {
+		err := reader.Close()
+		if err != nil {
+
+		}
+	}(reader)
 
 	b := make([]byte, 4096)
 	var output string
@@ -90,17 +100,14 @@ func GetJournalInformation(since time.Duration, numFromTail uint64, cursor strin
 	for {
 		c, err := reader.Read(b)
 		if err != nil {
-			return "failed to read the journal", err
 			break
 		}
 		if c == 0 {
 			continue
 		}
 
-		output += string(b[:])
+		output = string(b[:c])
 	}
-
-	fmt.Println("output from function", output)
 
 	return output, nil
 }
