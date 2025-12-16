@@ -25,7 +25,10 @@ func GetLoadedUnits(obj dbus.BusObject, out chan []svctypes.LoadedUnit) {
 		return
 	}
 
-	call.Store(&result)
+	err := call.Store(&result)
+	if err != nil {
+		return
+	}
 
 	out <- result
 
@@ -46,6 +49,9 @@ func GetAllUnits(obj dbus.BusObject, out chan []svctypes.UnitFileEntry) {
 		return
 	}
 
-	call.Store(&result)
+	err := call.Store(&result)
+	if err != nil {
+		return
+	}
 	out <- result
 }
