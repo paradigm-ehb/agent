@@ -2,12 +2,11 @@
 package tools
 
 import (
-
 	"fmt"
 	"runtime"
 )
 
-// Check if the user is running an supported OS
+// CheckOSUser Check if the user is running an supported OS
 func CheckOSUser() error {
 
 	if os := runtime.GOOS; os != "linux" {
@@ -15,6 +14,3 @@ func CheckOSUser() error {
 	}
 	return nil
 }
-
-
-

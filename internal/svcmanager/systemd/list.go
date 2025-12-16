@@ -35,7 +35,7 @@ func GetAllUnits(obj dbus.BusObject, out chan []svctypes.UnitFileEntry) {
 
 	// ListUnitFiles(out a(ss) files);
 	// an array of struct string string
-	// i think
+	// I think
 
 	var result []svctypes.UnitFileEntry
 

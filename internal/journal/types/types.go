@@ -1,4 +1,4 @@
-package loggertypes
+package journaltypes
 
 // Trusted journald fields
 type TrustedJournaldField string

@@ -8,12 +8,11 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	pb_greeter "paradigm-ehb/agent/gen/greet"
+	pbgreeter "paradigm-ehb/agent/gen/greet"
 	"paradigm-ehb/agent/gen/services/v1"
-	logger "paradigm-ehb/agent/internal/logger"
 	"paradigm-ehb/agent/pkg/service"
 
-	tools "paradigm-ehb/agent/tools"
+	"paradigm-ehb/agent/tools"
 )
 
 var (
@@ -37,11 +36,11 @@ func main() {
 
 	server := grpc.NewServer()
 
-	greeter_server := &service.GreeterServer{}
-	action_server := &service.HandlerService{}
+	greeterServer := &service.GreeterServer{}
+	actionServer := &service.HandlerService{}
 
-	pb_greeter.RegisterGreeterServer(server, greeter_server)
-	services.RegisterHandlerServiceServer(server, action_server)
+	pbgreeter.RegisterGreeterServer(server, greeterServer)
+	services.RegisterHandlerServiceServer(server, actionServer)
 
 	reflection.Register(server)
 

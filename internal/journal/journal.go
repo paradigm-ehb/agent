@@ -1,10 +1,11 @@
-package logger
+package journal
 
 import (
 	"fmt"
+	"time"
+
 	jrnl "github.com/coreos/go-systemd/v22/journal"
 	sdj "github.com/coreos/go-systemd/v22/sdjournal"
-	"time"
 )
 
 // checkJournal reports whether systemd’s journal is available and enabled
@@ -26,24 +27,24 @@ func checkJournal() bool {
 //
 // If the journal cannot be opened or the boot ID cannot be retrieved, the
 // returned string may be empty.
-func systemdID() string {
+func systemdID() (string, error) {
 
 	j, err := sdj.NewJournal()
 	if err != nil {
-		fmt.Printf("%v->", j)
+		return "not available", err
 	}
 
 	bid, err := j.GetBootID()
 	if err != nil {
-		fmt.Println("failed to get the bootd id")
+		return "not available", err
 	}
 
 	err = j.Close()
 	if err != nil {
-		fmt.Println("failed to close the journal")
+		return "not available", err
 	}
 
-	return bid
+	return bid, nil
 
 }
 
@@ -78,7 +79,7 @@ func GetJournaldInformation(since time.Duration, numFromTail uint64, cursor stri
 	reader, err := sdj.NewJournalReader(config)
 
 	if err != nil {
-		fmt.Println("Failed to open the journalctl reader")
+		fmt.Println("Failed to open the journal reader")
 	}
 
 	defer reader.Close()
