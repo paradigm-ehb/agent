@@ -30,17 +30,10 @@ func systemdID() (string, error) {
 
 	j, err := sdj.NewJournal()
 	if err != nil {
-		j.Close()
 		return "not available", err
 	}
 
 	bid, err := j.GetBootID()
-	if err != nil {
-		j.Close()
-		return "not available", err
-	}
-
-	err = j.Close()
 	if err != nil {
 		j.Close()
 		return "not available", err
