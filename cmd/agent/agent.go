@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"net"
-	"os"
+	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -14,10 +14,17 @@ import (
 	"paradigm-ehb/agent/pkg/service"
 
 	tools "paradigm-ehb/agent/tools"
+
+	"google.golang.org/grpc/health"
+	healthgrpc "google.golang.org/grpc/health/grpc_health_v1"
+	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 )
 
 var (
-	port = flag.Int("port", 50051, "The server port")
+	port  = flag.Int("port", 50051, "The server port")
+	sleep = flag.Duration("sleep", time.Second*5, "duration between changes in health")
+
+	system = "Greeter" // empty string represents the health of the system
 )
 
 func main() {
@@ -26,7 +33,7 @@ func main() {
 	err := tools.CheckOSUser()
 	if err != nil {
 		fmt.Println("Operating system is currently not supported. Come back in .... never! Imagine not using Linux. Not worthy.")
-		os.Exit(4)
+		//os.Exit(4)
 	}
 
 	flag.Parse()
@@ -38,6 +45,11 @@ func main() {
 
 	server := grpc.NewServer()
 
+	// Register Health Checking Service
+	healthServer := health.NewServer()
+	healthgrpc.RegisterHealthServer(server, healthServer)
+
+	// Register Greeter Service
 	greeter_server := &service.GreeterServer{}
 	action_server := &service.HandlerService{}
 
@@ -46,9 +58,44 @@ func main() {
 
 	reflection.Register(server)
 
+	go func(service string) {
+		// asynchronously inspect dependencies and toggle serving status as needed
+		next := healthpb.HealthCheckResponse_SERVING
+
+		for {
+			healthServer.SetServingStatus(service, next)
+
+			if next == healthpb.HealthCheckResponse_SERVING {
+				next = healthpb.HealthCheckResponse_NOT_SERVING
+			} else {
+				next = healthpb.HealthCheckResponse_SERVING
+			}
+
+			time.Sleep(*sleep)
+		}
+	}("Greeter")
+
+	go func(service string) {
+		// asynchronously inspect dependencies and toggle serving status as needed
+		next := healthpb.HealthCheckResponse_SERVING
+
+		for {
+			healthServer.SetServingStatus(service, next)
+
+			if next == healthpb.HealthCheckResponse_SERVING {
+				next = healthpb.HealthCheckResponse_NOT_SERVING
+			} else {
+				next = healthpb.HealthCheckResponse_SERVING
+			}
+
+			time.Sleep(*sleep)
+		}
+	}("Services")
+
+	healthServer.SetServingStatus("Greeter", healthpb.HealthCheckResponse_SERVING)
+
 	fmt.Printf("server listening at %v", lis.Addr())
 	if err := server.Serve(lis); err != nil {
 		fmt.Println("failed to serve: ", err)
 	}
-
 }
