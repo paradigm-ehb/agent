@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"net"
-	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -21,10 +20,7 @@ import (
 )
 
 var (
-	port  = flag.Int("port", 50051, "The server port")
-	sleep = flag.Duration("sleep", time.Second*5, "duration between changes in health")
-
-	system = "Greeter" // empty string represents the health of the system
+	port = flag.Int("port", 50051, "The server port")
 )
 
 func main() {
