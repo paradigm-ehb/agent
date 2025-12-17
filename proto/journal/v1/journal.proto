@@ -6,7 +6,7 @@ option go_package = "paradigm-ehb/agent/proto/journal";
 
 service JournalService {
 
-  rpc Action (JournalRequest) returns (JournalReply) {}
+  rpc Action (JournalRequest) returns (stream JournalChunk) {}
 
 }
 
@@ -32,8 +32,8 @@ message JournalRequest  {
 
 }
 
-message JournalReply {
+message JournalChunk {
 
-  string reply = 1;
+  bytes reply = 1;
 }
 

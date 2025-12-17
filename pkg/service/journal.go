@@ -1,22 +1,21 @@
 package service
 
 import (
-	"context"
-	"fmt"
+	"log"
 	"paradigm-ehb/agent/gen/journal/v1"
 	j "paradigm-ehb/agent/internal/journal"
+	"sync"
 
-	sdjournal "github.com/coreos/go-systemd/v22/sdjournal"
+	"github.com/coreos/go-systemd/v22/sdjournal"
 )
 
 type JournalService struct {
 	journal.UnimplementedJournalServiceServer
 }
 
-func (s *JournalService) Action(_ context.Context, in *journal.JournalRequest) (*journal.JournalReply, error) {
+func (s *JournalService) Action(in *journal.JournalRequest, srv journal.JournalService_ActionServer) error {
 
 	var val string
-
 	// TODO(nasr): remove the magic number enums, horrible code practice
 	switch in.Field {
 
@@ -43,9 +42,27 @@ func (s *JournalService) Action(_ context.Context, in *journal.JournalRequest) (
 	//
 	//duration := time.Since(sinceTime)
 
-	output, err := j.GetJournalInformation(0, in.NumFromTail, in.Cursor, m, in.Path)
-	if err != nil {
-		fmt.Println("error occurred when calling GetJournalInformation:", err)
-	}
-	return &journal.JournalReply{Reply: output}, nil
+	var wg sync.WaitGroup
+
+	ch := make(chan []byte)
+
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		j.GetJournalInformation(0, in.NumFromTail, in.Cursor, m, in.Path, ch)
+	}()
+
+	go func() {
+		defer wg.Done()
+
+		for range ch {
+			resp := journal.JournalChunk{Reply: <-ch}
+			if err := srv.Send(&resp); err != nil {
+				log.Printf("send error %v", err)
+			}
+		}
+	}()
+
+	wg.Wait()
+	return nil
 }

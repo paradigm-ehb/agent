@@ -1,7 +1,10 @@
 package journal
 
 import (
+	"io"
 	"time"
+
+	"fmt"
 
 	jrnl "github.com/coreos/go-systemd/v22/journal"
 	sdj "github.com/coreos/go-systemd/v22/sdjournal"
@@ -45,12 +48,12 @@ func systemdID() (string, error) {
 
 // TODO(nasr): checkout formatters
 
-// GetJournaldInformation reads entries from the systemd journal and returns
+// GetJournalInformation GetJournaldInformation reads entries from the systemd journal and returns
 // them as a single concatenated string.
 //
 // The journal reader is configured through the provided parameters:
 //   - since:        limits entries to those newer than the given duration
-//     relative to now
+//     relative now
 //   - numFromTail:  limits the number of entries read from the end of the journal
 //   - cursor:       reserved for future cursor-based positioning (currently unused)
 //   - matches:      filters entries using systemd journal match rules
@@ -62,7 +65,9 @@ func systemdID() (string, error) {
 // field-level decoding.
 //
 //	Example Matches:     []sdj.Match{{Field: "_SYSTEMD_UNIT", Value: "ssh.service"}}}
-func GetJournalInformation(since time.Duration, numFromTail uint64, cursor string, matches []sdj.Match, path string) (string, error) {
+func GetJournalInformation(since time.Duration, numFromTail uint64, cursor string, matches []sdj.Match, path string, out chan []byte) {
+
+	defer close(out)
 
 	config := sdj.JournalReaderConfig{
 		// TODO(nasr): fix time imlementation
@@ -77,30 +82,33 @@ func GetJournalInformation(since time.Duration, numFromTail uint64, cursor strin
 	reader, err := sdj.NewJournalReader(config)
 
 	if err != nil {
-		return "failed to open a journal reader", err
+		fmt.Println("failed to open the journal reader")
 	}
 
-	defer func(reader *sdj.JournalReader) {
-		err := reader.Close()
-		if err != nil {
-
-		}
-	}(reader)
+	defer reader.Close()
 
 	b := make([]byte, 4096)
-	var output string
 
 	for {
 		c, err := reader.Read(b)
+
 		if err != nil {
+			out <- []byte("nothing in here")
+			fmt.Println("failed to read from the journal reader", err)
 			break
 		}
+
+		if err == io.EOF {
+			fmt.Println("end of file")
+			break
+		}
+
 		if c == 0 {
+			fmt.Println("no more data")
 			continue
 		}
 
-		output = string(b[:c])
-	}
+		out <- b[:c]
 
-	return output, nil
+	}
 }
