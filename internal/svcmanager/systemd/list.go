@@ -25,7 +25,10 @@ func GetLoadedUnits(obj dbus.BusObject, out chan []svctypes.LoadedUnit) {
 		return
 	}
 
-	call.Store(&result)
+	err := call.Store(&result)
+	if err != nil {
+		return
+	}
 
 	out <- result
 
@@ -35,7 +38,7 @@ func GetAllUnits(obj dbus.BusObject, out chan []svctypes.UnitFileEntry) {
 
 	// ListUnitFiles(out a(ss) files);
 	// an array of struct string string
-	// i think
+	// I think
 
 	var result []svctypes.UnitFileEntry
 
@@ -46,6 +49,9 @@ func GetAllUnits(obj dbus.BusObject, out chan []svctypes.UnitFileEntry) {
 		return
 	}
 
-	call.Store(&result)
+	err := call.Store(&result)
+	if err != nil {
+		return
+	}
 	out <- result
 }

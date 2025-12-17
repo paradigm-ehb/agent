@@ -15,19 +15,6 @@ type System struct {
 	services  []Service // list of services on the server
 }
 
-type ServerState int
-
-// enum server healtha
-// @param
-// Healthy
-// Unhealthy
-// AttentionNeeded
-const (
-	Healthy ServerState = iota
-	Unhealthy
-	AttentionNeeded
-)
-
 type Process struct {
 	name string // process name
 	id   uint32 // PID

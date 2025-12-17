@@ -9,6 +9,8 @@ import (
 	"paradigm-ehb/agent/gen/services/v1"
 	dh "paradigm-ehb/agent/internal/svcmanager/dbus"
 	"paradigm-ehb/agent/internal/svcmanager/systemd"
+
+	"github.com/godbus/dbus"
 )
 
 type HandlerService struct {
@@ -25,7 +27,12 @@ func (s *HandlerService) Action(_ context.Context, in *services.ServiceActionReq
 		out = "failed system bus"
 	}
 
-	defer conn.Close()
+	defer func(conn *dbus.Conn) {
+		err := conn.Close()
+		if err != nil {
+
+		}
+	}(conn)
 
 	if in.GetUnitFileAction() == services.ServiceActionRequest_UNIT_FILE_ACTION_ENABLE {
 
