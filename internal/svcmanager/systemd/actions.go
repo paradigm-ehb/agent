@@ -1,4 +1,4 @@
-// Package that handles dbus connection actions
+// Package servicecontrol Package that handles dbus connection actions
 package servicecontrol
 
 type UnitAction string

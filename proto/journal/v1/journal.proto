@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package journal.v1;
+
+option go_package = "paradigm-ehb/agent/proto/journal";
+
+service JournalService {
+
+  rpc Action (JournalRequest) returns (stream JournalChunk) {}
+
+}
+
+message JournalRequest  {
+
+  enum Field {
+      Systemd  = 0;
+      PID      = 1;
+      UID      = 2;
+      GID      = 3;
+  }
+
+  string time = 1;
+  // The amount of stuff you want to pull from the journal
+  uint64 numFromTail = 2;
+  // dont know what this does yet
+  string cursor = 3;
+  // matches
+  Field field = 4;
+  string value = 5;
+
+  string path = 6;
+
+}
+
+message JournalChunk {
+
+  bytes reply = 1;
+}
+

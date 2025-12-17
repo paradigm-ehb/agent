@@ -4,16 +4,16 @@ import (
 	"flag"
 	"fmt"
 	"net"
-	"os"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	pb_greeter "paradigm-ehb/agent/gen/greet"
+	pbgreeter "paradigm-ehb/agent/gen/greet"
+	"paradigm-ehb/agent/gen/journal/v1"
 	"paradigm-ehb/agent/gen/services/v1"
 	"paradigm-ehb/agent/pkg/service"
 
-	tools "paradigm-ehb/agent/tools"
+	"paradigm-ehb/agent/tools"
 )
 
 var (
@@ -26,7 +26,6 @@ func main() {
 	err := tools.CheckOSUser()
 	if err != nil {
 		fmt.Println("Operating system is currently not supported. Come back in .... never! Imagine not using Linux. Not worthy.")
-		os.Exit(4)
 	}
 
 	flag.Parse()
@@ -38,17 +37,18 @@ func main() {
 
 	server := grpc.NewServer()
 
-	greeter_server := &service.GreeterServer{}
-	action_server := &service.HandlerService{}
+	greeterServer := &service.GreeterServer{}
+	actionServer := &service.HandlerService{}
+	journalServer := &service.JournalService{}
 
-	pb_greeter.RegisterGreeterServer(server, greeter_server)
-	services.RegisterHandlerServiceServer(server, action_server)
+	pbgreeter.RegisterGreeterServer(server, greeterServer)
+	services.RegisterHandlerServiceServer(server, actionServer)
+	journal.RegisterJournalServiceServer(server, journalServer)
 
 	reflection.Register(server)
 
-	fmt.Printf("server listening at %v", lis.Addr())
+	fmt.Printf("\nserver listening at %v\n", lis.Addr())
 	if err := server.Serve(lis); err != nil {
 		fmt.Println("failed to serve: ", err)
 	}
-
 }

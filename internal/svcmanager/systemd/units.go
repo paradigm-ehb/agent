@@ -15,7 +15,10 @@ import (
 func GetUnit(obj dbus.BusObject, name string) dbus.ObjectPath {
 
 	var result dbus.ObjectPath
-	obj.Call("org.freedesktop.systemd1.Manager.GetUnit", 0, name).Store(&result)
+	err := obj.Call("org.freedesktop.systemd1.Manager.GetUnit", 0, name).Store(&result)
+	if err != nil {
+		return ""
+	}
 
 	return result
 }
