@@ -14,6 +14,9 @@ import (
 	"paradigm-ehb/agent/pkg/service"
 
 	"paradigm-ehb/agent/tools"
+
+	"google.golang.org/grpc/health"
+	healthgrpc "google.golang.org/grpc/health/grpc_health_v1"
 )
 
 var (
@@ -37,6 +40,11 @@ func main() {
 
 	server := grpc.NewServer()
 
+	// Register Health Checking Service
+	healthServer := health.NewServer()
+	healthgrpc.RegisterHealthServer(server, healthServer)
+
+	// Register Greeter Service
 	greeterServer := &service.GreeterServer{}
 	actionServer := &service.HandlerService{}
 	journalServer := &service.JournalService{}
