@@ -20,7 +20,7 @@ import (
 )
 
 var (
-	port = flag.Int("port", 50051, "The server port")
+	port = flag.Int("port", 5000, "The server port")
 )
 
 func main() {
@@ -33,7 +33,7 @@ func main() {
 
 	flag.Parse()
 
-	lis, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%d", *port))
+	lis, err := net.Listen("tcp4", fmt.Sprintf("0.0.0.0:%d", *port))
 	if err != nil {
 		fmt.Println("failed to listen: ", err)
 	}
