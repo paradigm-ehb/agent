@@ -1,44 +1,70 @@
 #!/bin/sh
 
-echo -------------------------------------------------------------------------
-echo Description: Script to download protoc compiler and compile protoc files
-echo -------------------------------------------------------------------------
+set -eu
 
-# Install protocol buffer compiler
-# source : https://protobuf.dev/installation/
+echo "-------------------------------------------------------------------------"
+echo "Description: Script to download protoc compiler (x86_64 / arm64) and compile proto files"
+echo "-------------------------------------------------------------------------"
+
+PROTOC_VERSION="30.2"
 PB_REL="https://github.com/protocolbuffers/protobuf/releases"
-curl -LO $PB_REL/download/v30.2/protoc-30.2-linux-x86_64.zip
-unzip protoc-30.2-linux-x86_64.zip -d $HOME/.local
-export PATH="$PATH:$HOME/.local/bin"
+INSTALL_DIR="$HOME/.local"
+BIN_DIR="$INSTALL_DIR/bin"
 
-# Install protoc compiler plugins for Go
+ARCH="$(uname -m)"
+
+case "$ARCH" in
+    x86_64)
+        PROTOC_ARCH="linux-x86_64"
+        ;;
+    aarch64)
+        PROTOC_ARCH="linux-aarch_64"
+        ;;
+    *)
+        echo "Unsupported architecture: $ARCH"
+        exit 1
+        ;;
+esac
+
+ZIP_NAME="protoc-${PROTOC_VERSION}-${PROTOC_ARCH}.zip"
+DOWNLOAD_URL="$PB_REL/download/v${PROTOC_VERSION}/${ZIP_NAME}"
+
+echo "Detected architecture: $ARCH"
+echo "Downloading: $DOWNLOAD_URL"
+
+mkdir -p "$INSTALL_DIR"
+curl -L -o "$ZIP_NAME" "$DOWNLOAD_URL"
+unzip -o "$ZIP_NAME" -d "$INSTALL_DIR"
+rm -f "$ZIP_NAME"
+
+export PATH="$PATH:$BIN_DIR"
+
+# Install Go plugins
 go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 
-# Add protoc compiler to binary
 export PATH="$PATH:$(go env GOPATH)/bin"
 
-# compile protoc files
+# Compile proto files
 SRCDIR="."
-OUTDIR="gen/"
+OUTDIR="gen"
 
 cd "$SRCDIR/proto"
 
 for DIR in */; do
-    DIR=${DIR%/}   
+    DIR="${DIR%/}"
+    PROTOS="$(find "$DIR" -type f -name '*.proto')"
 
-	PROTOS=$(find "$DIR" -type f -name "*.proto") 
-
-# check length of protos
-   if [ -z "$PROTOS" ]; then
-        echo "tsjoe nothing in here ,  $DIR :("
-        exit 1
+    if [ -z "$PROTOS" ]; then
+        echo "Skipping $DIR (no proto files)"
+        continue
     fi
 
-    protoc --go_out=../$OUTDIR --go_opt=paths=source_relative \
-           --go-grpc_out=../$OUTDIR --go-grpc_opt=paths=source_relative \
-           $PROTOS
+    protoc \
+        --go_out="../$OUTDIR" --go_opt=paths=source_relative \
+        --go-grpc_out="../$OUTDIR" --go-grpc_opt=paths=source_relative \
+        $PROTOS
 
-	echo "yahoooo yippie yay $PROTOS"
-
+    echo "Compiled: $PROTOS"
 done
+
