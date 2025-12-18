@@ -12,6 +12,7 @@ service HandlerService {
 
 message ServiceActionRequest  {
 
+  // The name of the Service to request (for a list of all services, use "systemd")
   string service_name = 1;
 
   enum UnitAction {
