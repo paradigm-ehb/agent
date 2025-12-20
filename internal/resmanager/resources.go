@@ -1,38 +1,125 @@
 package resources
 
-// TODO(nasr): return the current cpu state
-type CpuState int
+/*
+#cgo CFLAGS:  -I${SRCDIR}/agent-resources
+#cgo LDFLAGS: -L${SRCDIR}/agent-resources/build -lagent_resources
+#include "agent_resources.h"
+*/
+import "C"
+import (
+	"log"
+)
 
-// TODO(nasr): return the current memory state
-type MemoryState int
+// TODO(nasr): add fields
+type CPUArena struct{}
+type MemoryArena struct {
+	Total string
+	Free  string
+}
+type DiskArena struct{}
+type DeviceArena struct{}
 
-// returns the delta of the cpu frquency
-// used to check if the cpu is stable
-func compareCpuFrequency(cpuFreqX float32, cpuFreqY float32) float32 {
+/**
+* Resource data objects
+* */
+type CPUUtilization float32
+type MemoryUtilization float32
+type DiskUtilization float32
+type DeviceUtilization float32
 
-	// TODO(nasr): retrieve the data with CGO
-	return cpuFreqY / cpuFreqX
+/**
+*
+* Create a snapshot of the current CPU and RAM state
+* to determine if the system is stable
+*
+* */
+type SystemSnapshot struct {
+	CPUFrequency CPUUtilization
+	MemoryUsage  MemoryUtilization
+	Timestamp    int64 // Consider adding timestamp for better tracking
 }
 
-// returns the deleta of the cpu usage
-// used to check if the cpu is stable
-func compareCpuUsage(cpuUsageX float32, cpuUsageY float32) float32 {
+/**
+*
+* HealthLevel assigns a value to the determined level of stability
+* */
+type HealthLevel int
 
-	// TODO(nasr): retrieve the data with CGO
-	return cpuUsageY / cpuUsageX
+const (
+	Stable HealthLevel = iota
+	Warning
+	Critical
+)
+
+/*
+* Check's for CPU drops.
+* An overheating or non-stable CPU drops clock frequency.
+* This will determine if the CPU is stable under the current load
+* CalculateCPUFrequencyRatio computes the ratio between two CPU frequency snapshots
+* @return: ratio where >1 means frequency increased, <1 means decreased
+*
+**/
+
+func CreateAgentCpu() {
+
+	ram := C.agent_ram_create()
+	if ram == nil {
+		return
+	}
+	defer C.agent_ram_destroy(ram)
+
+	if C.agent_ram_read(ram) != C.AGENT_OK {
+		return
+	}
+
+	info := RamInfo{
+		Total: C.GoString(&ram.data.total[0]),
+		Free:  C.GoString(&ram.data.free[0]),
+	}
+
+	log.Println(info)
 }
 
-// TODO(nasr): call cgo to create a snapshot of the current system
-func CreateSnapshot() {
+func CalculateCPUFrequencyRatio(baseline, current SystemSnapshot) float32 {
+	if baseline.CPUFrequency == 0 {
+		return 0 // Prevent division by zero
+	}
 
+	return float32(current.CPUFrequency) / float32(baseline.CPUFrequency)
 }
 
-// func Status(freqDelta float32, usageDelta float32) LogLevel {
-//
-// 	log.Println("checking if cpu is stable")
-// 	if freqDelta < 0 && usageDelta < 0 {
-// 		return
-// 	}
-//
-// 	return Medium
-// }
+// CalculateCPUUsageRatio computes the ratio between two CPU usage measurements
+// Returns: ratio where >1 means usage increased, <1 means decreased
+func CalculateCPUUsageRatio(baseline, current float32) float32 {
+	if baseline == 0 {
+		return 0 // Prevent division by zero
+	}
+	return current / baseline
+}
+
+/**
+ * CaptureSystemSnapshot retrieves current system resource state
+ * using the agent-resources libarary
+ */
+func CaptureSystemSnapshot() (SystemSnapshot, error) {
+	return SystemSnapshot{}, nil
+}
+
+// EvaluateSystemHealth determines system stability based on resource deltas
+// frequencyRatio: ratio of current/baseline CPU frequency
+// usageRatio: ratio of current/baseline CPU usage
+func EvaluateSystemHealth(frequencyRatio, usageRatio float32) HealthLevel {
+	log.Println("evaluating system stability")
+
+	// Both ratios < 1.0 indicate decreasing resources
+	if frequencyRatio < 1.0 && usageRatio < 1.0 {
+		return Critical
+	}
+
+	// Consider adding more nuanced thresholds
+	if frequencyRatio < 0.8 || usageRatio > 1.5 {
+		return Warning
+	}
+
+	return Stable
+}

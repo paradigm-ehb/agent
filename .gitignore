@@ -36,3 +36,5 @@ gen/
 .idea
 debug
 /protoc-30.2-linux-x86_64.zip
+tmp
+.air.toml

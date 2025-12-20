@@ -17,6 +17,7 @@ import (
 
 	"google.golang.org/grpc/health"
 	healthgrpc "google.golang.org/grpc/health/grpc_health_v1"
+	resource "paradigm-ehb/agent/internal/resmanager"
 )
 
 var (
@@ -24,8 +25,10 @@ var (
 )
 
 func main() {
-	fmt.Println("started")
 
+	resource.CreateAgentCpu()
+
+	fmt.Println("started")
 	err := tools.CheckOSUser()
 	if err != nil {
 		fmt.Println("Operating system is currently not supported. Come back in .... never! Imagine not using Linux. Not worthy.")
