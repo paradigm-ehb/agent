@@ -72,12 +72,7 @@ func CreateAgentCpu() {
 		return
 	}
 
-	info := RamInfo{
-		Total: C.GoString(&ram.data.total[0]),
-		Free:  C.GoString(&ram.data.free[0]),
-	}
-
-	log.Println(info)
+	log.Println(C.GoString(C.agent_ram_get_total(ram)))
 }
 
 func CalculateCPUFrequencyRatio(baseline, current SystemSnapshot) float32 {
