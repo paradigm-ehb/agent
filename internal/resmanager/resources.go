@@ -85,6 +85,7 @@ func CreateAgentRam() {
 
 	log.Println("total ram -> ", C.GoString(C.agent_ram_get_total(ram)))
 	log.Println("free ram -> ", C.GoString(C.agent_ram_get_free(ram)))
+	log.Printf("\n")
 }
 
 func CreateAgentCpu() {
@@ -106,6 +107,7 @@ func CreateAgentCpu() {
 	log.Println("cpu -> ", C.GoString(C.agent_cpu_get_model(cpu)))
 	log.Println("cpu -> ", C.GoString(C.agent_cpu_get_frequency(cpu)))
 	log.Println("cpu -> ", C.GoString(C.agent_cpu_get_cores(cpu)))
+	log.Printf("\n")
 
 }
 
@@ -125,7 +127,27 @@ func CreateAgentDevice() {
 	}
 
 	log.Println("device ->", C.GoString(C.agent_device_get_uptime(device)))
-	log.Println("device -> ", C.GoString(C.agent_device_get_os_version(device)))
+	log.Println("device ->", C.GoString(C.agent_device_get_os_version(device)))
+	log.Printf("\n")
+
+}
+
+func CreateAgentDisk() {
+
+	disk := C.agent_disk_create()
+
+	if disk == nil {
+		return
+	}
+
+	defer C.agent_disk_destroy(disk)
+
+	if C.agent_disk_read(disk) != C.AGENT_OK {
+		return
+	}
+
+	log.Println("disk ->", C.agent_disk_get_count(disk))
+	log.Println("disk ->", C.GoString(C.agent_disk_get_partitions(disk)))
 
 }
 

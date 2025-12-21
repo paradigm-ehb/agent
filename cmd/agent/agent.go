@@ -29,6 +29,7 @@ func main() {
 	resource.CreateAgentCpu()
 	resource.CreateAgentRam()
 	resource.CreateAgentDevice()
+	resource.CreateAgentDisk()
 
 	fmt.Println("started")
 	err := tools.CheckOSUser()
