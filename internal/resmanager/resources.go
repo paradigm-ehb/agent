@@ -11,13 +11,24 @@ import (
 )
 
 // TODO(nasr): add fields
-type CPUArena struct{}
+type CPUArena struct {
+	Vendor    string
+	Model     string
+	Frequency string
+	Cores     string
+}
 type MemoryArena struct {
 	Total string
 	Free  string
 }
 type DiskArena struct{}
-type DeviceArena struct{}
+
+type DeviceArena struct {
+	OsVersion      string
+	Uptime         string
+	Processes      []string
+	ProcessesCount int
+}
 
 /**
 * Resource data objects
@@ -36,7 +47,7 @@ type DeviceUtilization float32
 type SystemSnapshot struct {
 	CPUFrequency CPUUtilization
 	MemoryUsage  MemoryUtilization
-	Timestamp    int64 // Consider adding timestamp for better tracking
+	Timestamp    int64
 }
 
 /**
@@ -60,7 +71,7 @@ const (
 *
 **/
 
-func CreateAgentCpu() {
+func CreateAgentRam() {
 
 	ram := C.agent_ram_create()
 	if ram == nil {
@@ -72,7 +83,50 @@ func CreateAgentCpu() {
 		return
 	}
 
-	log.Println(C.GoString(C.agent_ram_get_total(ram)))
+	log.Println("total ram -> ", C.GoString(C.agent_ram_get_total(ram)))
+	log.Println("free ram -> ", C.GoString(C.agent_ram_get_free(ram)))
+}
+
+func CreateAgentCpu() {
+
+	cpu := C.agent_cpu_create()
+
+	if cpu == nil {
+		return
+	}
+
+	defer C.agent_cpu_destroy(cpu)
+
+	if C.agent_cpu_read(cpu) != C.AGENT_OK {
+		return
+	}
+
+	// TODO(nasr): currently not available on arm
+	log.Println("cpu -> ", C.GoString(C.agent_cpu_get_vendor(cpu)))
+	log.Println("cpu -> ", C.GoString(C.agent_cpu_get_model(cpu)))
+	log.Println("cpu -> ", C.GoString(C.agent_cpu_get_frequency(cpu)))
+	log.Println("cpu -> ", C.GoString(C.agent_cpu_get_cores(cpu)))
+
+}
+
+func CreateAgentDevice() {
+
+	device := C.agent_device_create()
+
+	if device == nil {
+		return
+	}
+
+	defer C.agent_device_destroy(device)
+
+	if C.agent_device_read(device) != C.AGENT_OK {
+		return
+
+	}
+
+	log.Println("device ->", C.GoString(C.agent_device_get_uptime(device)))
+	log.Println("device -> ", C.GoString(C.agent_device_get_os_version(device)))
+
 }
 
 func CalculateCPUFrequencyRatio(baseline, current SystemSnapshot) float32 {
@@ -106,12 +160,10 @@ func CaptureSystemSnapshot() (SystemSnapshot, error) {
 func EvaluateSystemHealth(frequencyRatio, usageRatio float32) HealthLevel {
 	log.Println("evaluating system stability")
 
-	// Both ratios < 1.0 indicate decreasing resources
 	if frequencyRatio < 1.0 && usageRatio < 1.0 {
 		return Critical
 	}
 
-	// Consider adding more nuanced thresholds
 	if frequencyRatio < 0.8 || usageRatio > 1.5 {
 		return Warning
 	}
