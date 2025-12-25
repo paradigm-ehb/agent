@@ -1,9 +1,12 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"net"
+	"os"
+	"syscall"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -13,11 +16,11 @@ import (
 	"paradigm-ehb/agent/gen/services/v1"
 	"paradigm-ehb/agent/pkg/service"
 
+	resources "paradigm-ehb/agent/internal/resmanager"
 	"paradigm-ehb/agent/tools"
 
 	"google.golang.org/grpc/health"
 	healthgrpc "google.golang.org/grpc/health/grpc_health_v1"
-	resource "paradigm-ehb/agent/internal/resmanager"
 )
 
 var (
@@ -26,15 +29,13 @@ var (
 
 func main() {
 
-	resource.CreateAgentCpu()
-	resource.CreateAgentRam()
-	resource.CreateAgentDevice()
-	resource.CreateAgentDisk()
+	resources.Make()
 
 	fmt.Println("started")
-	err := tools.CheckOSUser()
-	if err != nil {
-		fmt.Println("Operating system is currently not supported. Come back in .... never! Imagine not using Linux. Not worthy.")
+
+	if err := tools.CheckOSUser(); err != nil {
+		fmt.Println("Operating system is currently not supported.")
+		return
 	}
 
 	flag.Parse()
@@ -67,23 +68,20 @@ func main() {
 
 	server := grpc.NewServer()
 
-	// Register Health Checking Service
+	// Health service
 	healthServer := health.NewServer()
 	healthgrpc.RegisterHealthServer(server, healthServer)
 
-	// Register Greeter Service
-	greeterServer := &service.GreeterServer{}
-	actionServer := &service.HandlerService{}
-	journalServer := &service.JournalService{}
-
-	pbgreeter.RegisterGreeterServer(server, greeterServer)
-	services.RegisterHandlerServiceServer(server, actionServer)
-	journal.RegisterJournalServiceServer(server, journalServer)
+	// Application services
+	pbgreeter.RegisterGreeterServer(server, &service.GreeterServer{})
+	services.RegisterHandlerServiceServer(server, &service.HandlerService{})
+	journal.RegisterJournalServiceServer(server, &service.JournalService{})
 
 	reflection.Register(server)
 
 	fmt.Printf("\nserver listening at %v\n", lis.Addr())
+
 	if err := server.Serve(lis); err != nil {
-		fmt.Println("failed to serve: ", err)
+		fmt.Println("failed to serve:", err)
 	}
 }

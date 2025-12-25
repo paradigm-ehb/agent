@@ -6,189 +6,163 @@ package resources
 #include "agent_resources.h"
 */
 import "C"
+
 import (
-	"log"
+	"fmt"
+	"unsafe"
 )
 
-// TODO(nasr): add fields
-type CPUArena struct {
+type Cpu struct {
 	Vendor    string
 	Model     string
 	Frequency string
-	Cores     string
+	MaxCore   uint32
 }
-type MemoryArena struct {
+
+type Memory struct {
 	Total string
 	Free  string
 }
-type DiskArena struct{}
 
-type DeviceArena struct {
-	OsVersion      string
-	Uptime         string
-	Processes      []string
-	ProcessesCount int
+type DiskPartition struct {
+	Name   string
+	Major  uint32
+	Minor  uint32
+	Blocks uint64
 }
 
-/**
-* Resource data objects
-* */
-type CPUUtilization float32
-type MemoryUtilization float32
-type DiskUtilization float32
-type DeviceUtilization float32
-
-/**
-*
-* Create a snapshot of the current CPU and RAM state
-* to determine if the system is stable
-*
-* */
-type SystemSnapshot struct {
-	CPUFrequency CPUUtilization
-	MemoryUsage  MemoryUtilization
-	Timestamp    int64
+type Disk struct {
+	Partitions []DiskPartition
 }
 
-/**
-*
-* HealthLevel assigns a value to the determined level of stability
-* */
-type HealthLevel int
+type Device struct {
+	OsVersion string
+	Uptime    string
+}
+
+type ProcesState rune
 
 const (
-	Stable HealthLevel = iota
-	Warning
-	Critical
+	Running        ProcesState = 'R'
+	Sleeping       ProcesState = 'S'
+	DiskSleeping   ProcesState = 'D'
+	Stopped        ProcesState = 'T'
+	TracingStopped ProcesState = 't'
+	Zombie         ProcesState = 'Z'
+	Dead           ProcesState = 'X'
 )
 
-/*
-* Check's for CPU drops.
-* An overheating or non-stable CPU drops clock frequency.
-* This will determine if the CPU is stable under the current load
-* CalculateCPUFrequencyRatio computes the ratio between two CPU frequency snapshots
-* @return: ratio where >1 means frequency increased, <1 means decreased
-*
-**/
-
-func CreateAgentRam() {
-
-	ram := C.agent_ram_create()
-	if ram == nil {
-		return
-	}
-	defer C.agent_ram_destroy(ram)
-
-	if C.agent_ram_read(ram) != C.AGENT_OK {
-		return
-	}
-
-	log.Println("total ram -> ", C.GoString(C.agent_ram_get_total(ram)))
-	log.Println("free ram -> ", C.GoString(C.agent_ram_get_free(ram)))
-	log.Printf("\n")
+type Process struct {
+	PID        uint32
+	Name       string
+	State      ProcesState
+	UTime      uint64
+	NumThreads uint32
 }
 
-func CreateAgentCpu() {
-
-	cpu := C.agent_cpu_create()
-
-	if cpu == nil {
-		return
-	}
-
-	defer C.agent_cpu_destroy(cpu)
-
-	if C.agent_cpu_read(cpu) != C.AGENT_OK {
-		return
-	}
-
-	// TODO(nasr): currently not available on arm
-	log.Println("cpu -> ", C.GoString(C.agent_cpu_get_vendor(cpu)))
-	log.Println("cpu -> ", C.GoString(C.agent_cpu_get_model(cpu)))
-	log.Println("cpu -> ", C.GoString(C.agent_cpu_get_frequency(cpu)))
-	log.Println("cpu -> ", C.GoString(C.agent_cpu_get_cores(cpu)))
-	log.Printf("\n")
-
+type SystemResources struct {
+	CPU    Cpu
+	Memory Memory
+	Device Device
+	Disks  []Disk
+	Procs  []Process
 }
 
-func CreateAgentDevice() {
+func Make() (*SystemResources, error) {
+	arena := C.arena_create(C.MiB(8))
+	if arena == nil {
+		return nil, fmt.Errorf("arena_create failed")
+	}
+	defer C.arena_destroy(arena)
 
-	device := C.agent_device_create()
-
-	if device == nil {
-		return
+	ram := C.ram_create(arena)
+	if ram == nil || C.ram_read(ram) != C.OK {
+		return nil, fmt.Errorf("ram_read failed")
 	}
 
-	defer C.agent_device_destroy(device)
-
-	if C.agent_device_read(device) != C.AGENT_OK {
-		return
-
+	memGo := Memory{
+		Total: C.GoString(&ram.total[0]),
+		Free:  C.GoString(&ram.free[0]),
 	}
 
-	log.Println("device ->", C.GoString(C.agent_device_get_uptime(device)))
-	log.Println("device ->", C.GoString(C.agent_device_get_os_version(device)))
-	log.Printf("\n")
-
-}
-
-func CreateAgentDisk() {
-
-	disk := C.agent_disk_create()
-
-	if disk == nil {
-		return
+	cpu := C.cpu_create(arena)
+	if cpu == nil || C.cpu_read(cpu) != C.OK {
+		return nil, fmt.Errorf("cpu_read failed")
 	}
 
-	defer C.agent_disk_destroy(disk)
-
-	if C.agent_disk_read(disk) != C.AGENT_OK {
-		return
+	cpuGo := Cpu{
+		Vendor:    C.GoString(&cpu.vendor[0]),
+		Model:     C.GoString(&cpu.model[0]),
+		Frequency: C.GoString(&cpu.frequency[0]),
+		MaxCore:   uint32(cpu.cores),
 	}
 
-	log.Println("disk ->", C.agent_disk_get_count(disk))
-	log.Println("disk ->", C.GoString(C.agent_disk_get_partitions(disk)))
-
-}
-
-func CalculateCPUFrequencyRatio(baseline, current SystemSnapshot) float32 {
-	if baseline.CPUFrequency == 0 {
-		return 0 // Prevent division by zero
+	device := C.device_create(arena)
+	if device == nil || C.device_read(device) != C.OK {
+		return nil, fmt.Errorf("device_read failed")
 	}
 
-	return float32(current.CPUFrequency) / float32(baseline.CPUFrequency)
-}
-
-// CalculateCPUUsageRatio computes the ratio between two CPU usage measurements
-// Returns: ratio where >1 means usage increased, <1 means decreased
-func CalculateCPUUsageRatio(baseline, current float32) float32 {
-	if baseline == 0 {
-		return 0 // Prevent division by zero
-	}
-	return current / baseline
-}
-
-/**
- * CaptureSystemSnapshot retrieves current system resource state
- * using the agent-resources libarary
- */
-func CaptureSystemSnapshot() (SystemSnapshot, error) {
-	return SystemSnapshot{}, nil
-}
-
-// EvaluateSystemHealth determines system stability based on resource deltas
-// frequencyRatio: ratio of current/baseline CPU frequency
-// usageRatio: ratio of current/baseline CPU usage
-func EvaluateSystemHealth(frequencyRatio, usageRatio float32) HealthLevel {
-	log.Println("evaluating system stability")
-
-	if frequencyRatio < 1.0 && usageRatio < 1.0 {
-		return Critical
+	deviceGo := Device{
+		OsVersion: C.GoString(&device.os_version[0]),
+		Uptime:    C.GoString(&device.uptime[0]),
 	}
 
-	if frequencyRatio < 0.8 || usageRatio > 1.5 {
-		return Warning
+	C.process_list_collect(&device.processes, arena)
+
+	procs := make([]Process, 0, device.processes.count)
+	items := device.processes.items
+
+	for i := C.size_t(0); i < device.processes.count; i++ {
+		p := (*C.Process)(
+			unsafe.Pointer(
+				uintptr(unsafe.Pointer(items)) +
+					uintptr(i)*unsafe.Sizeof(*items),
+			),
+		)
+
+		if C.process_read(p.pid, p) != C.OK {
+			continue
+		}
+
+		procs = append(procs, Process{
+			PID:        uint32(p.pid),
+			Name:       C.GoString(&p.name[0]),
+			State:      ProcesState(p.state),
+			UTime:      uint64(p.utime),
+			NumThreads: uint32(p.num_threads),
+		})
 	}
 
-	return Stable
+	disk := C.disk_create(arena)
+	if disk == nil || C.disk_read(disk, arena) != C.OK {
+		return nil, fmt.Errorf("disk_read failed")
+	}
+
+	diskGo := Disk{
+		Partitions: make([]DiskPartition, 0, disk.count),
+	}
+
+	for i := C.size_t(0); i < disk.count; i++ {
+		part := (*C.Partition)(
+			unsafe.Pointer(
+				uintptr(unsafe.Pointer(disk.partitions)) +
+					uintptr(i)*unsafe.Sizeof(*disk.partitions),
+			),
+		)
+
+		diskGo.Partitions = append(diskGo.Partitions, DiskPartition{
+			Name:   C.GoString(&part.name[0]),
+			Major:  uint32(part.major),
+			Minor:  uint32(part.minor),
+			Blocks: uint64(part.blocks),
+		})
+	}
+
+	return &SystemResources{
+		CPU:    cpuGo,
+		Memory: memGo,
+		Device: deviceGo,
+		Disks:  []Disk{diskGo},
+		Procs:  procs,
+	}, nil
 }
