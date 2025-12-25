@@ -39,9 +39,30 @@ func main() {
 
 	flag.Parse()
 
-	lis, err := net.Listen("tcp4", fmt.Sprintf("0.0.0.0:%d", *port))
-	if err != nil {
-		fmt.Println("failed to listen: ", err)
+	var lis net.Listener
+	var err error
+	p := *port
+
+	for {
+		addr := fmt.Sprintf("0.0.0.0:%d", p)
+		lis, err = net.Listen("tcp4", addr)
+		if err != nil {
+			// Retry only if port is already in use
+			var opErr *net.OpError
+			if errors.As(err, &opErr) {
+				if sysErr, ok := opErr.Err.(*os.SyscallError); ok {
+					if sysErr.Err == syscall.EADDRINUSE {
+						p++
+						continue
+					}
+				}
+			}
+
+			fmt.Println("failed to listen:", err)
+			return
+		}
+
+		break
 	}
 
 	server := grpc.NewServer()
