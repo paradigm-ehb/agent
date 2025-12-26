@@ -17,11 +17,11 @@ import (
 	"paradigm-ehb/agent/gen/services/v1"
 	"paradigm-ehb/agent/pkg/service"
 
-	resources "paradigm-ehb/agent/internal/resmanager"
 	"paradigm-ehb/agent/tools"
 
 	"google.golang.org/grpc/health"
 	healthgrpc "google.golang.org/grpc/health/grpc_health_v1"
+	"time"
 )
 
 var (
@@ -29,16 +29,6 @@ var (
 )
 
 func main() {
-
-	resources.Make()
-
-	fmt.Println("started")
-
-	if err := tools.CheckOSUser(); err != nil {
-		fmt.Println("Operating system is currently not supported.")
-		return
-	}
-
 	flag.Parse()
 
 	var lis net.Listener
@@ -49,7 +39,6 @@ func main() {
 		addr := fmt.Sprintf("0.0.0.0:%d", p)
 		lis, err = net.Listen("tcp4", addr)
 		if err != nil {
-			// Retry only if port is already in use
 			var opErr *net.OpError
 			if errors.As(err, &opErr) {
 				if sysErr, ok := opErr.Err.(*os.SyscallError); ok {
@@ -60,20 +49,17 @@ func main() {
 				}
 			}
 
-			fmt.Println("failed to listen:", err)
+			fmt.Println("Failed to find open port", err)
 			return
 		}
-
 		break
 	}
 
 	server := grpc.NewServer()
 
-	// Health service
 	healthServer := health.NewServer()
 	healthgrpc.RegisterHealthServer(server, healthServer)
 
-	// Application services
 	pbgreeter.RegisterGreeterServer(server, &service.GreeterServer{})
 	services.RegisterHandlerServiceServer(server, &service.HandlerService{})
 	journal.RegisterJournalServiceServer(server, &service.JournalService{})
@@ -81,9 +67,16 @@ func main() {
 
 	reflection.Register(server)
 
-	fmt.Printf("\nserver listening at %v\n", lis.Addr())
+	fmt.Printf("Agent initialized\nListening:\nport:%v\n", p)
+
+	if err := tools.AssertLinux(); err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	go tools.RunRuntimeDiagnostics(3 * time.Second)
 
 	if err := server.Serve(lis); err != nil {
-		fmt.Println("failed to serve:", err)
+		fmt.Println("Failed to start server", err)
 	}
 }
