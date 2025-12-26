@@ -13,6 +13,7 @@ import (
 
 	pbgreeter "paradigm-ehb/agent/gen/greet"
 	"paradigm-ehb/agent/gen/journal/v1"
+	resourcespb "paradigm-ehb/agent/gen/resources/v1"
 	"paradigm-ehb/agent/gen/services/v1"
 	"paradigm-ehb/agent/pkg/service"
 
@@ -76,6 +77,7 @@ func main() {
 	pbgreeter.RegisterGreeterServer(server, &service.GreeterServer{})
 	services.RegisterHandlerServiceServer(server, &service.HandlerService{})
 	journal.RegisterJournalServiceServer(server, &service.JournalService{})
+	resourcespb.RegisterResourcesServiceServer(server, &service.ResourcesService{})
 
 	reflection.Register(server)
 
