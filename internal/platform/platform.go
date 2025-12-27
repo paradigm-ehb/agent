@@ -1,5 +1,5 @@
-// Package tools provides small helper utilities used across the project.
-package tools
+// Package platform provides small helper utilities used across the project.
+package platform
 
 import (
 	"fmt"
@@ -15,12 +15,13 @@ func AssertLinux() error {
 	return nil
 }
 
-func RunRuntimeDiagnostics(interval time.Duration) {
+func RunRuntimeDiagnostics(interval time.Duration, ip string, port int) {
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 
 	for range ticker.C {
 
+		// clear screen
 		fmt.Print("\033[2J")
 		fmt.Print("\033[H")
 
@@ -53,6 +54,14 @@ func RunRuntimeDiagnostics(interval time.Duration) {
 		fmt.Printf("%-20s : %d\n", "gc cycles", m.NumGC)
 		fmt.Printf("%-20s : %d ms\n", "gc pause total", m.PauseTotalNs/1e6)
 
+		fmt.Printf("%-20s : %d\n", "gc next", m.NextGC/1024)
+
+		fmt.Println()
+		fmt.Println("server info")
+		fmt.Println("-----------------")
+		fmt.Printf("port listening on     : %d\n", port)
+		fmt.Printf("ip address            : %s\n", ip)
+
 		if info, ok := debug.ReadBuildInfo(); ok {
 			fmt.Println()
 			fmt.Println("information")
@@ -64,6 +73,7 @@ func RunRuntimeDiagnostics(interval time.Duration) {
 			if info.Main.Version != "(devel)" {
 				fmt.Printf("%-20s : %s\n", "version", info.Main.Version)
 			}
+
 		}
 	}
 }

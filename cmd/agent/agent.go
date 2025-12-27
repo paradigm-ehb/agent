@@ -1,82 +1,78 @@
 package main
 
 import (
-	"errors"
 	"flag"
-	"fmt"
+	"log"
 	"net"
 	"os"
+	"os/signal"
+	"paradigm-ehb/agent/internal/platform"
+	"strconv"
 	"syscall"
+	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	pbgreeter "paradigm-ehb/agent/gen/greet"
+	"paradigm-ehb/agent/gen/greet"
 	"paradigm-ehb/agent/gen/journal/v1"
-	resourcespb "paradigm-ehb/agent/gen/resources/v1"
+
+	"paradigm-ehb/agent/gen/resources/v1"
+
 	"paradigm-ehb/agent/gen/services/v1"
 	"paradigm-ehb/agent/pkg/service"
 
-	"paradigm-ehb/agent/tools"
-
 	"google.golang.org/grpc/health"
-	healthgrpc "google.golang.org/grpc/health/grpc_health_v1"
-	"time"
+	"google.golang.org/grpc/health/grpc_health_v1"
 )
 
-var (
-	port = flag.Int("port", 5000, "The server port")
-)
+var diagnostics = flag.Bool("diagnostics", false, "run runtime diagnostics")
+var portFlag = flag.Int("port", 5000, "port to listen on")
+var ipFlag = flag.String("ip", "0.0.0.0", "ip addr")
 
 func main() {
+	if err := platform.AssertLinux(); err != nil {
+		log.Fatal(err)
+	}
+
 	flag.Parse()
 
-	var lis net.Listener
-	var err error
-	p := *port
+	addr := net.JoinHostPort(*ipFlag, strconv.Itoa(*portFlag))
 
-	for {
-		addr := fmt.Sprintf("0.0.0.0:%d", p)
-		lis, err = net.Listen("tcp4", addr)
-		if err != nil {
-			var opErr *net.OpError
-			if errors.As(err, &opErr) {
-				if sysErr, ok := opErr.Err.(*os.SyscallError); ok {
-					if sysErr.Err == syscall.EADDRINUSE {
-						p++
-						continue
-					}
-				}
-			}
-
-			fmt.Println("Failed to find open port", err)
-			return
-		}
-		break
+	lis, err := net.Listen("tcp", addr)
+	if err != nil {
+		log.Fatal(err)
 	}
+	defer lis.Close()
 
 	server := grpc.NewServer()
 
 	healthServer := health.NewServer()
-	healthgrpc.RegisterHealthServer(server, healthServer)
 
-	pbgreeter.RegisterGreeterServer(server, &service.GreeterServer{})
+	grpc_health_v1.RegisterHealthServer(server, healthServer)
+	greet.RegisterGreeterServer(server, &service.GreeterServer{})
 	services.RegisterHandlerServiceServer(server, &service.HandlerService{})
 	journal.RegisterJournalServiceServer(server, &service.JournalService{})
 	resourcespb.RegisterResourcesServiceServer(server, &service.ResourcesService{})
 
 	reflection.Register(server)
 
-	fmt.Printf("Agent initialized\nListening:\nport:%v\n", p)
+	if *diagnostics == true {
 
-	if err := tools.AssertLinux(); err != nil {
-		fmt.Println(err)
-		return
+		platform.RunRuntimeDiagnostics(time.Second*3, *ipFlag, *portFlag)
 	}
 
-	go tools.RunRuntimeDiagnostics(3 * time.Second)
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
+
+	go func() {
+		<-sig
+		server.GracefulStop()
+	}()
+
+	log.Printf("listening on %s\n", addr)
 
 	if err := server.Serve(lis); err != nil {
-		fmt.Println("Failed to start server", err)
+		log.Fatal(err)
 	}
 }
