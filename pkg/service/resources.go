@@ -2,10 +2,10 @@ package service
 
 import (
 	"context"
-	"fmt"
 
 	resourcespb "paradigm-ehb/agent/gen/resources/v1"
-	"paradigm-ehb/agent/internal/resmanager"
+	"paradigm-ehb/agent/internal/device_resources"
+	"paradigm-ehb/agent/pkg/wrapper"
 )
 
 type ResourcesService struct {
@@ -17,10 +17,7 @@ func (s *ResourcesService) GetSystemResources(
 	req *resourcespb.GetSystemResourcesRequest,
 ) (*resourcespb.GetSystemResourcesResponse, error) {
 
-	sys, err := resources.Make()
-	if err != nil {
-		return nil, fmt.Errorf("resource snapshot failed: %w", err)
-	}
+	sys := wrapper.Make()
 
 	return &resourcespb.GetSystemResourcesResponse{
 		Resources: &resourcespb.SystemResources{
@@ -44,7 +41,7 @@ func (s *ResourcesService) GetSystemResources(
 	}, nil
 }
 
-func mapDisks(disks []resources.Disk) []*resourcespb.Disk {
+func mapDisks(disks []wrapper.Disk) []*resourcespb.Disk {
 	out := make([]*resourcespb.Disk, 0, len(disks))
 	for _, d := range disks {
 		pbDisk := &resourcespb.Disk{
@@ -65,7 +62,7 @@ func mapDisks(disks []resources.Disk) []*resourcespb.Disk {
 	return out
 }
 
-func mapProcesses(ps []resources.Process) []*resourcespb.Process {
+func mapProcesses(ps []wrapper.Process) []*resourcespb.Process {
 	out := make([]*resourcespb.Process, 0, len(ps))
 	for _, p := range ps {
 		out = append(out, &resourcespb.Process{
@@ -79,21 +76,21 @@ func mapProcesses(ps []resources.Process) []*resourcespb.Process {
 	return out
 }
 
-func mapProcessState(s resources.ProcesState) resourcespb.ProcessState {
+func mapProcessState(s wrapper.ProcessState) resourcespb.ProcessState {
 	switch s {
-	case 'R':
+	case wrapper.Running:
 		return resourcespb.ProcessState_PROCESS_STATE_RUNNING
-	case 'S':
+	case wrapper.Sleeping:
 		return resourcespb.ProcessState_PROCESS_STATE_SLEEPING
-	case 'D':
+	case wrapper.DiskSleeping:
 		return resourcespb.ProcessState_PROCESS_STATE_DISK_SLEEPING
-	case 'T':
+	case wrapper.Stopped:
 		return resourcespb.ProcessState_PROCESS_STATE_STOPPED
-	case 't':
+	case wrapper.TracingStopped:
 		return resourcespb.ProcessState_PROCESS_STATE_TRACING_STOPPED
-	case 'Z':
+	case wrapper.Zombie:
 		return resourcespb.ProcessState_PROCESS_STATE_ZOMBIE
-	case 'X':
+	case wrapper.Dead:
 		return resourcespb.ProcessState_PROCESS_STATE_DEAD
 	default:
 		return resourcespb.ProcessState_PROCESS_STATE_UNSPECIFIED

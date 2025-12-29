@@ -4,11 +4,11 @@ import (
 	"context"
 	"log"
 
-	manager "paradigm-ehb/agent/internal/svcmanager"
+	manager "paradigm-ehb/agent/internal/dbus_services"
 
 	"paradigm-ehb/agent/gen/services/v1"
-	dh "paradigm-ehb/agent/internal/svcmanager/dbus"
-	"paradigm-ehb/agent/internal/svcmanager/systemd"
+	dh "paradigm-ehb/agent/internal/dbus_services/dbus"
+	"paradigm-ehb/agent/internal/dbus_services/systemd"
 
 	"github.com/godbus/dbus"
 )
