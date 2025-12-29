@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+package resources.v1;
+
+option go_package = "paradigm-ehb/agent/gen/debug_actions/v1/";
