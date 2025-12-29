@@ -6,8 +6,6 @@ echo "Build Script: Protobuf compilation + Agent Resources C library"
 echo "========================================================================="
 
 # ============================================================================
-# PART 1: Download protoc (only if not already installed)
-# ============================================================================
 echo ""
 echo "[1/2] Protobuf Compilation"
 echo "-------------------------------------------------------------------------"
@@ -78,8 +76,8 @@ done
 
 cd ..
 
-# ============================================================================
-# PART 2: Build Agent Resources C library
+# TOOD(nasr): call the external agent-resources buildscript instead of doing this
+# but make sure you read it's output and redirect it, so we have a proper output
 # ============================================================================
 echo ""
 echo "[2/2] Agent Resources C Library"
@@ -87,14 +85,14 @@ echo "-------------------------------------------------------------------------"
 
 CC=cc
 AR=ar
-AGENT_RES_DIR="internal/resmanager/agent-resources"
+AGENT_RES_DIR="pkg/agent-resources"
 SRC="$AGENT_RES_DIR/agent_resources.c"
 OUT_DIR="$AGENT_RES_DIR/build"
 OUT_OBJ="$OUT_DIR/agent_resources.o"
 OUT_LIB="$OUT_DIR/libagent_resources.a"
 
 CFLAGS="
--std=c11
+-std=c99
 -Wall
 -Wextra
 -Wpedantic
@@ -106,6 +104,14 @@ CFLAGS="
 -Wcast-qual
 -Wwrite-strings
 -Wformat=2
+-Wformat-security
+-Wnull-dereference
+-Wmisleading-indentation
+-Wunused
+-Wuninitialized
+-Werror
+-Wdouble-promotion
+-Wstrict-overflow=2
 -D_POSIX_C_SOURCE=200809L
 "
 
