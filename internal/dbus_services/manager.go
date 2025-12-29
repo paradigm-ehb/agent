@@ -3,10 +3,11 @@ package dbus_services
 import (
 	"fmt"
 
-	"github.com/godbus/dbus"
 	dh "paradigm-ehb/agent/internal/dbus_services/dbus"
 	svc "paradigm-ehb/agent/internal/dbus_services/systemd"
 	svctypes "paradigm-ehb/agent/internal/dbus_services/types"
+
+	"github.com/godbus/dbus"
 )
 
 // @param, action [start, stop, restart], symLinkAction [enable, disable], service name format "example.service"

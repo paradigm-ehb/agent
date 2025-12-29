@@ -3,7 +3,7 @@ package dbushandler
 
 import (
 	"fmt"
-	svctypes "paradigm-ehb/agent/internal/svcmanager/types"
+	svctypes "paradigm-ehb/agent/internal/dbus_services/types"
 )
 
 // TODO: implement interfaces maybe
