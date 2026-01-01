@@ -11,10 +11,30 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+/**
+ * ResourcesService implements the gRPC ResourcesServiceServer.
+ *
+ * It exposes endpoints that provide a snapshot of system-level resources
+ * such as CPU, memory, disks, and running processes. All data collection
+ * is delegated to the internal resources package and then mapped to
+ * protobuf-defined response types.
+ */
 type ResourcesService struct {
 	proto.UnimplementedResourcesServiceServer
 }
 
+/**
+ * GetSystemResources returns a full snapshot of system resources.
+ *
+ * The method:
+ *   - Respects context cancellation to avoid unnecessary work
+ *   - Collects system information via the internal resources layer
+ *   - Maps internal domain structures to protobuf response messages
+ *
+ * Errors:
+ *   - Returns codes.Canceled if the request context is canceled
+ *   - Returns codes.Internal if resource collection fails
+ */
 func (s *ResourcesService) GetSystemResources(
 	ctx context.Context,
 	req *proto.GetSystemResourcesRequest,
@@ -40,6 +60,13 @@ func (s *ResourcesService) GetSystemResources(
 	}, nil
 }
 
+/**
+ * mapSystemResources converts an internal SystemResources snapshot
+ * into its protobuf representation.
+ *
+ * This acts as the top-level aggregation mapper, delegating
+ * to more specific mapping functions per subsystem.
+ */
 func mapSystemResources(s *res.SystemResources) *proto.SystemResources {
 	return &proto.SystemResources{
 		Cpu:       mapCPU(s.CPU),
@@ -50,6 +77,10 @@ func mapSystemResources(s *res.SystemResources) *proto.SystemResources {
 	}
 }
 
+/**
+ * mapCPU maps CPU metadata from the cgo wrapper type
+ * into the protobuf Cpu message.
+ */
 func mapCPU(c wr.Cpu) *proto.Cpu {
 	return &proto.Cpu{
 		Vendor:    c.Vendor,
@@ -59,6 +90,11 @@ func mapCPU(c wr.Cpu) *proto.Cpu {
 	}
 }
 
+/**
+ * mapMemory maps RAM usage information into the protobuf Memory message.
+ *
+ * Values are expected to be raw byte counts as reported by the system.
+ */
 func mapMemory(m wr.Ram) *proto.Memory {
 	return &proto.Memory{
 		Total: m.Total,
@@ -66,6 +102,10 @@ func mapMemory(m wr.Ram) *proto.Memory {
 	}
 }
 
+/**
+ * mapDevice maps general device and OS-level metadata
+ * into the protobuf Device message.
+ */
 func mapDevice(d wr.Device) *proto.Device {
 	return &proto.Device{
 		OsVersion: d.OsVersion,
@@ -73,6 +113,12 @@ func mapDevice(d wr.Device) *proto.Device {
 	}
 }
 
+/**
+ * mapDisks maps a slice of disk descriptors into protobuf Disk messages.
+ *
+ * Each disk contains a list of partitions, which are also converted
+ * field-by-field into their protobuf equivalents.
+ */
 func mapDisks(disks []wr.Disk) []*proto.Disk {
 	out := make([]*proto.Disk, 0, len(disks))
 
@@ -95,6 +141,12 @@ func mapDisks(disks []wr.Disk) []*proto.Disk {
 	return out
 }
 
+/**
+ * mapProcesses maps a slice of process descriptors into protobuf Process messages.
+ *
+ * Each process includes basic scheduling and accounting information
+ * such as PID, state, CPU time, and thread count.
+ */
 func mapProcesses(ps []wr.Process) []*proto.Process {
 	out := make([]*proto.Process, 0, len(ps))
 
@@ -111,6 +163,13 @@ func mapProcesses(ps []wr.Process) []*proto.Process {
 	return out
 }
 
+/**
+ * mapProcessState converts an internal ProcessState enum
+ * into the corresponding protobuf ProcessState value.
+ *
+ * Unknown or unmapped states are converted to PROCESS_STATE_UNSPECIFIED
+ * to preserve forward compatibility.
+ */
 func mapProcessState(s wr.ProcessState) proto.ProcessState {
 	switch s {
 	case wr.ProcessRunning:
