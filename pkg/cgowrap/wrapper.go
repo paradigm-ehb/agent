@@ -16,31 +16,39 @@ import (
 // TODO(nasr): research this, interesting, alias vs true aliasing
 type Arena = C.mem_arena
 
-// Memory conversion utilities
-
-// KiB converts n to kibibytes (n * 1024).
+/*
+*
+KiB converts n to kibibytes (n * 1024).
+*/
 func KiB(n uint64) uint64 {
 	return n << 10
 }
 
-// MiB converts n to mebibytes (n * 1024 * 1024).
+/*
+*
+MiB converts n to mebibytes (n * 1024 * 1024).
+*/
 func MiB(n uint64) uint64 {
 	return n << 20
 }
 
-// GiB converts n to gibibytes (n * 1024 * 1024 * 1024).
+/*
+*
+GiB converts n to gibibytes (n * 1024 * 1024 * 1024).
+*/
 func GiB(n uint64) uint64 {
 	return n << 30
 }
 
-// Arena Management Functions
+/*
+*
+AllocateArena creates a new memory arena with 8 MiB capacity.
+The arena uses mmap for memory allocation and must be destroyed with DestroyArena.
 
-// AllocateArena creates a new memory arena with 8 MiB capacity.
-// The arena uses mmap for memory allocation and must be destroyed with DestroyArena.
-//
-// Returns:
-//   - *C.mem_arena: Pointer to the allocated arena
-//   - error: Error if allocation fails
+Returns:
+  - *C.mem_arena: Pointer to the allocated arena
+  - error: Error if allocation fails
+*/
 func AllocateArena(size uint64) (*C.mem_arena, error) {
 
 	arena := C.arena_create(C.ulong(size))
@@ -51,38 +59,45 @@ func AllocateArena(size uint64) (*C.mem_arena, error) {
 	return arena, nil
 }
 
-// DestroyArena unmaps and destroys the memory arena.
-// This should be called to clean up resources when the arena is no longer needed.
-//
-// Parameters:
-//   - arena: Pointer to the arena to destroy
+/*
+*
+DestroyArena unmaps and destroys the memory arena.
+This should be called to clean up resources when the arena is no longer needed.
+
+Parameters:
+  - arena: Pointer to the arena to destroy
+*/
 func DestroyArena(arena *C.mem_arena) {
 	if arena != nil {
 		C.arena_destroy(arena)
 	}
 }
 
-// ClearArena resets the arena position to its base, effectively clearing all allocations.
-// This does not free the memory but allows reusing the same arena space.
-//
-// Parameters:
-//   - arena: Pointer to the arena to clear
+/*
+*
+ClearArena resets the arena position to its base, effectively clearing all allocations.
+This does not free the memory but allows reusing the same arena space.
+
+Parameters:
+  - arena: Pointer to the arena to clear
+*/
 func ClearArena(arena *C.mem_arena) {
 	if arena != nil {
 		C.arena_clear(arena)
 	}
 }
 
-// CPU Functions
+/*
+*
+CpuCreate allocates a Cpu structure in the arena.
 
-// CpuCreate allocates a Cpu structure in the arena.
-//
-// Parameters:
-//   - arena: Memory arena to allocate from
-//
-// Returns:
-//   - *C.Cpu: Pointer to the allocated Cpu structure
-//   - error: Error if allocation fails
+Parameters:
+  - arena: Memory arena to allocate from
+
+Returns:
+  - *C.Cpu: Pointer to the allocated Cpu structure
+  - error: Error if allocation fails
+*/
 func CpuCreate(arena *C.mem_arena) (*C.Cpu, error) {
 	c := C.cpu_create(arena)
 	if c == nil {
@@ -91,15 +106,18 @@ func CpuCreate(arena *C.mem_arena) (*C.Cpu, error) {
 	return c, nil
 }
 
-// CpuRead reads CPU information from the system and returns a Go Cpu struct.
-// This reads from /proc/cpuinfo on AMD64 or /proc/device-tree and /sys on ARM64.
-//
-// Parameters:
-//   - c: Pointer to the C Cpu structure to read into
-//
-// Returns:
-//   - Cpu: Go struct containing CPU information
-//   - error: Error if reading fails
+/*
+*
+CpuRead reads CPU information from the system and returns a Go Cpu struct.
+This reads from /proc/cpuinfo on AMD64 or /proc/device-tree and /sys on ARM64.
+
+Parameters:
+  - c: Pointer to the C Cpu structure to read into
+
+Returns:
+  - Cpu: Go struct containing CPU information
+  - error: Error if reading fails
+*/
 func CpuRead(c *C.Cpu) (Cpu, error) {
 	if c == nil {
 		return Cpu{}, fmt.Errorf("nil Cpu pointer")
@@ -118,16 +136,17 @@ func CpuRead(c *C.Cpu) (Cpu, error) {
 	return cpu, nil
 }
 
-// RAM Functions
+/*
+*
+RamCreate allocates a Ram structure in the arena and reads RAM information.
 
-// RamCreate allocates a Ram structure in the arena and reads RAM information.
-//
-// Parameters:
-//   - arena: Memory arena to allocate from
-//
-// Returns:
-//   - *C.Ram: Pointer to the allocated and populated Ram structure
-//   - error: Error if allocation or reading fails
+Parameters:
+  - arena: Memory arena to allocate from
+
+Returns:
+  - *C.Ram: Pointer to the allocated and populated Ram structure
+  - error: Error if allocation or reading fails
+*/
 func RamCreate(arena *C.mem_arena) (*C.Ram, error) {
 	r := C.ram_create(arena)
 	if r == nil {
@@ -139,15 +158,18 @@ func RamCreate(arena *C.mem_arena) (*C.Ram, error) {
 	return r, nil
 }
 
-// RamRead converts a C Ram structure to a Go Ram struct.
-// This reads total and free memory from /proc/meminfo.
-//
-// Parameters:
-//   - ram: Pointer to the C Ram structure
-//
-// Returns:
-//   - Ram: Go struct containing RAM information in kilobytes
-//   - error: Error if ram pointer is nil
+/*
+*
+RamRead converts a C Ram structure to a Go Ram struct.
+This reads total and free memory from /proc/meminfo.
+
+Parameters:
+  - ram: Pointer to the C Ram structure
+
+Returns:
+  - Ram: Go struct containing RAM information in kilobytes
+  - error: Error if ram pointer is nil
+*/
 func RamRead(ram *C.Ram) (Ram, error) {
 	if ram == nil {
 		return Ram{}, fmt.Errorf("nil Ram pointer")
@@ -160,16 +182,19 @@ func RamRead(ram *C.Ram) (Ram, error) {
 	return r, nil
 }
 
-// Disk Functions
+/**
+Disk Functions
 
-// DiskCreate allocates a Disk structure in the arena and reads partition information.
-//
-// Parameters:
-//   - arena: Memory arena to allocate from
-//
-// Returns:
-//   - *C.Disk: Pointer to the allocated Disk structure
-//   - error: Error if allocation fails
+DiskCreate allocates a Disk structure in the arena and reads partition information.
+
+Parameters:
+  - arena: Memory arena to allocate from
+
+Returns:
+  - *C.Disk: Pointer to the allocated Disk structure
+  - error: Error if allocation fails
+*/
+
 func DiskCreate(arena *C.mem_arena) (*C.Disk, error) {
 	di := C.disk_create(arena)
 	if di == nil {
@@ -181,15 +206,18 @@ func DiskCreate(arena *C.mem_arena) (*C.Disk, error) {
 	return di, nil
 }
 
-// DiskRead converts a C Disk structure to a Go Disk struct with all partitions.
-// This reads partition information from /proc/partitions.
-//
-// Parameters:
-//   - disk: Pointer to the C Disk structure
-//
-// Returns:
-//   - Disk: Go struct containing all disk partitions
-//   - error: Error if disk pointer is nil
+/*
+*
+DiskRead converts a C Disk structure to a Go Disk struct with all partitions.
+This reads partition information from /proc/partitions.
+
+Parameters:
+  - disk: Pointer to the C Disk structure
+
+Returns:
+  - Disk: Go struct containing all disk partitions
+  - error: Error if disk pointer is nil
+*/
 func DiskRead(disk *C.Disk) (Disk, error) {
 	if disk == nil {
 		return Disk{}, fmt.Errorf("nil Disk pointer")
@@ -216,16 +244,18 @@ func DiskRead(disk *C.Disk) (Disk, error) {
 	return d, nil
 }
 
-// Device Functions
+/**
+DeviceCreate allocates a Device structure in the arena.
 
-// DeviceCreate allocates a Device structure in the arena.
-//
-// Parameters:
-//   - arena: Memory arena to allocate from
-//
-// Returns:
-//   - *C.Device: Pointer to the allocated Device structure
-//   - error: Error if allocation fails
+Parameters:
+  - arena: Memory arena to allocate from
+
+Returns:
+  - *C.Device: Pointer to the allocated Device structure
+  - error: Error if allocation fails
+
+*/
+
 func DeviceCreate(arena *C.mem_arena) (*C.Device, error) {
 	de := C.device_create(arena)
 	if de == nil {
@@ -234,16 +264,19 @@ func DeviceCreate(arena *C.mem_arena) (*C.Device, error) {
 	return de, nil
 }
 
-// DeviceRead reads device information including OS version and uptime.
-// This reads from /etc/os-release and /proc/uptime.
-//
-// Parameters:
-//   - device: Pointer to the C Device structure
-//   - arena: Memory arena (not currently used but kept for consistency)
-//
-// Returns:
-//   - Device: Go struct containing device information
-//   - error: Error if reading fails
+/*
+*
+DeviceRead reads device information including OS version and uptime.
+This reads from /etc/os-release and /proc/uptime.
+
+Parameters:
+  - device: Pointer to the C Device structure
+  - arena: Memory arena (not currently used but kept for consistency)
+
+Returns:
+  - Device: Go struct containing device information
+  - error: Error if reading fails
+*/
 func DeviceRead(device *C.Device, arena *C.mem_arena) (Device, error) {
 	if device == nil {
 		return Device{}, fmt.Errorf("nil Device pointer")
@@ -260,17 +293,20 @@ func DeviceRead(device *C.Device, arena *C.mem_arena) (Device, error) {
 	return de, nil
 }
 
-// Process Functions
+/*
+*
+Process Functions
 
-// FetchProcesses collects all running process IDs from /proc directory.
-// This populates the device's process list but does not read detailed information.
-//
-// Parameters:
-//   - device: Pointer to the C Device structure to populate
-//   - arena: Memory arena to allocate process list from
-//
-// Returns:
-//   - error: Error if collection fails
+FetchProcesses collects all running process IDs from /proc directory.
+This populates the device's process list but does not read detailed information.
+
+Parameters:
+  - device: Pointer to the C Device structure to populate
+  - arena: Memory arena to allocate process list from
+
+Returns:
+  - error: Error if collection fails
+*/
 func FetchProcesses(device *C.Device, arena *C.mem_arena) error {
 	if device == nil {
 		return fmt.Errorf("nil Device pointer")
@@ -285,15 +321,18 @@ func FetchProcesses(device *C.Device, arena *C.mem_arena) error {
 	return nil
 }
 
-// ReadProcesses reads detailed information for all processes in the device's process list.
-// This reads from /proc/[pid]/status for each process.
-//
-// Parameters:
-//   - device: Pointer to the C Device structure containing the process list
-//
-// Returns:
-//   - []Process: Slice of Process structs with detailed information
-//   - error: Error if device pointer is nil
+/*
+*
+ReadProcesses reads detailed information for all processes in the device's process list.
+This reads from /proc/[pid]/status for each process.
+
+Parameters:
+  - device: Pointer to the C Device structure containing the process list
+
+Returns:
+  - []Process: Slice of Process structs with detailed information
+  - error: Error if device pointer is nil
+*/
 func ReadProcesses(device *C.Device) ([]Process, error) {
 	if device == nil {
 		return nil, fmt.Errorf("nil Device pointer")
@@ -310,9 +349,12 @@ func ReadProcesses(device *C.Device) ([]Process, error) {
 			),
 		)
 
-		// Read detailed process information
+		/**
+		Read detailed process information
+		Skip processes that can't be read
+		*/
 		if C.process_read(p.pid, p) != C.OK {
-			continue // Skip processes that can't be read
+			continue
 		}
 
 		procs = append(procs, Process{
@@ -328,13 +370,16 @@ func ReadProcesses(device *C.Device) ([]Process, error) {
 	return procs, nil
 }
 
-// KillProcess sends a SIGTERM signal to the specified process.
-//
-// Parameters:
-//   - pid: Process ID to terminate
-//
-// Returns:
-//   - error: Error if the process cannot be killed or doesn't exist
+/*
+*
+KillProcess sends a SIGTERM signal to the specified process.
+
+Parameters:
+  - pid: Process ID to terminate
+
+Returns:
+  - error: Error if the process cannot be killed or doesn't exist
+*/
 func KillProcess(pid int) error {
 	if pid <= 0 {
 		return fmt.Errorf("invalid PID: %d", pid)
