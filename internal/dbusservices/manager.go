@@ -3,9 +3,9 @@ package dbus_services
 import (
 	"fmt"
 
-	dh "paradigm-ehb/agent/internal/dbus_services/dbus"
-	svc "paradigm-ehb/agent/internal/dbus_services/systemd"
-	svctypes "paradigm-ehb/agent/internal/dbus_services/types"
+	dh "paradigm-ehb/agent/internal/dbusservices/dbus"
+	svc "paradigm-ehb/agent/internal/dbusservices/systemd"
+	svctypes "paradigm-ehb/agent/internal/dbusservices/types"
 
 	"github.com/godbus/dbus"
 )
