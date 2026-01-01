@@ -13,6 +13,9 @@ import (
 	"golang.org/x/sys/unix"
 )
 
+// TODO(nasr): research this, interesting, alias vs true aliasing
+type Arena = C.mem_arena
+
 // Memory conversion utilities
 
 // KiB converts n to kibibytes (n * 1024).
@@ -38,8 +41,10 @@ func GiB(n uint64) uint64 {
 // Returns:
 //   - *C.mem_arena: Pointer to the allocated arena
 //   - error: Error if allocation fails
-func AllocateArena() (*C.mem_arena, error) {
-	arena := C.arena_create(C.u64(MiB(8)))
+func AllocateArena(size uint64) (*C.mem_arena, error) {
+
+	arena := C.arena_create(C.ulong(size))
+
 	if arena == nil {
 		return nil, fmt.Errorf("failed to allocate the arena")
 	}
