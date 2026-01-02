@@ -63,7 +63,7 @@ func TestResources_All(t *testing.T) {
 		t.Fatalf("rpc failed: %v", err)
 	}
 
-	if resp != nil {
+	if resp == nil {
 		t.Fatalf("unexpected response: %q", resp)
 	}
 }
