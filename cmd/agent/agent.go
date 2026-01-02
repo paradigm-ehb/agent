@@ -28,7 +28,7 @@ import (
 	"paradigm-ehb/agent/gen/resources/v1"
 	"paradigm-ehb/agent/gen/services/v1"
 	// "paradigm-ehb/agent/internal/platform"
-	"paradigm-ehb/agent/pkg/grpc_handlers"
+	"paradigm-ehb/agent/pkg/grpc_handler"
 	"syscall"
 	// "time"
 )
@@ -125,10 +125,10 @@ func main() {
 	    - ResourcesService: system resource inspection and reporting
 
 	*/
-	greet.RegisterGreeterServer(server, &service.GreeterServer{})
-	services.RegisterHandlerServiceServer(server, &service.HandlerService{})
-	journal.RegisterJournalServiceServer(server, &service.JournalService{})
-	resourcespb.RegisterResourcesServiceServer(server, &service.ResourcesService{})
+	greet.RegisterGreeterServer(server, &grpc_handler.GreeterServer{})
+	services.RegisterHandlerServiceServer(server, &grpc_handler.HandlerService{})
+	journal.RegisterJournalServiceServer(server, &grpc_handler.JournalService{})
+	resourcespb.RegisterResourcesServiceServer(server, &grpc_handler.ResourcesService{})
 
 	/*
 		Diagnostics mode (disabled for now)
