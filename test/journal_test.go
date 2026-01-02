@@ -1,12 +1,11 @@
 package server_test
 
-
 import (
 	"context"
 	"testing"
 	"time"
 
-	pb "paradigm-ehb/agent/gen/resources/v1"
+	pb "paradigm-ehb/agent/gen/journal/v1"
 
 	"google.golang.org/grpc/resolver"
 
@@ -15,7 +14,7 @@ import (
 )
 
 
-func TestResources_All(t *testing.T) {
+func TestJournal_all(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
@@ -32,9 +31,9 @@ func TestResources_All(t *testing.T) {
 	}
 	defer clientConn.Close()
 
-	client := pb.NewResourcesServiceClient(clientConn)
+	client := pb.NewJournalServiceClient(clientConn)
 
-	resp, err := client.GetSystemResources(ctx, &pb.GetSystemResourcesRequest{})
+	resp, err := client.Action(ctx, &pb.JournalRequest{})
 	if err != nil {
 		t.Fatalf("rpc failed: %v", err)
 	}

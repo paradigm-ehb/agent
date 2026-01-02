@@ -1,12 +1,11 @@
 package server_test
 
-
 import (
 	"context"
 	"testing"
 	"time"
 
-	pb "paradigm-ehb/agent/gen/resources/v1"
+	pb "paradigm-ehb/agent/gen/services/v1"
 
 	"google.golang.org/grpc/resolver"
 
@@ -14,8 +13,8 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
+func TestService_Test(t *testing.T) {
 
-func TestResources_All(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
@@ -32,9 +31,16 @@ func TestResources_All(t *testing.T) {
 	}
 	defer clientConn.Close()
 
-	client := pb.NewResourcesServiceClient(clientConn)
+	client := pb.NewHandlerServiceClient(clientConn)
 
-	resp, err := client.GetSystemResources(ctx, &pb.GetSystemResourcesRequest{})
+	resp, err := client.Action(ctx, &pb.ServiceActionRequest{
+
+		ServiceName: "nginx.service",
+		UnitAction: pb.ServiceActionRequest_UNIT_ACTION_START.Enum(),
+		UnitFileAction: pb.ServiceActionRequest_UNIT_FILE_ACTION_UNSPECIFIED.Enum(),
+
+	})
+
 	if err != nil {
 		t.Fatalf("rpc failed: %v", err)
 	}

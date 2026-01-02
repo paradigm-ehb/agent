@@ -1,6 +1,5 @@
 package server_test
 
-
 import (
 	"context"
 	"testing"
@@ -14,8 +13,10 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-
-func TestResources_All(t *testing.T) {
+/**
+TODO(nasr):  write test for reboot and shutdown, what would be  a proper way of doing this
+*/
+func TestActions_all(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
