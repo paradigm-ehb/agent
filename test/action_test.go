@@ -36,6 +36,7 @@ func TestActions_all(t *testing.T) {
 	client := pb.NewResourcesServiceClient(clientConn)
 
 	resp, err := client.GetSystemResources(ctx, &pb.GetSystemResourcesRequest{})
+
 	if err != nil {
 		t.Fatalf("rpc failed: %v", err)
 	}

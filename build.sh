@@ -77,8 +77,6 @@ done
 cd ..
 
 # TOOD(nasr): call the external agent-resources buildscript instead of doing this
-# but make sure you read it's output and redirect it, so we have a proper output
-# ============================================================================
 echo ""
 echo "[2/2] Agent Resources C Library"
 echo "-------------------------------------------------------------------------"
@@ -125,9 +123,6 @@ $AR rcs "$OUT_LIB" "$OUT_OBJ"
 
 echo "Done: $OUT_LIB"
 
-# ============================================================================
-# Summary
-# ============================================================================
 echo ""
 echo "========================================================================="
 echo "Build Complete!"

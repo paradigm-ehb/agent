@@ -1,6 +1,5 @@
 package server_test
 
-
 import (
 	"context"
 	"testing"
@@ -19,7 +18,6 @@ func TestResources_All(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-
 	resolver.SetDefaultScheme("passthrough")
 
 	clientConn, err := grpc.NewClient(
@@ -27,6 +25,7 @@ func TestResources_All(t *testing.T) {
 		grpc.WithContextDialer(BufDialer),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
+
 	if err != nil {
 		t.Fatalf("failed to create client: %v", err)
 	}

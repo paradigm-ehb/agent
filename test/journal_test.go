@@ -26,6 +26,7 @@ func TestJournal_all(t *testing.T) {
 		grpc.WithContextDialer(BufDialer),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
+
 	if err != nil {
 		t.Fatalf("failed to create client: %v", err)
 	}
