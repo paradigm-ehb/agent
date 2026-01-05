@@ -76,7 +76,7 @@ done
 
 cd ..
 
-# TOOD(nasr): call the external agent-resources buildscript instead of doing this
+# TOOD(nasr): call the external resources buildscript instead of doing this
 echo ""
 echo "[2/2] Agent Resources C Library"
 echo "-------------------------------------------------------------------------"
@@ -84,9 +84,9 @@ echo "-------------------------------------------------------------------------"
 CC=cc
 AR=ar
 AGENT_RES_DIR="pkg/agent-resources"
-SRC="$AGENT_RES_DIR/agent_resources.c"
+SRC="$AGENT_RES_DIR/resources.c"
 OUT_DIR="$AGENT_RES_DIR/build"
-OUT_OBJ="$OUT_DIR/agent_resources.o"
+OUT_OBJ="$OUT_DIR/resources.o"
 OUT_LIB="$OUT_DIR/libagent_resources.a"
 
 CFLAGS="

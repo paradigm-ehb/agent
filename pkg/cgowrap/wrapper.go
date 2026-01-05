@@ -3,7 +3,7 @@ package wrapper
 /*
 #cgo CFLAGS:  -I${SRCDIR}/../agent-resources
 #cgo LDFLAGS: -L${SRCDIR}/../agent-resources/build -lagent_resources
-#include "agent_resources.h"
+#include "resources.h"
 */
 import "C"
 import (

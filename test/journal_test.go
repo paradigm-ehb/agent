@@ -18,7 +18,6 @@ func TestJournal_all(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-
 	resolver.SetDefaultScheme("passthrough")
 
 	clientConn, err := grpc.NewClient(
