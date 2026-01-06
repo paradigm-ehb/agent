@@ -16,7 +16,10 @@ type HandlerServiceV2 struct {
 	v2.UnimplementedHandlerServiceServer
 }
 
-func (s *HandlerServiceV2) PerformAction(_ context.Context, in *v2.ServiceActionRequest) (*v2.ServiceActionReply, error) {
+var SystemBus *dbus.Conn
+var SharedBus *dbus.Conn
+
+func ( *HandlerServiceV2) PerformAction(_ context.Context, in *v2.ServiceActionRequest) (*v2.ServiceActionReply, error) {
 	conn, err := dh.CreateSystemBus()
 	if err != nil {
 		log.Printf("failed to create systembus: %v", err)
@@ -194,3 +197,5 @@ func (s *HandlerServiceV2) GetUnitStatus(
 		ErrorMessage: "",
 	}, nil
 }
+
+
