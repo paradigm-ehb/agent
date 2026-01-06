@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-set -eu
+set -euo pipefail
 
 HOST="${HOST:-localhost}"
 PORT="${PORT:-5000}"
@@ -19,47 +19,64 @@ grpcurl -plaintext "${ADDR}" list >/dev/null
 echo "OK"
 echo
 
-echo "== Listing services =="
+echo "== Listing all services =="
 grpcurl -plaintext "${ADDR}" list
 echo
 
-echo "== Checking JournalService =="
-grpcurl -plaintext "${ADDR}" list journal.v1.JournalService >/dev/null
+SERVICE="services.v2.HandlerService"
+
+echo "== Checking ${SERVICE} existence =="
+grpcurl -plaintext "${ADDR}" list "${SERVICE}" >/dev/null
 echo "OK"
 echo
 
-echo "== JournalService.Action (GID=1000) =="
-grpcurl -plaintext \
-  -d '{
-    "numFromTail": 5,
-    "field": "GID",
-    "value": "1000"
-  }' \
-  "${ADDR}" \
-  journal.v1.JournalService/Action
+echo "== Listing ${SERVICE} methods =="
+grpcurl -plaintext "${ADDR}" list "${SERVICE}"
 echo
 
-echo "== JournalService.Action (systemd unit) =="
-grpcurl -plaintext \
-  -d '{
-    "numFromTail": 5,
-    "field": "Systemd",
-    "value": "systemd-journald.service"
-  }' \
-  "${ADDR}" \
-  journal.v1.JournalService/Action
-echo
-
-echo "== Checking ResourcesService =="
-grpcurl -plaintext "${ADDR}" list resources.v1.ResourcesService >/dev/null
-echo "OK"
-echo
-
-echo "== ResourcesService.GetSystemResources =="
+echo "== GetAllUnits =="
 grpcurl -plaintext \
   -d '{}' \
   "${ADDR}" \
-  resources.v1.ResourcesService/GetSystemResources
+  "${SERVICE}/GetAllUnits"
+echo
+
+echo "== GetLoadedUnits =="
+grpcurl -plaintext \
+  -d '{}' \
+  "${ADDR}" \
+  "${SERVICE}/GetLoadedUnits"
+echo
+
+echo "== GetUnitStatus (example: ssh.service) =="
+grpcurl -plaintext \
+  -d '{
+    "unitName": "ssh.service"
+  }' \
+  "${ADDR}" \
+  "${SERVICE}/GetUnitStatus"
+echo
+
+echo "== PerformAction: restart ssh.service =="
+grpcurl -plaintext \
+  -d '{
+    "serviceName": "ssh.service",
+    "unitAction": "UNIT_ACTION_RESTART"
+  }' \
+  "${ADDR}" \
+  "${SERVICE}/PerformAction"
+echo
+
+echo "== PerformAction: enable ssh.service (runtime=false, force=true) =="
+grpcurl -plaintext \
+  -d '{
+    "serviceName": "ssh.service",
+    "unitFileAction": "UNIT_FILE_ACTION_ENABLE",
+    "runtime": false,
+    "force": true
+  }' \
+  "${ADDR}" \
+  "${SERVICE}/PerformAction"
 echo
 
 echo "== All gRPC tests passed =="
