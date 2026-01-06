@@ -19,7 +19,7 @@ type HandlerServiceV2 struct {
 var SystemBus *dbus.Conn
 var SharedBus *dbus.Conn
 
-func ( *HandlerServiceV2) PerformAction(_ context.Context, in *v2.ServiceActionRequest) (*v2.ServiceActionReply, error) {
+func (s *HandlerServiceV2) PerformAction(_ context.Context, in *v2.ServiceActionRequest) (*v2.ServiceActionReply, error) {
 	conn, err := dh.CreateSystemBus()
 	if err != nil {
 		log.Printf("failed to create systembus: %v", err)
