@@ -17,16 +17,20 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/health"
-	"google.golang.org/grpc/health/grpc_health_v1"
-	"google.golang.org/grpc/reflection"
 	"net"
 	"os"
 	"paradigm-ehb/agent/gen/greet"
 	"paradigm-ehb/agent/gen/journal/v1"
 	"paradigm-ehb/agent/gen/resources/v1"
 	"paradigm-ehb/agent/gen/services/v1"
+	luke "paradigm-ehb/agent/gen/actions/v1"
+	// "paradigm-ehb/agent/internal/deviceactions"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/health"
+	"google.golang.org/grpc/health/grpc_health_v1"
+	"google.golang.org/grpc/reflection"
+
 	// "paradigm-ehb/agent/internal/platform"
 	"paradigm-ehb/agent/pkg/grpc_handler"
 	"syscall"
@@ -129,6 +133,8 @@ func main() {
 	services.RegisterHandlerServiceServer(server, &grpc_handler.HandlerService{})
 	journal.RegisterJournalServiceServer(server, &grpc_handler.JournalService{})
 	resourcespb.RegisterResourcesServiceServer(server, &grpc_handler.ResourcesService{})
+	luke.RegisterActionServiceServer(server, &grpc_handler.DeviceActionsService{})
+	
 
 	/*
 		Diagnostics mode (disabled for now)
