@@ -1,50 +1,100 @@
 syntax = "proto3";
+
 package services.v2;
+
 option go_package = "paradigm-ehb/agent/proto/services/v2";
 
+
 service HandlerService {
-  rpc PerformAction (ServiceActionRequest) returns (ServiceActionReply) {}
-  rpc GetAllUnits (GetUnitsRequest) returns (GetUnitsReply) {}
-  rpc GetLoadedUnits (GetUnitsRequest) returns (GetUnitsReply) {}
-  rpc GetUnitStatus (GetUnitStatusRequest) returns (GetUnitStatusReply) {}
+  rpc PerformUnitAction (UnitActionRequest) returns (UnitActionReply);
+  rpc PerformUnitFileAction (UnitFileActionRequest) returns (UnitFileActionReply);
+  rpc GetAllUnits (GetUnitsRequest) returns (GetUnitsReply);
+  rpc GetLoadedUnits (GetUnitsRequest) returns (GetUnitsReply);
+  rpc GetUnitStatus (GetUnitStatusRequest) returns (GetUnitStatusReply);
 }
 
-message ServiceActionRequest {
-  string service_name = 1;
-  
-  enum UnitAction {
+
+message UnitActionRequest {
+  string unit_name = 1;
+
+ enum UnitAction {
     UNIT_ACTION_UNSPECIFIED = 0;
     UNIT_ACTION_START = 1;
     UNIT_ACTION_STOP = 2;
     UNIT_ACTION_RESTART = 3;
   }
-  
-  enum UnitFileAction {
-    UNIT_FILE_ACTION_UNSPECIFIED = 0;
-    UNIT_FILE_ACTION_ENABLE = 1;
-    UNIT_FILE_ACTION_DISABLE = 2;
-  }
-  
-  optional UnitAction unit_action = 2;
-  optional UnitFileAction unit_file_action = 3;
-  optional bool runtime = 4;  
-  optional bool force = 5;   
+
+  UnitAction action = 2;
+  bool force = 3;
 }
 
-message ServiceActionReply {
+message UnitActionReply {
   bytes status = 1;
   bool success = 2;
   string error_message = 3;
 }
 
-message GetUnitsRequest {
+
+message UnitFileActionRequest {
+  string unit_name = 1;
+
+  enum UnitFileAction {
+    UNIT_FILE_ACTION_UNSPECIFIED = 0;
+    UNIT_FILE_ACTION_ENABLE = 1;
+    UNIT_FILE_ACTION_DISABLE = 2;
+  }
+
+  UnitFileAction action = 2;
+  bool runtime = 3;
+  bool force = 4;
 }
 
-message GetUnitsReply {
-  bytes units_data = 1;
+message UnitFileActionReply {
+  bytes status = 1;
   bool success = 2;
   string error_message = 3;
 }
+
+
+message LoadedUnit {
+  string name = 1;
+  string description = 2;
+  string load_state = 3;
+  string sub_state = 4;
+  string active_state = 5;
+  string dep_unit = 6;
+
+  string object_path = 7;
+
+  uint32 queued_job = 8;
+  string job_type = 9;
+  string job_path = 10;
+}
+
+message Unit {
+  string name = 1;
+  string state = 2;
+}
+
+
+message GetUnitsRequest {
+
+  enum UnitState {
+    UNIT_STATE_UNSPECIFIED = 0;
+    ENABLED = 1;
+    DISABLED = 2;
+  }
+
+  string name = 1;
+  UnitState state = 2;
+}
+
+message GetUnitsReply {
+  repeated LoadedUnit units = 1;
+  bool success = 2;
+  string error_message = 3;
+}
+
 
 message GetUnitStatusRequest {
   string unit_name = 1;
