@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"paradigm-ehb/agent/gen/device_actions/v1"
+	actions "paradigm-ehb/agent/gen/actions/v1"
 	dh "paradigm-ehb/agent/internal/dbusservices/dbus"
 	da "paradigm-ehb/agent/internal/deviceactions"
 
@@ -13,10 +13,10 @@ import (
 )
 
 type DeviceActionsService struct {
-	device_actions.UnimplementedDeviceActionsServiceServer
+	actions.UnimplementedActionServiceServer
 }
 
-func (s *DeviceActionsService) Action(ctx context.Context, req *device_actions.DeviceActionRequest) (*device_actions.DeviceActionReply, error) {
+func (s *DeviceActionsService) Action(ctx context.Context, req *actions.ActionRequest) (*actions.ActionReply, error) {
 
 	select {
 	case <-ctx.Done():
@@ -31,19 +31,25 @@ func (s *DeviceActionsService) Action(ctx context.Context, req *device_actions.D
 		out = "failed system bus"
 	}
 
-	switch req.DeviceActionRequest {
-	case device_actions.DeviceActionRequest_DEVICE_ACTION_REQUEST_SHUTDOWN:
-		out = string(da.PerformDeviceAction(bus.BusObject(), da.DeviceActionShutdown))
-	case device_actions.DeviceActionRequest_DEVICE_ACTION_REQUEST_REBOOT:
-		out = string(da.PerformDeviceAction(bus.BusObject(), da.DeviceActionReboot))
-	case device_actions.DeviceActionRequest_DEVICE_ACTION_REQUEST_SUSPEND:
-		out = string(da.PerformDeviceAction(bus.BusObject(), da.DeviceActionSuspend))
-	case device_actions.DeviceActionRequest_DEVICE_ACTION_REQUEST_HIBERNATE:
-		out = string(da.PerformDeviceAction(bus.BusObject(), da.DeviceActionHibernate))
+
+	obj := bus.Object(
+		"org.freedesktop.login1",
+		"/org/freedesktop/login1",
+	)
+
+	switch req.GetDeviceAction() {
+	case actions.DeviceAction_DEVICE_ACTION_SHUTDOWN:
+		out = string(da.PerformDeviceAction(obj, da.DeviceActionShutdown))
+	case actions.DeviceAction_DEVICE_ACTION_REBOOT:
+		out = string(da.PerformDeviceAction(obj, da.DeviceActionReboot))
+	case actions.DeviceAction_DEVICE_ACTION_SUSPEND:
+		out = string(da.PerformDeviceAction(obj, da.DeviceActionSuspend))
+	case actions.DeviceAction_DEVICE_ACTION_HIBERNATE:
+		out = string(da.PerformDeviceAction(obj, da.DeviceActionHibernate))
 	default:
 		out = "unknown action"
 	}
-	return &device_actions.DeviceActionReply{
-		Result: out,
+	return &actions.ActionReply{
+		Status: out,
 	}, nil
 }

@@ -16,7 +16,7 @@ import (
 func PerformDeviceAction(obj dbus.BusObject, DeviceActionRequest DeviceAction) dbus.ObjectPath {
 
 	var result dbus.ObjectPath
-	err := obj.Call(string(DeviceActionRequest), 0).Store(&result)
+	err := obj.Call(string(DeviceActionRequest), 0, false).Store(&result)
 	if err != nil {
 		return ""
 	}
