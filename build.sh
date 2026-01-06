@@ -84,9 +84,18 @@ echo "-------------------------------------------------------------------------"
 CC=cc
 AR=ar
 AGENT_RES_DIR="pkg/agent-resources"
-SRC="$AGENT_RES_DIR/resources.c"
+# SRC="$AGENT_RES_DIR/resources.c"
 OUT_DIR="$AGENT_RES_DIR/build"
-OUT_OBJ="$OUT_DIR/resources.o"
+# OUT_OBJ="$OUT_DIR/resources.o"
+# OUT_LIB="$OUT_DIR/libagent_resources.a"
+
+
+SRC_RES="$AGENT_RES_DIR/resources.c"
+SRC_ARENA="$AGENT_RES_DIR/arena.c"
+
+OUT_OBJ_RES="$OUT_DIR/resources.o"
+OUT_OBJ_ARENA="$OUT_DIR/arena.o"
+
 OUT_LIB="$OUT_DIR/libagent_resources.a"
 
 CFLAGS="
@@ -115,11 +124,19 @@ CFLAGS="
 
 mkdir -p "$OUT_DIR"
 
-echo "Compiling object..."
-$CC $CFLAGS -c "$SRC" -o "$OUT_OBJ"
+# echo "Compiling object..."
+# $CC $CFLAGS -c "$SRC" -o "$OUT_OBJ"
+
+echo "Compiling resources.c..."
+$CC $CFLAGS -c "$SRC_RES" -o "$OUT_OBJ_RES"
+
+echo "Compiling arena.c..."
+$CC $CFLAGS -c "$SRC_ARENA" -o "$OUT_OBJ_ARENA"
 
 echo "Creating static library..."
-$AR rcs "$OUT_LIB" "$OUT_OBJ"
+# $AR rcs "$OUT_LIB" "$OUT_OBJ"
+
+$AR rcs "$OUT_LIB" "$OUT_OBJ_RES" "$OUT_OBJ_ARENA"
 
 echo "Done: $OUT_LIB"
 
