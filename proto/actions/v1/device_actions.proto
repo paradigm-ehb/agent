@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package actions.v1;
 
-option go_package = "paradigm-ehb/agent/gen/device_actions/v1/";
+option go_package = "paradigm-ehb/agent/gen/device_actions/v1";
 
 // TODO(nasr): reboot poweroff etc
 
@@ -11,11 +11,11 @@ service ActionService {
 }
 
 message ActionRequest {
-    DeviceAction device_action;
+    DeviceAction device_action = 1;
 }
 
 message ActionReply {
-    bool status;
+    string status = 2;
 }
 
 enum DeviceAction {
