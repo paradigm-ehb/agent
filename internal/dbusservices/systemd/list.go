@@ -14,7 +14,7 @@ import (
 // files (templates) cannot directly be loaded as units but need to be instantiated.
 // ---------------------------------------------------------------------------------------
 // Method returns an array of all currently loaded units,
-
+//
 func GetLoadedUnits(obj dbus.BusObject, out chan []svctypes.LoadedUnit) {
 
 	var result []svctypes.LoadedUnit
@@ -25,7 +25,9 @@ func GetLoadedUnits(obj dbus.BusObject, out chan []svctypes.LoadedUnit) {
 		return
 	}
 
+
 	err := call.Store(&result)
+
 	if err != nil {
 		return
 	}
@@ -38,7 +40,6 @@ func GetAllUnits(obj dbus.BusObject, out chan []svctypes.UnitFileEntry) {
 
 	// ListUnitFiles(out a(ss) files);
 	// an array of struct string string
-	// I think
 
 	var result []svctypes.UnitFileEntry
 

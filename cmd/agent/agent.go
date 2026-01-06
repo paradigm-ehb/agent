@@ -17,10 +17,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/health"
-	"google.golang.org/grpc/health/grpc_health_v1"
-	"google.golang.org/grpc/reflection"
 	"net"
 	"os"
 	"paradigm-ehb/agent/gen/greet"
@@ -28,7 +24,15 @@ import (
 	"paradigm-ehb/agent/gen/resources/v1"
 	services_v1 "paradigm-ehb/agent/gen/services/v1"
 	services_v2 "paradigm-ehb/agent/gen/services/v2"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/health"
+	"google.golang.org/grpc/health/grpc_health_v1"
+	"google.golang.org/grpc/reflection"
+
 	// "paradigm-ehb/agent/internal/platform"
+	// "paradigm-ehb/agent/internal/dbusservices"
+	// dbushandler "paradigm-ehb/agent/internal/dbusservices/dbus"
 	"paradigm-ehb/agent/pkg/grpc_handler"
 	"syscall"
 	// "time"
@@ -59,6 +63,7 @@ var (
 )
 
 func main() {
+
 	/**
 	Parse command-line flags before any runtime behavior.
 	*/

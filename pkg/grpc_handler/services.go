@@ -54,8 +54,8 @@ func (s *HandlerService) UnitAction(_ context.Context, in *v1.ServiceActionReque
 
 	} else {
 
-		log.Println("failed to do everything")
-		out = "failed alot"
+		log.Println("Bad input")
+		out = "Bad input"
 
 	}
 
@@ -88,8 +88,8 @@ func (s *HandlerService) UnitAction(_ context.Context, in *v1.ServiceActionReque
 
 	} else {
 
-		log.Println("failed to to do everything")
-		out = "failed a lot"
+		log.Println("external bad input")
+		out = "external bad input"
 	}
 
 	err = manager.RunRetrieval(conn, true)

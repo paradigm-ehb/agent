@@ -45,7 +45,7 @@ func RunSymlinkAction(conn *dbus.Conn, sc svc.UnitFileAction, enableForRunTime b
 	case svc.UnitFileActionEnable:
 		call := obj.Call(string(sc), dbus.FlagAllowInteractiveAuthorization, service, enableForRunTime, enableForce)
 		if call.Err != nil {
-			return fmt.Errorf("something happened here %v", call.Err)
+			return fmt.Errorf("error %v", call.Err)
 		}
 	case svc.UnitFileActionDisable:
 		call := obj.Call(string(sc), dbus.FlagAllowInteractiveAuthorization, service, enableForRunTime)
@@ -69,6 +69,7 @@ func RunRetrieval(conn *dbus.Conn, all bool) error {
 
 		go svc.GetAllUnits(obj, ch)
 		go dh.ParseUnitFileEntries(ch, parse)
+		fmt.Printf("here")
 		<-parse
 
 	} else if !all {
@@ -78,7 +79,6 @@ func RunRetrieval(conn *dbus.Conn, all bool) error {
 
 		go svc.GetLoadedUnits(obj, ch)
 		go dh.ParseLoadedUnits(ch, parse)
-		<-parse
 
 	} else {
 		return fmt.Errorf("failed parameter")
@@ -87,10 +87,24 @@ func RunRetrieval(conn *dbus.Conn, all bool) error {
 	return nil
 }
 
-func GetStatus(obj dbus.BusObject, name string) {
+func GetStatus(obj dbus.BusObject, name string) (string, error) {
+	var result string
 
-	call := obj.Call("org.freedesktop.systemd1.Manager.GetUnitFileState", dbus.Flags(dbus.NameFlagReplaceExisting), name)
-	// DEBUG
-	call.Path.IsValid()
+	call := obj.Call(
+		"org.freedesktop.systemd1.Manager.GetUnitFileState",
+		0, 
+		name,
+	)
 
+	if call.Err != nil {
+		return "", call.Err
+	}
+
+	if err := call.Store(&result); err != nil {
+		return "", err
+	}
+
+	fmt.Println("status:", result)
+
+	return result, nil
 }
