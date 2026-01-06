@@ -131,7 +131,7 @@ func (s *HandlerServiceV2) GetAllUnits(_ context.Context, _ *v2.GetUnitsRequest)
 	}
 
 	return &v2.GetUnitsReply{
-		UnitsData:    []byte("all units retrieved successfully"),
+		UnitsData:    []byte(),
 		Success:      true,
 		ErrorMessage: "",
 	}, nil

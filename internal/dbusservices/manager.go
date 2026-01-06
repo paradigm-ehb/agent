@@ -57,7 +57,7 @@ func RunSymlinkAction(conn *dbus.Conn, sc svc.UnitFileAction, enableForRunTime b
 }
 
 // @param, true for all on disk, false for loaded units
-func RunRetrieval(conn *dbus.Conn, all bool) ([]svctypes.UnitFileEntry, []svctypes.LoadedUnit ,error) {
+func RunRetrieval(conn *dbus.Conn, all bool) ([]svctypes.UnitFileEntry, []svctypes.LoadedUnit, error) {
 
 	obj := dh.CreateSystemdObject(conn)
 
@@ -68,9 +68,9 @@ func RunRetrieval(conn *dbus.Conn, all bool) ([]svctypes.UnitFileEntry, []svctyp
 
 		go svc.GetAllUnits(obj, ch)
 		go dh.ParseUnitFileEntries(ch, parse)
-		
+
 		/**
-			throw it back at em
+		throw it back at em
 		*/
 		return <-parse, nil, nil
 
@@ -79,26 +79,25 @@ func RunRetrieval(conn *dbus.Conn, all bool) ([]svctypes.UnitFileEntry, []svctyp
 		ch := make(chan []svctypes.LoadedUnit)
 		parse := make(chan []svctypes.LoadedUnit)
 
-
 		/**
-			throw it back at em
+		throw it back at em
 		*/
 		go svc.GetLoadedUnits(obj, ch)
 		go dh.ParseLoadedUnits(ch, parse)
 
 		return nil, <-parse, nil
 
-	} 
-		return nil, nil, fmt.Errorf("failed parameter")
 	}
 
+	return nil, nil, fmt.Errorf("failed parameter")
+}
 
 func GetStatus(obj dbus.BusObject, name string) (string, error) {
 	var result string
 
 	call := obj.Call(
 		"org.freedesktop.systemd1.Manager.GetUnitFileState",
-		0, 
+		0,
 		name,
 	)
 
@@ -111,8 +110,6 @@ func GetStatus(obj dbus.BusObject, name string) (string, error) {
 	}
 
 	fmt.Println("status:", result)
-
-
 
 	return result, nil
 }
