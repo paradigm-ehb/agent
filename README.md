@@ -13,6 +13,16 @@ The binary is intentionally small, dependency-minimal, and easy to deploy over S
 * Lightweight footprint, suitable for cloud VPS, on-prem servers, and embedded Linux systems
 * Simple build and run workflow
 
+## Cloning
+
+Inside the project we use a git submodule that refers to www.github.com/paradigm-ehb/agent-resources for the C-Library.
+
+```sh
+git clone --recursive <agent-repo-url>
+# Or if already cloned:
+git submodule update --init --recursive
+```
+
 ## Requirements
 
 Before building the project or generating protobuf files, ensure the following tools are available in your environment:

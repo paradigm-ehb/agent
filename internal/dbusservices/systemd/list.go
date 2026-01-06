@@ -2,7 +2,7 @@ package servicecontrol
 
 import (
 	"fmt"
-	svctypes "paradigm-ehb/agent/internal/svcmanager/types"
+	svctypes "paradigm-ehb/agent/internal/dbusservices/types"
 
 	"github.com/godbus/dbus"
 )

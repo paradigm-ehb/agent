@@ -1,12 +1,13 @@
-package svcmanager
+package dbus_services
 
 import (
 	"fmt"
 
+	dh "paradigm-ehb/agent/internal/dbusservices/dbus"
+	svc "paradigm-ehb/agent/internal/dbusservices/systemd"
+	svctypes "paradigm-ehb/agent/internal/dbusservices/types"
+
 	"github.com/godbus/dbus"
-	dh "paradigm-ehb/agent/internal/svcmanager/dbus"
-	svc "paradigm-ehb/agent/internal/svcmanager/systemd"
-	svctypes "paradigm-ehb/agent/internal/svcmanager/types"
 )
 
 // @param, action [start, stop, restart], symLinkAction [enable, disable], service name format "example.service"

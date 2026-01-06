@@ -1,4 +1,4 @@
-package service
+package grpc_handler
 
 import (
 	"log"

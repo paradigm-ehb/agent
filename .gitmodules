@@ -1,0 +1,3 @@
+[submodule "internal/resmanager/agent-resources"]
+	path = pkg/agent-resources
+	url = git@github.com:paradigm-ehb/agent-resources.git

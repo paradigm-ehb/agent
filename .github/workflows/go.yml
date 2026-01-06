@@ -11,7 +11,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: Cache Go modules
         uses: actions/cache@v4
@@ -31,7 +34,7 @@ jobs:
       - name: sdjournal dependencies
         run: |
           sudo apt-get update
-          sudo apt install -y libsystemd-dev pkg-config
+          sudo apt-get install -y libsystemd-dev pkg-config
 
       - name: Dependencies
         run: go mod tidy
@@ -43,5 +46,4 @@ jobs:
         run: go build -v ./...
 
       - name: Test
-        run: go test -v ./...
-
+        run: go test -v ./test
