@@ -28,7 +28,6 @@ func (s *HandlerService) UnitAction(_ context.Context, in *v1.ServiceActionReque
 	}
 
 	defer func(conn *dbus.Conn) {
-		err := conn.Close()
 		if err != nil {
 
 		}

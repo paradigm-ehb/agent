@@ -11,7 +11,6 @@ import (
 )
 
 // @param, action [start, stop, restart], symLinkAction [enable, disable], service name format "example.service"
-// TODO(nasr): add parameters and handling
 func RunAction(conn *dbus.Conn, ac svc.UnitAction, service string) error {
 
 	obj := dh.CreateSystemdObject(conn)
@@ -22,7 +21,7 @@ func RunAction(conn *dbus.Conn, ac svc.UnitAction, service string) error {
 	call := obj.Call(string(ac), 0, service, "replace")
 
 	if call.Err != nil {
-		return fmt.Errorf("failed to execute object on in unit action")
+		return fmt.Errorf("failed to execute object on in unit action, ", call.Err)
 	}
 
 	return nil
@@ -58,7 +57,7 @@ func RunSymlinkAction(conn *dbus.Conn, sc svc.UnitFileAction, enableForRunTime b
 }
 
 // @param, true for all on disk, false for loaded units
-func RunRetrieval(conn *dbus.Conn, all bool) error {
+func RunRetrieval(conn *dbus.Conn, all bool) ([]svctypes.UnitFileEntry, []svctypes.LoadedUnit ,error) {
 
 	obj := dh.CreateSystemdObject(conn)
 
@@ -69,23 +68,30 @@ func RunRetrieval(conn *dbus.Conn, all bool) error {
 
 		go svc.GetAllUnits(obj, ch)
 		go dh.ParseUnitFileEntries(ch, parse)
-		fmt.Printf("here")
-		<-parse
+		
+		/**
+			throw it back at em
+		*/
+		return <-parse, nil, nil
 
 	} else if !all {
 
 		ch := make(chan []svctypes.LoadedUnit)
 		parse := make(chan []svctypes.LoadedUnit)
 
+
+		/**
+			throw it back at em
+		*/
 		go svc.GetLoadedUnits(obj, ch)
 		go dh.ParseLoadedUnits(ch, parse)
 
-	} else {
-		return fmt.Errorf("failed parameter")
+		return nil, <-parse, nil
+
+	} 
+		return nil, nil, fmt.Errorf("failed parameter")
 	}
 
-	return nil
-}
 
 func GetStatus(obj dbus.BusObject, name string) (string, error) {
 	var result string
@@ -97,14 +103,16 @@ func GetStatus(obj dbus.BusObject, name string) (string, error) {
 	)
 
 	if call.Err != nil {
-		return "", call.Err
+		return "call error: ", call.Err
 	}
 
 	if err := call.Store(&result); err != nil {
-		return "", err
+		return "call store: ", err
 	}
 
 	fmt.Println("status:", result)
+
+
 
 	return result, nil
 }

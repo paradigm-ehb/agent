@@ -27,8 +27,8 @@ message ServiceActionRequest {
   
   optional UnitAction unit_action = 2;
   optional UnitFileAction unit_file_action = 3;
-  optional bool runtime = 4;  // For enable/disable runtime flag
-  optional bool force = 5;    // For enable force flag
+  optional bool runtime = 4;  
+  optional bool force = 5;   
 }
 
 message ServiceActionReply {
@@ -38,7 +38,6 @@ message ServiceActionReply {
 }
 
 message GetUnitsRequest {
-  // Empty for now, could add filters later
 }
 
 message GetUnitsReply {

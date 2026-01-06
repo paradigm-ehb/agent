@@ -32,9 +32,11 @@ func TestServiceV2_PerformAction_Start(t *testing.T) {
 		UnitAction:     pb.ServiceActionRequest_UNIT_ACTION_START.Enum(),
 		UnitFileAction: pb.ServiceActionRequest_UNIT_FILE_ACTION_UNSPECIFIED.Enum(),
 	})
+
 	if err != nil {
 		t.Fatalf("rpc failed: %v", err)
 	}
+
 	if resp == nil {
 		t.Fatalf("response is nil")
 	}

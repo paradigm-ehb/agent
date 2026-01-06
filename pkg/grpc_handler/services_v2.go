@@ -19,73 +19,78 @@ type HandlerServiceV2 struct {
 var SystemBus *dbus.Conn
 var SharedBus *dbus.Conn
 
-func (s *HandlerServiceV2) PerformAction(_ context.Context, in *v2.ServiceActionRequest) (*v2.ServiceActionReply, error) {
+func (s *HandlerServiceV2) PerformAction(
+	_ context.Context,
+	in *v2.ServiceActionRequest) (*v2.ServiceActionReply, error) {
 	conn, err := dh.CreateSystemBus()
 	if err != nil {
-		log.Printf("failed to create systembus: %v", err)
-		return &v2.ServiceActionReply{
-			Status:       []byte("failed to create system bus"),
-			Success:      false,
-			ErrorMessage: err.Error(),
-		}, nil
-	}
-	defer func(conn *dbus.Conn) {
-		if err := conn.Close(); err != nil {
-			log.Printf("failed to close connection: %v", err)
-		}
-	}(conn)
 
-	var operations []string
+		fmt.Println("failed to create system bus")
+	}
 
 	if in.GetUnitFileAction() != v2.ServiceActionRequest_UNIT_FILE_ACTION_UNSPECIFIED {
+
 		runtime := true
 		force := true
+
 		if in.Runtime != nil {
 			runtime = *in.Runtime
 		}
+
 		if in.Force != nil {
 			force = *in.Force
 		}
 
 		var action servicecontrol.UnitFileAction
+
 		switch in.GetUnitFileAction() {
+
 		case v2.ServiceActionRequest_UNIT_FILE_ACTION_ENABLE:
-			action = servicecontrol.UnitFileActionEnable
-			operations = append(operations, "enable")
+			{
+				action = servicecontrol.UnitFileActionEnable
+			}
+
 		case v2.ServiceActionRequest_UNIT_FILE_ACTION_DISABLE:
-			action = servicecontrol.UnitFileActionDisable
-			operations = append(operations, "disable")
+			{
+				action = servicecontrol.UnitFileActionDisable
+			}
 		}
 
 		err = manager.RunSymlinkAction(conn, action, runtime, force, []string{in.ServiceName})
+
 		if err != nil {
-			log.Printf("failed to %s service: %v", operations[len(operations)-1], err)
 			return &v2.ServiceActionReply{
-				Status:       []byte(fmt.Sprintf("failed to %s service", operations[len(operations)-1])),
+				Status:       []byte(fmt.Sprintf("NICE IT WORKED (nope joking it failed, tough luck, try again another time)")),
 				Success:      false,
 				ErrorMessage: err.Error(),
 			}, nil
 		}
+
 	}
 
 	if in.GetUnitAction() != v2.ServiceActionRequest_UNIT_ACTION_UNSPECIFIED {
+
 		var action servicecontrol.UnitAction
 		var actionName string
 
 		switch in.GetUnitAction() {
 		case v2.ServiceActionRequest_UNIT_ACTION_START:
-			action = servicecontrol.UnitActionStart
-			actionName = "start"
+			{
+				action = servicecontrol.UnitActionStart
+			}
 		case v2.ServiceActionRequest_UNIT_ACTION_STOP:
-			action = servicecontrol.UnitActionStop
-			actionName = "stop"
+			{
+				action = servicecontrol.UnitActionStop
+			}
 		case v2.ServiceActionRequest_UNIT_ACTION_RESTART:
-			action = servicecontrol.UnitActionRestart
-			actionName = "restart"
+			{
+				action = servicecontrol.UnitActionRestart
+				actionName = "restart"
+			}
 		}
 
-		operations = append(operations, actionName)
 		err = manager.RunAction(conn, action, in.ServiceName)
+
 		if err != nil {
 			log.Printf("failed to %s service: %v", actionName, err)
 			return &v2.ServiceActionReply{
@@ -96,21 +101,16 @@ func (s *HandlerServiceV2) PerformAction(_ context.Context, in *v2.ServiceAction
 		}
 	}
 
-	var statusMsg string
-	if len(operations) > 0 {
-		statusMsg = fmt.Sprintf("successfully executed: %v on %s", operations, in.ServiceName)
-	} else {
-		statusMsg = "no operations specified"
-	}
-
 	return &v2.ServiceActionReply{
-		Status:       []byte(statusMsg),
+		Status:       []byte("succes"),
 		Success:      true,
 		ErrorMessage: "",
 	}, nil
+
 }
 
 func (s *HandlerServiceV2) GetAllUnits(_ context.Context, _ *v2.GetUnitsRequest) (*v2.GetUnitsReply, error) {
+
 	conn, err := dh.CreateSessionBus()
 	if err != nil {
 		log.Printf("failed to create systembus: %v", err)
@@ -119,9 +119,9 @@ func (s *HandlerServiceV2) GetAllUnits(_ context.Context, _ *v2.GetUnitsRequest)
 			ErrorMessage: err.Error(),
 		}, nil
 	}
-	defer conn.Close()
 
-	err = manager.RunRetrieval(conn, true)
+	_, al, err := manager.RunRetrieval(conn, true)
+
 	if err != nil {
 		log.Printf("failed to retrieve all units: %v", err)
 		return &v2.GetUnitsReply{
@@ -139,16 +139,13 @@ func (s *HandlerServiceV2) GetAllUnits(_ context.Context, _ *v2.GetUnitsRequest)
 
 func (s *HandlerServiceV2) GetLoadedUnits(_ context.Context, _ *v2.GetUnitsRequest) (*v2.GetUnitsReply, error) {
 	conn, err := dh.CreateSystemBus()
+
 	if err != nil {
-		log.Printf("failed to create systembus: %v", err)
-		return &v2.GetUnitsReply{
-			Success:      false,
-			ErrorMessage: err.Error(),
-		}, nil
+		fmt.Println("failed to create system bus")
 	}
-	defer conn.Close()
 
 	err = manager.RunRetrieval(conn, false)
+
 	if err != nil {
 		log.Printf("failed to retrieve loaded units: %v", err)
 		return &v2.GetUnitsReply{
@@ -166,26 +163,19 @@ func (s *HandlerServiceV2) GetLoadedUnits(_ context.Context, _ *v2.GetUnitsReque
 
 func (s *HandlerServiceV2) GetUnitStatus(
 	_ context.Context,
-	in *v2.GetUnitStatusRequest,) (*v2.GetUnitStatusReply, error) {
+	in *v2.GetUnitStatusRequest) (*v2.GetUnitStatusReply, error) {
 
-	conn, err := dh.CreateSessionBus()
-
+	conn, err := dh.CreateSystemBus()
 	if err != nil {
-		log.Printf("failed to create system bus: %v", err)
-		return &v2.GetUnitStatusReply{
-			Success:      false,
-			ErrorMessage: err.Error(),
-		}, nil
+		fmt.Println("failed to crete sysembus")
 	}
-
-	defer conn.Close()
-
 	obj := dh.CreateSystemdObject(conn)
 
 	status, err := manager.GetStatus(obj, in.UnitName)
 	if err != nil {
+		fmt.Printf("\n %s\n\n", err)
 		return &v2.GetUnitStatusReply{
-			State:        "",
+			State:        "failed here?",
 			Success:      false,
 			ErrorMessage: err.Error(),
 		}, nil
@@ -197,5 +187,3 @@ func (s *HandlerServiceV2) GetUnitStatus(
 		ErrorMessage: "",
 	}, nil
 }
-
-
