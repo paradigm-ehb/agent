@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>paradigm-ehb Agent</title>
+    <link rel="stylesheet" href="static/mystyles.css" />
+    <script src="static/fontawesome.js"></script>
+    <script src="static/lunr.js"></script>
+    <script src="static/theme.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <nav class="level pt-6 mb-5 pb-2 bottom-border">
+        <div class="level-left">
+          <p class="level-item has-text-centered is-size-3 has-text-weight-medium">
+            <a class="link is-info" href="index.html">
+              paradigm-ehb Agent
+            </a>
+          </p>
+        </div>
+
+        <div class="level-right">
+          
+          <form action="search.html" class="mr-2 has-text-centered">
+            <input type="text" name="query" class="input mr-3 navbar-search-query-input" placeholder="Search">
+            <input type="submit" class="button is-primary mr-5" value="Search" />
+          </form>
+          
+
+          <p class="level-item has-text-centered is-size-5">
+            <a href="https://github.com/paradigm-ehb/agent" class="link is-info mr-5" target="_blank">
+              
+              <span class="icon">
+                <i class="fa-brands fa-github"></i>
+              </span>
+              
+              <span>Source</span>
+            </a>
+
+            <button class="theme-toggle" id="theme-toggle" title="Toggles light & dark" aria-label="auto" aria-live="polite" type="button">
+              <svg class="sun-and-moon" aria-hidden="true" width="24" height="24" viewBox="0 0 24 24">
+                <mask class="moon" id="moon-mask">
+                  <rect x="0" y="0" width="100%" height="100%" fill="white" />
+                  <circle cx="24" cy="10" r="6" fill="black" />
+                </mask>
+                <circle class="sun" cx="12" cy="12" r="6" mask="url(#moon-mask)" fill="currentColor" />
+                <g class="sun-beams" stroke="currentColor">
+                  <line x1="12" y1="1" x2="12" y2="3" />
+                  <line x1="12" y1="21" x2="12" y2="23" />
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                  <line x1="1" y1="12" x2="3" y2="12" />
+                  <line x1="21" y1="12" x2="23" y2="12" />
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                </g>
+              </svg>
+            </button>
+          </p>
+        </div>
+      </nav>
+    </div>
+
+    <div id="main-content" class="container mb-6">
+  <p class="mb-2">
+    <a style="font-size: 0.9em" href="index.html">← Back to packages</a>
+  </p>
+  <h3 class="title is-3">
+    
+    Package <code>resources.v1</code>
+    
+  </h3>
+
+  <div class="block">
+    
+    <p>
+      <a href="#service-resources.v1.ResourcesService">
+        <span class="tag" style="min-width: 6em">Service</span>
+        <code>ResourcesService</code> 
+      </a>
+    </p>
+    
+
+    
+      
+      <p>
+        <a href="#message-resources.v1.Cpu">
+          <span class="tag" style="min-width: 6em">Message</span>
+          <code>Cpu</code> 
+        </a>
+      </p>
+      
+    
+      
+      <p>
+        <a href="#message-resources.v1.Device">
+          <span class="tag" style="min-width: 6em">Message</span>
+          <code>Device</code> 
+        </a>
+      </p>
+      
+    
+      
+      <p>
+        <a href="#message-resources.v1.Disk">
+          <span class="tag" style="min-width: 6em">Message</span>
+          <code>Disk</code> 
+        </a>
+      </p>
+      
+    
+      
+      <p>
+        <a href="#message-resources.v1.DiskPartition">
+          <span class="tag" style="min-width: 6em">Message</span>
+          <code>DiskPartition</code> 
+        </a>
+      </p>
+      
+    
+      
+      <p>
+        <a href="#message-resources.v1.GetSystemResourcesRequest">
+          <span class="tag" style="min-width: 6em">Message</span>
+          <code>GetSystemResourcesRequest</code> 
+        </a>
+      </p>
+      
+    
+      
+      <p>
+        <a href="#message-resources.v1.GetSystemResourcesResponse">
+          <span class="tag" style="min-width: 6em">Message</span>
+          <code>GetSystemResourcesResponse</code> 
+        </a>
+      </p>
+      
+    
+      
+      <p>
+        <a href="#message-resources.v1.Memory">
+          <span class="tag" style="min-width: 6em">Message</span>
+          <code>Memory</code> 
+        </a>
+      </p>
+      
+    
+      
+      <p>
+        <a href="#message-resources.v1.Process">
+          <span class="tag" style="min-width: 6em">Message</span>
+          <code>Process</code> 
+        </a>
+      </p>
+      
+    
+      
+      <p>
+        <a href="#message-resources.v1.SystemResources">
+          <span class="tag" style="min-width: 6em">Message</span>
+          <code>SystemResources</code> 
+        </a>
+      </p>
+      
+    
+
+    
+      <p>
+        <a href="#enum-resources.v1.ProcessState">
+          <span class="tag" style="min-width: 6em">Enum</span>
+          <code>ProcessState</code> 
+        </a>
+      </p>
+    
+  </div>
+
+  <div class="block">
+      
+  </div>
+
+  
+
+  <div class="block">
+    <h3 class="title is-3">
+      Services
+    </h3>
+
+    
+    <div>
+      
+
+<h4 class="title is-4 type-heading" id="service-resources.v1.ResourcesService">
+  <a href="#service-resources.v1.ResourcesService" title="resources.v1.ResourcesService">service ResourcesService</a>
+  
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v1/device_resources.proto#L7">resources/v1/device_resources.proto</a>
+  
+</h4>
+
+<div class="block content">
+  <p></p>
+</div>
+
+
+<div class="box">
+  <div class="block">
+    <h5 class="title is-5" id="service-resources.v1.ResourcesService-GetSystemResources">
+      <a href="#service-resources.v1.ResourcesService-GetSystemResources">
+        rpc <code>GetSystemResources</code>
+      </a>
+    </h5>
+    Request: <code><a href="resources.v1.html#message-resources.v1.GetSystemResourcesRequest"><span title="resources.v1.GetSystemResourcesRequest">resources.v1.GetSystemResourcesRequest</span>
+    </a></code><br>
+    Response: <code><a href="resources.v1.html#message-resources.v1.GetSystemResourcesResponse"><span title="resources.v1.GetSystemResourcesResponse">resources.v1.GetSystemResourcesResponse</span>
+    </a></code><br>
+  </div>
+
+  
+</div>
+ 
+    </div>
+    
+  </div>
+
+  
+
+  
+
+    <h3 class="title is-3">
+      Messages
+    </h3>
+
+    
+      
+      <div class="block">
+        
+
+<h4 class="title is-4 type-heading" id="message-resources.v1.Cpu">
+  <span>
+    <a href="#message-resources.v1.Cpu" title="resources.v1.Cpu">message Cpu</a>
+  
+  </span>
+  
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v1/device_resources.proto#L37">resources/v1/device_resources.proto</a>
+  
+</h4>
+
+<div class="block content">
+  <p>*
+Cpu information</p>
+<p>@return vendor, model, frequency, cores</p>
+</div>
+
+<table class="table is-fullwidth is-hoverable is-bordered">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Field</th>
+      <th>Type</th>
+      <th>Description</th>
+      
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>1</td>
+      <td>
+        vendor
+      </td>
+      <td>
+        <code title="string">
+          
+          <span>string</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>2</td>
+      <td>
+        model
+      </td>
+      <td>
+        <code title="string">
+          
+          <span>string</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>3</td>
+      <td>
+        frequency
+      </td>
+      <td>
+        <code title="string">
+          
+          <span>string</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>4</td>
+      <td>
+        max_core
+      </td>
+      <td>
+        <code title="uint32">
+          
+          <span>uint32</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    
+  </tbody>
+</table>
+ 
+      </div>
+      
+    
+      
+      <div class="block">
+        
+
+<h4 class="title is-4 type-heading" id="message-resources.v1.Device">
+  <span>
+    <a href="#message-resources.v1.Device" title="resources.v1.Device">message Device</a>
+  
+  </span>
+  
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v1/device_resources.proto#L59">resources/v1/device_resources.proto</a>
+  
+</h4>
+
+<div class="block content">
+  
+</div>
+
+<table class="table is-fullwidth is-hoverable is-bordered">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Field</th>
+      <th>Type</th>
+      <th>Description</th>
+      
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>1</td>
+      <td>
+        os_version
+      </td>
+      <td>
+        <code title="string">
+          
+          <span>string</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>2</td>
+      <td>
+        uptime
+      </td>
+      <td>
+        <code title="string">
+          
+          <span>string</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    
+  </tbody>
+</table>
+ 
+      </div>
+      
+    
+      
+      <div class="block">
+        
+
+<h4 class="title is-4 type-heading" id="message-resources.v1.Disk">
+  <span>
+    <a href="#message-resources.v1.Disk" title="resources.v1.Disk">message Disk</a>
+  
+  </span>
+  
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v1/device_resources.proto#L71">resources/v1/device_resources.proto</a>
+  
+</h4>
+
+<div class="block content">
+  
+</div>
+
+<table class="table is-fullwidth is-hoverable is-bordered">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Field</th>
+      <th>Type</th>
+      <th>Description</th>
+      
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>1</td>
+      <td>
+        partitions
+      </td>
+      <td>
+        <code title="resources.v1.DiskPartition">
+          
+            repeated
+          
+          <a href="resources.v1.html#message-resources.v1.DiskPartition"><span title="resources.v1.DiskPartition">resources.v1.DiskPartition</span>
+    </a>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    
+  </tbody>
+</table>
+ 
+      </div>
+      
+    
+      
+      <div class="block">
+        
+
+<h4 class="title is-4 type-heading" id="message-resources.v1.DiskPartition">
+  <span>
+    <a href="#message-resources.v1.DiskPartition" title="resources.v1.DiskPartition">message DiskPartition</a>
+  
+  </span>
+  
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v1/device_resources.proto#L79">resources/v1/device_resources.proto</a>
+  
+</h4>
+
+<div class="block content">
+  <p>*
+Partition
+@return partition name, major, minor, blocks</p>
+</div>
+
+<table class="table is-fullwidth is-hoverable is-bordered">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Field</th>
+      <th>Type</th>
+      <th>Description</th>
+      
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>1</td>
+      <td>
+        name
+      </td>
+      <td>
+        <code title="string">
+          
+          <span>string</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>2</td>
+      <td>
+        major
+      </td>
+      <td>
+        <code title="uint32">
+          
+          <span>uint32</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>3</td>
+      <td>
+        minor
+      </td>
+      <td>
+        <code title="uint32">
+          
+          <span>uint32</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>4</td>
+      <td>
+        blocks
+      </td>
+      <td>
+        <code title="uint64">
+          
+          <span>uint64</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    
+  </tbody>
+</table>
+ 
+      </div>
+      
+    
+      
+      <div class="block">
+        
+
+<h4 class="title is-4 type-heading" id="message-resources.v1.GetSystemResourcesRequest">
+  <span>
+    <a href="#message-resources.v1.GetSystemResourcesRequest" title="resources.v1.GetSystemResourcesRequest">message GetSystemResourcesRequest</a>
+  
+  </span>
+  
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v1/device_resources.proto#L12">resources/v1/device_resources.proto</a>
+  
+</h4>
+
+<div class="block content">
+  
+</div>
+
+<table class="table is-fullwidth is-hoverable is-bordered">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Field</th>
+      <th>Type</th>
+      <th>Description</th>
+      
+    </tr>
+  </thead>
+  <tbody>
+    
+    
+  </tbody>
+</table>
+ 
+      </div>
+      
+    
+      
+      <div class="block">
+        
+
+<h4 class="title is-4 type-heading" id="message-resources.v1.GetSystemResourcesResponse">
+  <span>
+    <a href="#message-resources.v1.GetSystemResourcesResponse" title="resources.v1.GetSystemResourcesResponse">message GetSystemResourcesResponse</a>
+  
+  </span>
+  
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v1/device_resources.proto#L14">resources/v1/device_resources.proto</a>
+  
+</h4>
+
+<div class="block content">
+  
+</div>
+
+<table class="table is-fullwidth is-hoverable is-bordered">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Field</th>
+      <th>Type</th>
+      <th>Description</th>
+      
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>1</td>
+      <td>
+        resources
+      </td>
+      <td>
+        <code title="resources.v1.SystemResources">
+          
+          <a href="resources.v1.html#message-resources.v1.SystemResources"><span title="resources.v1.SystemResources">resources.v1.SystemResources</span>
+    </a>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    
+  </tbody>
+</table>
+ 
+      </div>
+      
+    
+      
+      <div class="block">
+        
+
+<h4 class="title is-4 type-heading" id="message-resources.v1.Memory">
+  <span>
+    <a href="#message-resources.v1.Memory" title="resources.v1.Memory">message Memory</a>
+  
+  </span>
+  
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v1/device_resources.proto#L48">resources/v1/device_resources.proto</a>
+  
+</h4>
+
+<div class="block content">
+  <p>*
+Memory
+@return total memory on system, available memory on system</p>
+</div>
+
+<table class="table is-fullwidth is-hoverable is-bordered">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Field</th>
+      <th>Type</th>
+      <th>Description</th>
+      
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>1</td>
+      <td>
+        total
+      </td>
+      <td>
+        <code title="string">
+          
+          <span>string</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>2</td>
+      <td>
+        free
+      </td>
+      <td>
+        <code title="string">
+          
+          <span>string</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    
+  </tbody>
+</table>
+ 
+      </div>
+      
+    
+      
+      <div class="block">
+        
+
+<h4 class="title is-4 type-heading" id="message-resources.v1.Process">
+  <span>
+    <a href="#message-resources.v1.Process" title="resources.v1.Process">message Process</a>
+  
+  </span>
+  
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v1/device_resources.proto#L101">resources/v1/device_resources.proto</a>
+  
+</h4>
+
+<div class="block content">
+  <p>*
+Process information
+@return pid ( process identifier ), process name, the state, todo :)</p>
+</div>
+
+<table class="table is-fullwidth is-hoverable is-bordered">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Field</th>
+      <th>Type</th>
+      <th>Description</th>
+      
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>1</td>
+      <td>
+        pid
+      </td>
+      <td>
+        <code title="uint32">
+          
+          <span>uint32</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>2</td>
+      <td>
+        name
+      </td>
+      <td>
+        <code title="string">
+          
+          <span>string</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>3</td>
+      <td>
+        state
+      </td>
+      <td>
+        <code title="resources.v1.ProcessState">
+          
+          <a href="resources.v1.html#enum-resources.v1.ProcessState"><span title="resources.v1.ProcessState">resources.v1.ProcessState</span>
+    </a>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>4</td>
+      <td>
+        utime
+      </td>
+      <td>
+        <code title="uint64">
+          
+          <span>uint64</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>5</td>
+      <td>
+        num_threads
+      </td>
+      <td>
+        <code title="uint32">
+          
+          <span>uint32</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    
+  </tbody>
+</table>
+ 
+      </div>
+      
+    
+      
+      <div class="block">
+        
+
+<h4 class="title is-4 type-heading" id="message-resources.v1.SystemResources">
+  <span>
+    <a href="#message-resources.v1.SystemResources" title="resources.v1.SystemResources">message SystemResources</a>
+  
+  </span>
+  
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v1/device_resources.proto#L24">resources/v1/device_resources.proto</a>
+  
+</h4>
+
+<div class="block content">
+  <p>*</p>
+<p>Get a complete system snapshots
+@return Cpu, Memory, Device, Disk ( partitions ) and processes</p>
+</div>
+
+<table class="table is-fullwidth is-hoverable is-bordered">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Field</th>
+      <th>Type</th>
+      <th>Description</th>
+      
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>1</td>
+      <td>
+        cpu
+      </td>
+      <td>
+        <code title="resources.v1.Cpu">
+          
+          <a href="resources.v1.html#message-resources.v1.Cpu"><span title="resources.v1.Cpu">resources.v1.Cpu</span>
+    </a>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>2</td>
+      <td>
+        memory
+      </td>
+      <td>
+        <code title="resources.v1.Memory">
+          
+          <a href="resources.v1.html#message-resources.v1.Memory"><span title="resources.v1.Memory">resources.v1.Memory</span>
+    </a>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>3</td>
+      <td>
+        device
+      </td>
+      <td>
+        <code title="resources.v1.Device">
+          
+          <a href="resources.v1.html#message-resources.v1.Device"><span title="resources.v1.Device">resources.v1.Device</span>
+    </a>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>4</td>
+      <td>
+        disks
+      </td>
+      <td>
+        <code title="resources.v1.Disk">
+          
+            repeated
+          
+          <a href="resources.v1.html#message-resources.v1.Disk"><span title="resources.v1.Disk">resources.v1.Disk</span>
+    </a>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>5</td>
+      <td>
+        processes
+      </td>
+      <td>
+        <code title="resources.v1.Process">
+          
+            repeated
+          
+          <a href="resources.v1.html#message-resources.v1.Process"><span title="resources.v1.Process">resources.v1.Process</span>
+    </a>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    
+  </tbody>
+</table>
+ 
+      </div>
+      
+    
+
+  
+
+  
+
+    <h3 class="title is-3">
+      Enums
+    </h3>
+
+    
+    <div class="block">
+      <h4 class="title is-4 type-heading" id="enum-resources.v1.ProcessState">
+  <a href="#enum-resources.v1.ProcessState" title="resources.v1.ProcessState">enum ProcessState</a>
+  
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v1/device_resources.proto#L86">resources/v1/device_resources.proto</a>
+  
+</h4>
+
+<div class="block content">
+  <p></p>
+</div>
+
+<table class="table is-fullwidth is-hoverable is-bordered">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Number</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td><code>PROCESS_STATE_UNSPECIFIED</code></td>
+      <td>0</td>
+      <td class="content"></td>
+    </tr>
+    
+    <tr>
+      <td><code>PROCESS_STATE_RUNNING</code></td>
+      <td>1</td>
+      <td class="content"></td>
+    </tr>
+    
+    <tr>
+      <td><code>PROCESS_STATE_SLEEPING</code></td>
+      <td>2</td>
+      <td class="content"></td>
+    </tr>
+    
+    <tr>
+      <td><code>PROCESS_STATE_DISK_SLEEPING</code></td>
+      <td>3</td>
+      <td class="content"></td>
+    </tr>
+    
+    <tr>
+      <td><code>PROCESS_STATE_STOPPED</code></td>
+      <td>4</td>
+      <td class="content"></td>
+    </tr>
+    
+    <tr>
+      <td><code>PROCESS_STATE_TRACING_STOPPED</code></td>
+      <td>5</td>
+      <td class="content"></td>
+    </tr>
+    
+    <tr>
+      <td><code>PROCESS_STATE_ZOMBIE</code></td>
+      <td>6</td>
+      <td class="content"></td>
+    </tr>
+    
+    <tr>
+      <td><code>PROCESS_STATE_DEAD</code></td>
+      <td>7</td>
+      <td class="content"></td>
+    </tr>
+    
+  </tbody>
+</table> 
+    </div>
+    
+
+  
+
+</div>
+
+    <footer class="footer">
+      <div class="content has-text-centered">
+        
+          <p>© 2025 paradigm-ehb. All rights reserved.</p>
+        
+        <p>Built with <strong><a href="https://github.com/markvincze/sabledocs" target="_blank">sabledocs</a></strong>.</p>
+      </div>
+    </footer>
+  </body>
+</html>
