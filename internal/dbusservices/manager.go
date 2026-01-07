@@ -76,18 +76,67 @@ func RunRetrieval(
 
 		units := make([]*v2.LoadedUnit, 0, len(entries))
 		for _, e := range entries {
-			units = append(units, &v2.LoadedUnit{
-				Name:        e.Name,
-				Description: "",
-				LoadState:   e.State,
-				SubState:    "",
-				ActiveState: "",
-				DepUnit:     "",
-				ObjectPath:  "",
-				QueuedJob:   0,
-				JobType:     "",
-				JobPath:     "",
-			})
+			for _, i := range entries {
+
+				/**
+
+				TODO(nasr): replace this with the proper enum
+				*/
+
+				ch := make(chan []svctypes.LoadedUnit)
+				parse := make(chan []svctypes.LoadedUnit)
+
+				go svc.GetLoadedUnits(obj, ch)
+				go dh.ParseLoadedUnits(ch, parse)
+
+				loaded := <-parse
+
+				if i.State == "enabled" {
+
+					svc.GetLoadedUnits(obj, out)
+
+					var luIdx int16
+					var alIdx int16
+
+					for luIdx, lu := range <-out {
+
+					}
+
+				}
+
+				units = append(units, &v2.LoadedUnit{
+					Name:        e.Name,
+					Description: "",
+					LoadState:   e.State,
+					SubState:    "",
+					ActiveState: "",
+					DepUnit:     "",
+					ObjectPath:  "",
+					QueuedJob:   0,
+					JobType:     "",
+					JobPath:     "",
+				})
+			}
+
+			loaded := <-parse
+
+			units := make([]*v2.LoadedUnit, 0, len(loaded))
+			for _, u := range loaded {
+				units = append(units, &v2.LoadedUnit{
+					Name:        u.Name,
+					Description: u.Description,
+					LoadState:   u.LoadState,
+					SubState:    u.SubState,
+					ActiveState: u.ActiveState,
+					DepUnit:     u.DepUnit,
+					ObjectPath:  string(u.ObjectPath),
+					/*oops typo in queued job :)*/
+					QueuedJob: u.QueudJob,
+					JobType:   u.JobType,
+					JobPath:   string(u.JobPath),
+				})
+			}
+
 		}
 
 		return units, nil
@@ -112,9 +161,9 @@ func RunRetrieval(
 			DepUnit:     u.DepUnit,
 			ObjectPath:  string(u.ObjectPath),
 			/*oops typo in queued job :)*/
-			QueuedJob:   u.QueudJob,
-			JobType:     u.JobType,
-			JobPath:     string(u.JobPath),
+			QueuedJob: u.QueudJob,
+			JobType:   u.JobType,
+			JobPath:   string(u.JobPath),
 		})
 	}
 
