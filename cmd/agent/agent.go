@@ -19,10 +19,10 @@ import (
 	"fmt"
 	"net"
 	"os"
+	devacpb "paradigm-ehb/agent/gen/actions/v1"
 	"paradigm-ehb/agent/gen/greet"
 	"paradigm-ehb/agent/gen/journal/v1"
 	"paradigm-ehb/agent/gen/resources/v1"
-	devacpb "paradigm-ehb/agent/gen/actions/v1"
 	services_v1 "paradigm-ehb/agent/gen/services/v1"
 	services_v2 "paradigm-ehb/agent/gen/services/v2"
 
@@ -31,10 +31,11 @@ import (
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
 
+	"paradigm-ehb/agent/internal/platform"
 
 	"paradigm-ehb/agent/pkg/grpc_handler"
 	"syscall"
-	// "time"
+	"time"
 )
 
 var (
@@ -44,7 +45,7 @@ var (
 		NOTE: When enabled, diagnostics must never block the gRPC server.
 	 **/
 
-	diagnostics = flag.Bool("diagnostics", false, "run runtime diagnostics")
+	diagnostics = flag.Bool("diagnostics", true, "run runtime diagnostics")
 
 	/**
 	portFlag is the preferred TCP port to bind the gRPC server to.
@@ -62,8 +63,6 @@ var (
 )
 
 func main() {
-
-
 
 	/**
 	Parse command-line flags before any runtime behavior.
@@ -132,13 +131,13 @@ func main() {
 	    - ResourcesService: system resource inspection and reporting
 
 	*/
+
 	greet.RegisterGreeterServer(server, &grpc_handler.GreeterServer{})
 	services_v1.RegisterHandlerServiceServer(server, &grpc_handler.HandlerService{})
 	services_v2.RegisterHandlerServiceServer(server, &grpc_handler.HandlerServiceV2{})
 	journal.RegisterJournalServiceServer(server, &grpc_handler.JournalService{})
 	resourcespb.RegisterResourcesServiceServer(server, &grpc_handler.ResourcesService{})
 	devacpb.RegisterActionServiceServer(server, &grpc_handler.DeviceActionsService{})
-	
 
 	/*
 		Diagnostics mode (disabled for now)
@@ -164,8 +163,14 @@ func main() {
 	and message schemas at runtime.
 	*/
 	reflection.Register(server)
-
 	fmt.Printf("\nserver listening at %v\n", lis.Addr())
+
+	if *diagnostics {
+
+		go platform.RunRuntimeDiagnostics(time.Second*2, *ipFlag, *portFlag)
+
+	}
+
 
 	/**
 	Start serving requests.
