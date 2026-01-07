@@ -3,6 +3,7 @@ package dbus_services
 import (
 	"fmt"
 
+	v2 "paradigm-ehb/agent/gen/services/v2"
 	dh "paradigm-ehb/agent/internal/dbusservices/dbus"
 	svc "paradigm-ehb/agent/internal/dbusservices/systemd"
 	svctypes "paradigm-ehb/agent/internal/dbusservices/types"
@@ -11,7 +12,6 @@ import (
 )
 
 // @param, action [start, stop, restart], symLinkAction [enable, disable], service name format "example.service"
-// TODO(nasr): add parameters and handling
 func RunAction(conn *dbus.Conn, ac svc.UnitAction, service string) error {
 
 	obj := dh.CreateSystemdObject(conn)
@@ -22,7 +22,7 @@ func RunAction(conn *dbus.Conn, ac svc.UnitAction, service string) error {
 	call := obj.Call(string(ac), 0, service, "replace")
 
 	if call.Err != nil {
-		return fmt.Errorf("failed to execute object on in unit action")
+		return fmt.Errorf("failed to execute object on in unit action, %v", call.Err)
 	}
 
 	return nil
@@ -45,7 +45,7 @@ func RunSymlinkAction(conn *dbus.Conn, sc svc.UnitFileAction, enableForRunTime b
 	case svc.UnitFileActionEnable:
 		call := obj.Call(string(sc), dbus.FlagAllowInteractiveAuthorization, service, enableForRunTime, enableForce)
 		if call.Err != nil {
-			return fmt.Errorf("something happened here %v", call.Err)
+			return fmt.Errorf("error %v", call.Err)
 		}
 	case svc.UnitFileActionDisable:
 		call := obj.Call(string(sc), dbus.FlagAllowInteractiveAuthorization, service, enableForRunTime)
@@ -58,39 +58,87 @@ func RunSymlinkAction(conn *dbus.Conn, sc svc.UnitFileAction, enableForRunTime b
 }
 
 // @param, true for all on disk, false for loaded units
-func RunRetrieval(conn *dbus.Conn, all bool) error {
+func RunRetrieval(
+	conn *dbus.Conn,
+	all bool,
+) ([]*v2.LoadedUnit, error) {
 
 	obj := dh.CreateSystemdObject(conn)
 
 	if all {
-
 		ch := make(chan []svctypes.UnitFileEntry)
 		parse := make(chan []svctypes.UnitFileEntry)
 
 		go svc.GetAllUnits(obj, ch)
 		go dh.ParseUnitFileEntries(ch, parse)
-		<-parse
 
-	} else if !all {
+		entries := <-parse
 
-		ch := make(chan []svctypes.LoadedUnit)
-		parse := make(chan []svctypes.LoadedUnit)
+		units := make([]*v2.LoadedUnit, 0, len(entries))
+		for _, e := range entries {
+			units = append(units, &v2.LoadedUnit{
+				Name:        e.Name,
+				Description: "",
+				LoadState:   e.State,
+				SubState:    "",
+				ActiveState: "",
+				DepUnit:     "",
+				ObjectPath:  "",
+				QueuedJob:   0,
+				JobType:     "",
+				JobPath:     "",
+			})
+		}
 
-		go svc.GetLoadedUnits(obj, ch)
-		go dh.ParseLoadedUnits(ch, parse)
-		<-parse
-
-	} else {
-		return fmt.Errorf("failed parameter")
+		return units, nil
 	}
 
-	return nil
+	ch := make(chan []svctypes.LoadedUnit)
+	parse := make(chan []svctypes.LoadedUnit)
+
+	go svc.GetLoadedUnits(obj, ch)
+	go dh.ParseLoadedUnits(ch, parse)
+
+	loaded := <-parse
+
+	units := make([]*v2.LoadedUnit, 0, len(loaded))
+	for _, u := range loaded {
+		units = append(units, &v2.LoadedUnit{
+			Name:        u.Name,
+			Description: u.Description,
+			LoadState:   u.LoadState,
+			SubState:    u.SubState,
+			ActiveState: u.ActiveState,
+			DepUnit:     u.DepUnit,
+			ObjectPath:  string(u.ObjectPath),
+			/*oops typo in queued job :)*/
+			QueuedJob:   u.QueudJob,
+			JobType:     u.JobType,
+			JobPath:     string(u.JobPath),
+		})
+	}
+
+	return units, nil
 }
 
-func GetStatus(obj dbus.BusObject, name string) {
+func GetStatus(obj dbus.BusObject, name string) (string, error) {
+	var result string
 
-	call := obj.Call("org.freedesktop.systemd1.Manager.GetUnitFileState", dbus.Flags(dbus.NameFlagReplaceExisting), name)
-	// DEBUG
-	call.Path.IsValid()
+	call := obj.Call(
+		"org.freedesktop.systemd1.Manager.GetUnitFileState",
+		0,
+		name,
+	)
 
+	if call.Err != nil {
+		return "call error: ", call.Err
+	}
+
+	if err := call.Store(&result); err != nil {
+		return "call store: ", err
+	}
+
+	fmt.Println("status:", result)
+
+	return result, nil
 }

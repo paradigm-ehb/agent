@@ -33,7 +33,7 @@ func TestService_Test(t *testing.T) {
 
 	client := pb.NewHandlerServiceClient(clientConn)
 
-	resp, err := client.Action(ctx, &pb.ServiceActionRequest{
+	resp, err := client.UnitAction(ctx, &pb.ServiceActionRequest{
 
 		ServiceName: "nginx.service",
 		UnitAction: pb.ServiceActionRequest_UNIT_ACTION_START.Enum(),

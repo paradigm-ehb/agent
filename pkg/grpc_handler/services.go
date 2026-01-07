@@ -14,10 +14,10 @@ import (
 )
 
 type HandlerService struct {
-	services.UnimplementedHandlerServiceServer
+	v1.UnimplementedHandlerServiceServer
 }
 
-func (s *HandlerService) Action(_ context.Context, in *services.ServiceActionRequest) (*services.ServiceActionReply, error) {
+func (s *HandlerService) UnitAction(_ context.Context, in *v1.ServiceActionRequest) (*v1.ServiceActionReply, error) {
 
 	var out string
 	conn, err := dh.CreateSystemBus()
@@ -28,13 +28,12 @@ func (s *HandlerService) Action(_ context.Context, in *services.ServiceActionReq
 	}
 
 	defer func(conn *dbus.Conn) {
-		err := conn.Close()
 		if err != nil {
 
 		}
 	}(conn)
 
-	if in.GetUnitFileAction() == services.ServiceActionRequest_UNIT_FILE_ACTION_ENABLE {
+	if in.GetUnitFileAction() == v1.ServiceActionRequest_UNIT_FILE_ACTION_ENABLE {
 
 		err = manager.RunSymlinkAction(conn, servicecontrol.UnitFileActionEnable, true, true, []string{in.ServiceName})
 		if err != nil {
@@ -43,7 +42,7 @@ func (s *HandlerService) Action(_ context.Context, in *services.ServiceActionReq
 			out = "failed unit file action"
 		}
 
-	} else if in.GetUnitFileAction() == services.ServiceActionRequest_UNIT_FILE_ACTION_DISABLE {
+	} else if in.GetUnitFileAction() == v1.ServiceActionRequest_UNIT_FILE_ACTION_DISABLE {
 
 		err = manager.RunSymlinkAction(conn, servicecontrol.UnitFileActionDisable, true, true, []string{in.ServiceName})
 		if err != nil {
@@ -54,12 +53,12 @@ func (s *HandlerService) Action(_ context.Context, in *services.ServiceActionReq
 
 	} else {
 
-		log.Println("failed to do everything")
-		out = "failed alot"
+		log.Println("Bad input")
+		out = "Bad input"
 
 	}
 
-	if in.GetUnitAction() == services.ServiceActionRequest_UNIT_ACTION_START {
+	if in.GetUnitAction() == v1.ServiceActionRequest_UNIT_ACTION_START {
 
 		err = manager.RunAction(conn, servicecontrol.UnitActionStart, in.ServiceName)
 		if err != nil {
@@ -68,7 +67,7 @@ func (s *HandlerService) Action(_ context.Context, in *services.ServiceActionReq
 			out = "failed unit action"
 		}
 
-	} else if in.GetUnitAction() == services.ServiceActionRequest_UNIT_ACTION_STOP {
+	} else if in.GetUnitAction() == v1.ServiceActionRequest_UNIT_ACTION_STOP {
 
 		err = manager.RunAction(conn, servicecontrol.UnitActionStop, in.ServiceName)
 		if err != nil {
@@ -77,7 +76,7 @@ func (s *HandlerService) Action(_ context.Context, in *services.ServiceActionReq
 			out = "failed unit action"
 		}
 
-	} else if in.GetUnitAction() == services.ServiceActionRequest_UNIT_ACTION_RESTART {
+	} else if in.GetUnitAction() == v1.ServiceActionRequest_UNIT_ACTION_RESTART {
 
 		err = manager.RunAction(conn, servicecontrol.UnitActionRestart, in.ServiceName)
 		if err != nil {
@@ -88,15 +87,15 @@ func (s *HandlerService) Action(_ context.Context, in *services.ServiceActionReq
 
 	} else {
 
-		log.Println("failed to to do everything")
-		out = "failed a lot"
+		log.Println("external bad input")
+		out = "external bad input"
 	}
 
-	err = manager.RunRetrieval(conn, true)
+	_, err = manager.RunRetrieval(conn, true)
 	if err != nil {
 		log.Println("failed to do everything")
 		out = "failed even more"
 	}
 
-	return &services.ServiceActionReply{Status: out}, nil
+	return &v1.ServiceActionReply{Status: out}, nil
 }

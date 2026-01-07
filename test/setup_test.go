@@ -9,7 +9,8 @@ import (
 	"google.golang.org/grpc/test/bufconn"
 	"paradigm-ehb/agent/pkg/grpc_handler"
 	respb "paradigm-ehb/agent/gen/resources/v1"
-	serpb "paradigm-ehb/agent/gen/services/v1"
+	serpb_v1 "paradigm-ehb/agent/gen/services/v1"
+	serpb_v2 "paradigm-ehb/agent/gen/services/v2"
 
 	greetpb "paradigm-ehb/agent/gen/greet"
 	journalpb "paradigm-ehb/agent/gen/journal/v1"
@@ -37,7 +38,8 @@ func init() {
 	grpc_health_v1.RegisterHealthServer(server, healthServer)
 
 	respb.RegisterResourcesServiceServer(server, &grpc_handler.ResourcesService{})
-	serpb.RegisterHandlerServiceServer(server, &grpc_handler.HandlerService{})
+	serpb_v1.RegisterHandlerServiceServer(server, &grpc_handler.HandlerService{})
+	serpb_v2.RegisterHandlerServiceServer(server, &grpc_handler.HandlerServiceV2{})
 	greetpb.RegisterGreeterServer(server, &grpc_handler.GreeterServer{})
 	journalpb.RegisterJournalServiceServer(server, &grpc_handler.JournalService{})
 
