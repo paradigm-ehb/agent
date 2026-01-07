@@ -19,13 +19,11 @@ func ParseUnitFileEntries(in chan []svctypes.UnitFileEntry, out chan []svctypes.
 	for i := range input {
 
 		if input[i].State == "enabled" {
-			fmt.Println(input[i].Name)
+			continue
 		} else {
-
-			fmt.Println(input[i].Name)
+			out <- input
 		}
 	}
-	out <- input
 
 }
 
