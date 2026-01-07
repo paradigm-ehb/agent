@@ -1,7 +1,26 @@
 syntax = "proto3";
 
-package resources.v1;
+package actions.v1;
 
-option go_package = "paradigm-ehb/agent/gen/debug_actions/v1/";
+option go_package = "paradigm-ehb/agent/gen/device_actions/v1";
 
 // TODO(nasr): reboot poweroff etc
+
+service ActionService {
+    rpc Action (ActionRequest) returns (ActionReply);
+}
+
+message ActionRequest {
+    DeviceAction device_action = 1;
+}
+
+message ActionReply {
+    string status = 2;
+}
+
+enum DeviceAction {
+    DEVICE_ACTION_SHUTDOWN = 0;
+    DEVICE_ACTION_REBOOT = 1;
+    DEVICE_ACTION_SUSPEND = 2;
+    DEVICE_ACTION_HIBERNATE = 3;
+}

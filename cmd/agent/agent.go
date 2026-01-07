@@ -22,6 +22,7 @@ import (
 	"paradigm-ehb/agent/gen/greet"
 	"paradigm-ehb/agent/gen/journal/v1"
 	"paradigm-ehb/agent/gen/resources/v1"
+	devacpb "paradigm-ehb/agent/gen/actions/v1"
 	services_v1 "paradigm-ehb/agent/gen/services/v1"
 	services_v2 "paradigm-ehb/agent/gen/services/v2"
 
@@ -136,6 +137,8 @@ func main() {
 	services_v2.RegisterHandlerServiceServer(server, &grpc_handler.HandlerServiceV2{})
 	journal.RegisterJournalServiceServer(server, &grpc_handler.JournalService{})
 	resourcespb.RegisterResourcesServiceServer(server, &grpc_handler.ResourcesService{})
+	devacpb.RegisterActionServiceServer(server, &grpc_handler.DeviceActionsService{})
+	
 
 	/*
 		Diagnostics mode (disabled for now)
