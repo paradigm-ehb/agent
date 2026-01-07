@@ -2,11 +2,11 @@ syntax = "proto3";
 
 package services.v1;
 
-option go_package = "paradigm-ehb/agent/proto/services";
+option go_package = "paradigm-ehb/agent/proto/services/v1";
 
 service HandlerService {
 
-  rpc Action (ServiceActionRequest) returns (ServiceActionReply) {}
+  rpc UnitAction (ServiceActionRequest) returns (ServiceActionReply) {}
 
 }
 

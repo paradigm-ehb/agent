@@ -92,21 +92,22 @@ func GetJournalInformation(since time.Duration, numFromTail uint64, cursor strin
 	for {
 		c, err := reader.Read(b)
 
+		if err == io.EOF {
+			fmt.Println("End of journal")
+			break
+		}
+
+		if c == 0 {
+			fmt.Println(" data")
+			continue
+		}
+
 		if err != nil {
 			out <- []byte("nothing in here")
 			fmt.Println("failed to read from the journal reader", err)
 			break
 		}
 
-		if err == io.EOF {
-			fmt.Println("end of file")
-			break
-		}
-
-		if c == 0 {
-			fmt.Println("no more data")
-			continue
-		}
 
 		out <- b[:c]
 

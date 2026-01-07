@@ -1,9 +1,11 @@
 #!/usr/bin/env sh
-set -eu
+set -euo pipefail
 
 HOST="${HOST:-localhost}"
 PORT="${PORT:-5000}"
 ADDR="${HOST}:${PORT}"
+
+SERVICE="services.v2.HandlerService"
 
 echo "== gRPC integration test =="
 echo "Target: ${ADDR}"
@@ -19,47 +21,86 @@ grpcurl -plaintext "${ADDR}" list >/dev/null
 echo "OK"
 echo
 
-echo "== Listing services =="
+echo "== Listing all services =="
 grpcurl -plaintext "${ADDR}" list
 echo
 
-echo "== Checking JournalService =="
-grpcurl -plaintext "${ADDR}" list journal.v1.JournalService >/dev/null
+echo "== Checking ${SERVICE} existence =="
+grpcurl -plaintext "${ADDR}" list "${SERVICE}" >/dev/null
 echo "OK"
 echo
 
-echo "== JournalService.Action (GID=1000) =="
-grpcurl -plaintext \
-  -d '{
-    "numFromTail": 5,
-    "field": "GID",
-    "value": "1000"
-  }' \
-  "${ADDR}" \
-  journal.v1.JournalService/Action
+echo "== Listing ${SERVICE} methods =="
+grpcurl -plaintext "${ADDR}" list "${SERVICE}"
 echo
 
-echo "== JournalService.Action (systemd unit) =="
-grpcurl -plaintext \
-  -d '{
-    "numFromTail": 5,
-    "field": "Systemd",
-    "value": "systemd-journald.service"
-  }' \
-  "${ADDR}" \
-  journal.v1.JournalService/Action
-echo
-
-echo "== Checking ResourcesService =="
-grpcurl -plaintext "${ADDR}" list resources.v1.ResourcesService >/dev/null
-echo "OK"
-echo
-
-echo "== ResourcesService.GetSystemResources =="
+echo "== GetAllUnits =="
 grpcurl -plaintext \
   -d '{}' \
   "${ADDR}" \
-  resources.v1.ResourcesService/GetSystemResources
+  "${SERVICE}/GetAllUnits"
 echo
 
-echo "== All gRPC tests passed =="
+echo "== GetLoadedUnits =="
+grpcurl -plaintext \
+  -d '{}' \
+  "${ADDR}" \
+  "${SERVICE}/GetLoadedUnits"
+echo
+
+echo "== GetUnitStatus (tailscaled.service) =="
+grpcurl -plaintext \
+  -d '{
+    "unitName": "tailscaled.service"
+  }' \
+  "${ADDR}" \
+  "${SERVICE}/GetUnitStatus"
+echo
+
+echo "== PerformUnitAction: START tailscaled.service =="
+grpcurl -plaintext \
+  -d '{
+    "unitName": "tailscaled.service",
+    "action": "UNIT_ACTION_START"
+  }' \
+  "${ADDR}" \
+  "${SERVICE}/PerformUnitAction"
+echo
+
+echo "== PerformUnitFileAction: ENABLE tailscaled.service (runtime=true, force=true) =="
+grpcurl -plaintext \
+  -d '{
+    "unitName": "tailscaled.service",
+    "action": "UNIT_FILE_ACTION_ENABLE",
+    "runtime": true,
+    "force": true
+  }' \
+  "${ADDR}" \
+  "${SERVICE}/PerformUnitFileAction"
+echo
+
+echo "== PerformUnitAction: STOP tailscaled.service =="
+grpcurl -plaintext \
+  -d '{
+    "unitName": "tailscaled.service",
+    "action": "UNIT_ACTION_STOP",
+    "force": true
+  }' \
+  "${ADDR}" \
+  "${SERVICE}/PerformUnitAction"
+echo
+
+
+echo "== PerformUnitFileAction: DISABLE tailscaled.service =="
+grpcurl -plaintext \
+  -d '{
+    "unitName": "tailscaled.service",
+    "action": "UNIT_FILE_ACTION_DISABLE",
+    "runtime": true,
+    "force": true
+  }' \
+  "${ADDR}" \
+  "${SERVICE}/PerformUnitFileAction"
+echo
+
+echo "== All gRPC v2 tests passed =="
