@@ -1,0 +1,116 @@
+syntax = "proto3";
+
+package resources.v2;
+
+option go_package = "paradigm-ehb/agent/gen/resources/v2;resourcespb";
+
+service ResourcesService {
+  rpc GetSystemResources(GetSystemResourcesRequest)
+      returns (GetSystemResourcesResponse);
+}
+
+message GetSystemResourcesRequest {}
+
+message GetSystemResourcesResponse {
+  SystemResources resources = 1;
+}
+
+/**
+ *
+ * Get a complete system snapshots
+ * @return Cpu, Memory, Device, Disk ( partitions ) and processes
+ *
+ * */
+message SystemResources {
+  Cpu cpu = 1;
+  Memory memory = 2;
+  Device device = 3;
+  repeated Disk disks = 4;
+  repeated Process processes = 5;
+}
+
+/**
+ * Cpu information
+ *
+ * @return vendor, model, frequency, cores
+ * */
+message Cpu {
+  string vendor = 1;
+  string model = 2;
+  string frequency = 3;
+  uint32 max_core = 4;
+}
+
+/**
+ * Memory
+ * @return total memory on system, available memory on system 
+ * */
+message Memory {
+  string total = 1;
+  string free = 2;
+}
+
+/**
+ * Device specific information
+ * @return os version ( distro information ), and uptime in string format
+ *
+ * */
+
+message Device {
+  string os_version = 1;
+  string uptime = 2;
+}
+
+/**
+ *
+ * Disk information
+ * @disk a list of all available partitions
+ *
+ * */
+
+message Disk {
+  repeated DiskPartition partitions = 1;
+}
+
+/**
+ * Partition
+ * @return partition name, major, minor, blocks
+ * */
+message DiskPartition {
+  string name = 1;
+  uint32 major = 2;
+  uint32 minor = 3;
+  uint64 blocks = 4;
+}
+
+enum ProcessState {
+  PROCESS_STATE_UNSPECIFIED = 0;
+  PROCESS_STATE_RUNNING = 1;
+  PROCESS_STATE_SLEEPING = 2;
+  PROCESS_STATE_DISK_SLEEPING = 3;
+  PROCESS_STATE_STOPPED = 4;
+  PROCESS_STATE_TRACING_STOPPED = 5;
+  PROCESS_STATE_ZOMBIE = 6;
+  PROCESS_STATE_DEAD = 7;
+}
+
+/**
+ * Process information
+ * @return pid ( process identifier ), process name, the state, todo :)
+ * */
+message Process {
+  uint32 pid = 1;
+  string name = 2;
+  ProcessState state = 3;
+  uint64 utime = 4;
+  uint32 num_threads = 5;
+}
+
+message KillProcessRequest {
+  uint32 pid = 1;
+}
+
+message KillProcessReply {
+
+  string succes = 1;
+}
