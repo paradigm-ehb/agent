@@ -25,18 +25,13 @@ func (s *DeviceActionsService) Action(ctx context.Context, req *actions.ActionRe
 	}
 
 	var out string
-	bus, err := dh.CreateSystemBus()
+	conn, err := dh.CreateSystemBus()
 	if err != nil {
 		log.Println("failed to create systembus")
 		out = "failed system bus"
 	}
 
-
-	obj := bus.Object(
-		"org.freedesktop.login1",
-		"/org/freedesktop/login1",
-	)
-
+	obj, _ := dh.CreateLoginObject(conn)
 	switch req.GetDeviceAction() {
 	case actions.DeviceAction_DEVICE_ACTION_SHUTDOWN:
 		out = string(da.PerformDeviceAction(obj, da.DeviceActionShutdown))
