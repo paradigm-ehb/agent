@@ -27,7 +27,7 @@ type Service struct {
 }
 
 // type a(ss)
-type UnitFileEntry struct {
+type Unit struct {
 	Name  string
 	State string
 }

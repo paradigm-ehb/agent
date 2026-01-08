@@ -2,7 +2,7 @@ package servicecontrol
 
 import (
 	"fmt"
-	svctypes "paradigm-ehb/agent/internal/dbusservices/types"
+	types "paradigm-ehb/agent/internal/dbusservices/types"
 
 	"github.com/godbus/dbus"
 )
@@ -14,17 +14,17 @@ import (
 // files (templates) cannot directly be loaded as units but need to be instantiated.
 // ---------------------------------------------------------------------------------------
 // Method returns an array of all currently loaded units,
-//
-func GetLoadedUnits(obj dbus.BusObject, out chan []svctypes.LoadedUnit) {
+func GetLoadedUnits(
+	obj dbus.BusObject,
+	out chan []types.LoadedUnit) {
 
-	var result []svctypes.LoadedUnit
+	var result []types.LoadedUnit
 
 	call := obj.Call("org.freedesktop.systemd1.Manager.ListUnits", 0)
 	if call.Err != nil {
 		fmt.Printf("failed to list unit files that are loaded in memory %v", call.Err)
 		return
 	}
-
 
 	err := call.Store(&result)
 
@@ -36,12 +36,14 @@ func GetLoadedUnits(obj dbus.BusObject, out chan []svctypes.LoadedUnit) {
 
 }
 
-func GetAllUnits(obj dbus.BusObject, out chan []svctypes.UnitFileEntry) {
+func GetUnits(
+	obj dbus.BusObject,
+	out chan []types.Unit) {
 
 	// ListUnitFiles(out a(ss) files);
 	// an array of struct string string
 
-	var result []svctypes.UnitFileEntry
+	var result []types.Unit
 
 	call := obj.Call("org.freedesktop.systemd1.Manager.ListUnitFiles", 0)
 
@@ -54,5 +56,29 @@ func GetAllUnits(obj dbus.BusObject, out chan []svctypes.UnitFileEntry) {
 	if err != nil {
 		return
 	}
+
 	out <- result
+}
+
+func GetUnitsFiltered(
+	obj dbus.BusObject,
+	out chan []types.LoadedUnit,
+	states []string) {
+
+	var result []types.LoadedUnit
+
+	call := obj.Call("org.freedesktop.systemd1.Manager.ListUnitsFiltered", 0, states)
+
+	if call.Err != nil {
+		fmt.Println("failed to call filtered list of units")
+		return
+	}
+
+	err := call.Store(&result)
+	if err != nil {
+		return
+	}
+
+	out <- result
+
 }

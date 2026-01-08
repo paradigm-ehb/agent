@@ -2,40 +2,54 @@
 package dbushandler
 
 import (
-	"fmt"
-	svctypes "paradigm-ehb/agent/internal/dbusservices/types"
+	types "paradigm-ehb/agent/internal/dbusservices/types"
+	"strings"
 )
 
-// TODO: implement interfaces maybe
+// TODO(nasr): implement interfaces maybe
 
 // Method
 // @param chan a(ss), chan a(ss)
 // @param chan UnitFileEntry, chan UnitFileEntry
 // @return nil
-func ParseUnitFileEntries(in chan []svctypes.UnitFileEntry, out chan []svctypes.UnitFileEntry) {
+func ParseUnits(in chan []types.Unit, out chan []types.Unit) {
 
 	input := <-in
 
-	for i := range input {
+	/**
+	filter the units on services and remove devices etc
+	*/
+	buffer := make([]types.Unit, 0, len(input))
+	for _, value := range input {
 
-		if input[i].State == "enabled" {
-			continue
-		} else {
-			out <- input
+		if strings.HasSuffix(".service", value.Name) {
+			buffer = append(buffer, value)
 		}
 	}
 
+	out <- buffer
+
+	return
+
 }
 
-func ParseLoadedUnits(in chan []svctypes.LoadedUnit, out chan []svctypes.LoadedUnit) {
+func ParseLoadedUnits(in chan []types.LoadedUnit, out chan []types.LoadedUnit) {
 
 	input := <-in
 
-	for i := range input {
+	/**
+	filter the units on services and remove devices etc
+	*/
+	buffer := make([]types.LoadedUnit, 0, len(input))
+	for _, value := range input {
 
-		fmt.Println(input[i])
+		if strings.HasSuffix(".service", string(value.Name)) {
+			buffer = append(buffer, value)
+		}
 	}
 
-	out <- input
+	out <- buffer
+
+	return
 
 }
