@@ -22,9 +22,12 @@ import (
 	devacpb "paradigm-ehb/agent/gen/actions/v1"
 	"paradigm-ehb/agent/gen/greet"
 	"paradigm-ehb/agent/gen/journal/v1"
-	"paradigm-ehb/agent/gen/resources/v1"
-	services_v1 "paradigm-ehb/agent/gen/services/v1"
-	services_v2 "paradigm-ehb/agent/gen/services/v2"
+
+	servicesV1 "paradigm-ehb/agent/gen/services/v1"
+	servicesV2 "paradigm-ehb/agent/gen/services/v2"
+
+	resourcesv1 "paradigm-ehb/agent/gen/resources/v1"
+	resourcesv2 "paradigm-ehb/agent/gen/resources/v2"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
@@ -33,7 +36,14 @@ import (
 
 	"paradigm-ehb/agent/internal/platform"
 
-	"paradigm-ehb/agent/pkg/grpc_handler"
+	"paradigm-ehb/agent/pkg/grpchandler"
+
+	resourcesHandlerV1 "paradigm-ehb/agent/pkg/grpchandler/resources/v1"
+	resourcesHandlerV2 "paradigm-ehb/agent/pkg/grpchandler/resources/v2"
+
+	servicesHandlerV1 "paradigm-ehb/agent/pkg/grpchandler/services/v1"
+	servicesHandlerV2 "paradigm-ehb/agent/pkg/grpchandler/services/v2"
+
 	"syscall"
 	"time"
 )
@@ -132,29 +142,33 @@ func main() {
 
 	*/
 
-	greet.RegisterGreeterServer(server, &grpc_handler.GreeterServer{})
-	services_v1.RegisterHandlerServiceServer(server, &grpc_handler.HandlerService{})
-	services_v2.RegisterHandlerServiceServer(server, &grpc_handler.HandlerServiceV2{})
-	journal.RegisterJournalServiceServer(server, &grpc_handler.JournalService{})
-	resourcespb.RegisterResourcesServiceServer(server, &grpc_handler.ResourcesService{})
-	devacpb.RegisterActionServiceServer(server, &grpc_handler.DeviceActionsService{})
+	greet.RegisterGreeterServer(
+		server,
+		&grpc_handler.GreeterServer{})
 
-	/*
-		Diagnostics mode (disabled for now)
+	servicesV1.RegisterHandlerServiceServer(
+		server,
+		&servicesHandlerV1.HandlerService{})
 
-		Problem:
-		  - Running diagnostics synchronously introduces an infinite loop
-		    that blocks gRPC reflection and request handling.
+	servicesV2.RegisterHandlerServiceServer(
+		server,
+		&servicesHandlerV2.HandlerServiceV2{})
 
-		Important invariant:
-		  - Diagnostics must run asynchronously and must never interfere
-		    with server startup, reflection, or request processing.
+	journal.RegisterJournalServiceServer(
+		server,
+		&grpc_handler.JournalService{})
 
-		TODO(nasr):
-		  - Move diagnostics into a separate goroutine
-		  - Introduce a proper shutdown context
-		  - Ensure diagnostics respect server lifecycle
-	*/
+	resourcesv1.RegisterResourcesServiceServer(
+		server,
+		&resourcesHandlerV1.ResourcesService{})
+
+	resourcesv2.RegisterResourcesServiceServer(
+		server,
+		&resourcesHandlerV2.ResourcesServiceV2{})
+
+	devacpb.RegisterActionServiceServer(
+		server,
+		&grpc_handler.DeviceActionsService{})
 
 	/**
 	Enable gRPC reflection unconditionally.
@@ -170,7 +184,6 @@ func main() {
 		go platform.RunRuntimeDiagnostics(time.Second*2, *ipFlag, *portFlag)
 
 	}
-
 
 	/**
 	Start serving requests.
