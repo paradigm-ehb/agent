@@ -13,6 +13,56 @@ import (
 	"golang.org/x/sys/unix"
 )
 
+// ProcessState represents the state of a process.
+
+type ProcessState C.int32_t
+
+const (
+	ProcessUndefined      ProcessState = C.PROCESS_UNDEFINED
+	ProcessRunning        ProcessState = C.PROCESS_RUNNING
+	ProcessSleeping       ProcessState = C.PROCESS_SLEEPING
+	ProcessDiskSleep      ProcessState = C.PROCESS_DISK_SLEEP
+	ProcessStopped        ProcessState = C.PROCESS_STOPPED
+	ProcessTracingStopped ProcessState = C.PROCESS_TRACING_STOPPED
+	ProcessZombie         ProcessState = C.PROCESS_ZOMBIE
+	ProcessDead           ProcessState = C.PROCESS_DEAD
+	ProcessIdle           ProcessState = C.PROCESS_IDLE
+)
+
+// Process represents a single process with its attributes.
+type Process struct {
+	PID        int32
+	State      ProcessState
+	UTime      uint64
+	STime      uint64
+	NumThreads uint32
+	Name       string
+}
+
+func (s ProcessState) String() string {
+
+	switch s {
+	case ProcessRunning:
+		return "Running"
+	case ProcessSleeping:
+		return "Sleeping"
+	case ProcessDiskSleep:
+		return "Disk Sleep"
+	case ProcessStopped:
+		return "Stopped"
+	case ProcessTracingStopped:
+		return "Tracing Stopped"
+	case ProcessZombie:
+		return "Zombie"
+	case ProcessDead:
+		return "Dead"
+	case ProcessIdle:
+		return "Idle"
+	default:
+		return "Undefined"
+	}
+}
+
 // TODO(nasr): research this, interesting, alias vs true aliasing
 type Arena = C.mem_arena
 
@@ -57,6 +107,14 @@ func AllocateArena(size uint64) (*C.mem_arena, error) {
 		return nil, fmt.Errorf("failed to allocate the arena")
 	}
 	return arena, nil
+}
+
+func PushArena(arena *C.mem_arena, size uint64) {
+
+	if arena != nil {
+		C.arena_push(arena, C.ulong(size), 1)
+	}
+
 }
 
 /*
@@ -334,37 +392,55 @@ Returns:
   - error: Error if device pointer is nil
 */
 func ReadProcesses(device *C.Device) ([]Process, error) {
+
 	if device == nil {
-		return nil, fmt.Errorf("nil Device pointer")
+		return nil, fmt.Errorf("dvice null pointer")
 	}
 
-	procs := make([]Process, 0, device.processes.count)
+	count := int(device.processes.count)
 	items := device.processes.items
 
-	for i := C.size_t(0); i < device.processes.count; i++ {
-		p := (*C.Process)(
-			unsafe.Pointer(
-				uintptr(unsafe.Pointer(items)) +
-					uintptr(i)*unsafe.Sizeof(*items),
-			),
-		)
+	// slice := unsafe.Slice(items, count)
 
-		/**
-		Read detailed process information
-		Skip processes that can't be read
-		*/
-		if C.process_read(p.pid, p) != C.OK {
-			continue
+	procs := make([]Process, 0, count)
+
+	// p := unsafe.Pointer(&items[i])
+
+	// p := (*C.Process)(unsafe.Pointer(items), uintptr(i)*unsafe.Sizeof(*items))
+
+	for i := 0; i < count; i++ {
+		// p := &slice[i]
+
+	p := (*C.Process)(unsafe.Pointer(uintptr(unsafe.Pointer(items)) + uintptr(i)*unsafe.Sizeof(*items)))
+
+
+		err := C.process_read(p.pid, p)
+		if err != C.OK {
+			fmt.Errorf("failed reading processes")
 		}
 
+		if p.state == C.PROCESS_UNDEFINED {
+
+			C.process_read(p.pid, p)
+		}
+
+
+		fmt.Println(unsafe.Sizeof(C.Process{}))
+
+
+		fmt.Println("pid offset  ", unsafe.Offsetof(p.pid))
+		fmt.Println("state offset", unsafe.Offsetof(p.state))
+		fmt.Println("utime offset", unsafe.Offsetof(p.utime))
+
 		procs = append(procs, Process{
-			PID:        uint32(p.pid),
-			Name:       C.GoString(&p.name[0]),
-			State:      ProcessState(p.state),
+			PID:        int32(p.pid),
+			State:      ProcessState(p.state), //BREAKPOINT
 			UTime:      uint64(p.utime),
 			STime:      uint64(p.stime),
 			NumThreads: uint32(p.num_threads),
+			Name:       C.GoString(&p.name[0]),
 		})
+
 	}
 
 	return procs, nil
@@ -381,6 +457,7 @@ Returns:
   - error: Error if the process cannot be killed or doesn't exist
 */
 func KillProcess(pid int) error {
+
 	if pid <= 0 {
 		return fmt.Errorf("invalid PID: %d", pid)
 	}
