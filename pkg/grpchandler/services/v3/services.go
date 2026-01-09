@@ -225,6 +225,7 @@ func (s *HandlerServicev3) GetFilteredUnits(
 	/**
 		
 		TODO(nasr): handle the correct types
+		doing now
 
 	*/
 	_, err = manager.MapFilteredUnits(conn)
