@@ -114,5 +114,5 @@ message KillProcessRequest {
 
 message KillProcessReply {
 
-  string succes = 1;
+  bool succes = 1;
 }

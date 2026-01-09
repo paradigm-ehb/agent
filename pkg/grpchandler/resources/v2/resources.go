@@ -73,12 +73,12 @@ func (s *ResourcesServiceV2) KillProcess(
 	if err != nil {
 
 		return &proto.KillProcessReply{
-			Succes: "false",
+			Succes: false,
 		}, nil
 	}
 
 	return &proto.KillProcessReply{
-		Succes: "true",
+		Succes: true,
 	}, nil
 }
 
