@@ -194,9 +194,12 @@ func (s *HandlerServiceV2) GetUnitStatus(
 		}, nil
 	}
 
-	obj, _ := dh.CreateSystemdObject(conn)
+	obj, err := dh.CreateSystemdObject(conn)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create system object")
+	}
 
-	state, err := manager.GetStatus(obj, in.UnitName)
+	state, err := manager.UnitStatus(obj, in.UnitName)
 	if err != nil {
 		return &v2.GetUnitStatusReply{
 			Success:      false,

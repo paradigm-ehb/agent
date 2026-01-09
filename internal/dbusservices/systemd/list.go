@@ -82,3 +82,26 @@ func GetUnitsFiltered(
 	out <- result
 
 }
+
+
+func GetStatusCall(obj dbus.BusObject, name string) (string, error) {
+	var result string
+
+	call := obj.Call(
+		"org.freedesktop.systemd1.Manager.GetUnitFileState",
+		0,
+		name,
+	)
+
+	if call.Err != nil {
+		return "call error: ", call.Err
+	}
+
+	if err := call.Store(&result); err != nil {
+		return "call store: ", err
+	}
+
+	return result, nil
+}
+
+

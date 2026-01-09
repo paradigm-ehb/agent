@@ -23,16 +23,16 @@ func mapLoadedUnit(u *types.LoadedUnit) *v3.LoadedUnit {
 	}
 
 	return &v3.LoadedUnit{
-		Name:         u.Name,
-		Description:  u.Description,
-		LoadState:    u.LoadState,
-		SubState:     u.SubState,
-		ActiveState:  u.ActiveState,
-		DepUnit:      u.DepUnit,
-		ObjectPath:   string(u.ObjectPath),
-		QueuedJob:    u.QueudJob,
-		JobType:      u.JobType,
-		JobPath:      string(u.JobPath),
+		Name:        u.Name,
+		Description: u.Description,
+		LoadState:   u.LoadState,
+		SubState:    u.SubState,
+		ActiveState: u.ActiveState,
+		DepUnit:     u.DepUnit,
+		ObjectPath:  string(u.ObjectPath),
+		QueuedJob:   u.QueudJob,
+		JobType:     u.JobType,
+		JobPath:     string(u.JobPath),
 	}
 }
 
@@ -209,24 +209,26 @@ func (s *HandlerServicev3) GetFilteredUnits(
 		}, nil
 	}
 
-	var filters []string
+	filters := make([]string, 0, len(in.Filters))
 
-	switch in.State {
-	case v3.GetUnitsFilteredRequest_LOADED:
-		filters = []string{"loaded"}
-	case v3.GetUnitsFilteredRequest_NOT_FOUND:
-		filters = []string{"not-found"}
-	case v3.GetUnitsFilteredRequest_BAD_SETTING:
-		filters = []string{"bad-setting"}
-	case v3.GetUnitsFilteredRequest_ERROR:
-		filters = []string{"error"}
-	case v3.GetUnitsFilteredRequest_MASKED:
-		filters = []string{"masked"}
-	default:
-		return &v3.GetUnitsReply{
-			Success:      false,
-			ErrorMessage: "unspecified filter state",
-		}, nil
+	for _, f := range in.Filters {
+		switch f {
+		case v3.GetUnitsFilteredRequest_LOADED:
+			filters = append(filters, "loaded")
+		case v3.GetUnitsFilteredRequest_NOT_FOUND:
+			filters = append(filters, "not-found")
+		case v3.GetUnitsFilteredRequest_BAD_SETTING:
+			filters = append(filters, "bad-setting")
+		case v3.GetUnitsFilteredRequest_ERROR:
+			filters = append(filters, "error")
+		case v3.GetUnitsFilteredRequest_MASKED:
+			filters = append(filters, "masked")
+		default:
+			return &v3.GetUnitsReply{
+				Success:      false,
+				ErrorMessage: "unspecified filter state",
+			}, nil
+		}
 	}
 
 	units, err := manager.MapFilteredUnits(conn, filters)
@@ -242,7 +244,6 @@ func (s *HandlerServicev3) GetFilteredUnits(
 		Success: true,
 	}, nil
 }
-
 
 func (s *HandlerServicev3) GetUnitStatus(
 	_ context.Context,
@@ -262,10 +263,10 @@ func (s *HandlerServicev3) GetUnitStatus(
 		return &v3.GetUnitStatusReply{
 			Success:      false,
 			ErrorMessage: err.Error(),
-		}, fmt.Errorf("failed to create systemd object")
+		}, nil
 	}
 
-	state, err := manager.GetStatus(obj, in.UnitName)
+	state, err := manager.UnitStatus(obj, in.UnitName)
 	if err != nil {
 		return &v3.GetUnitStatusReply{
 			Success:      false,
@@ -278,4 +279,3 @@ func (s *HandlerServicev3) GetUnitStatus(
 		Success: true,
 	}, nil
 }
-```

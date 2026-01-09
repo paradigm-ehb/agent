@@ -25,6 +25,7 @@ import (
 
 	servicesV1 "paradigm-ehb/agent/gen/services/v1"
 	servicesV2 "paradigm-ehb/agent/gen/services/v2"
+	servicesV3 "paradigm-ehb/agent/gen/services/v3"
 
 	resourcesv1 "paradigm-ehb/agent/gen/resources/v1"
 	resourcesv2 "paradigm-ehb/agent/gen/resources/v2"
@@ -43,6 +44,7 @@ import (
 
 	servicesHandlerV1 "paradigm-ehb/agent/pkg/grpchandler/services/v1"
 	servicesHandlerV2 "paradigm-ehb/agent/pkg/grpchandler/services/v2"
+	servicesHandlerV3 "paradigm-ehb/agent/pkg/grpchandler/services/v3"
 
 	"syscall"
 	"time"
@@ -154,6 +156,12 @@ func main() {
 		server,
 		&servicesHandlerV2.HandlerServiceV2{})
 
+	servicesV3.RegisterHandlerServiceServer(
+		server,
+		&servicesHandlerV3.HandlerServicev3{})
+		
+
+
 	journal.RegisterJournalServiceServer(
 		server,
 		&grpc_handler.JournalService{})
@@ -169,6 +177,7 @@ func main() {
 	devacpb.RegisterActionServiceServer(
 		server,
 		&grpc_handler.DeviceActionsService{})
+
 
 	/**
 	Enable gRPC reflection unconditionally.

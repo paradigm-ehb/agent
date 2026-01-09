@@ -98,24 +98,50 @@ func MapLoadedUnits(conn *dbus.Conn) []*types.LoadedUnit {
 	return units
 }
 
-func MapFilteredUnits(conn *dbus.Conn) ([]*types.LoadedUnit, error) {
+func MapFilteredUnits(conn *dbus.Conn, filters []string) ([]*types.LoadedUnit, error) {
 
-	/*
+	obj, err := dbushelper.CreateSystemdObject(conn)
+	if err != nil {
+		fmt.Errorf("failed to create systemd object")
+	}
 
-		   dbushelper.CreateSystemdObject(conn)
-			 TODO(nasr): map the filtered units to their appropriate object and pass
-			 them to the grpc handler
-		**/
+	in := make(chan []types.LoadedUnit)
+	out := make(chan []types.LoadedUnit)
 
-	return nil, nil
+	go systemd.GetUnitsFiltered(obj, in, filters)
+	go dbushelper.ParseLoadedUnits(in, out)
+
+	var entries []types.LoadedUnit
+
+	units := make([]*types.LoadedUnit, 0, len(entries))
+
+	entries = <-out
+
+	for _, e := range entries {
+
+		units = append(units, &types.LoadedUnit{
+			Name:        e.Name,
+			Description: "Not available",
+			LoadState:   e.LoadState,
+			SubState:    "Not Available",
+			ActiveState: "Not Available",
+			DepUnit:     "Not Available",
+			ObjectPath:  "Not Available",
+			QueudJob:    0,
+			JobType:     "Not Available",
+			JobPath:     "Not Available",
+		})
+	}
+
+	return units, nil
 }
 
 func MapUnits(conn *dbus.Conn) []*types.LoadedUnit {
 
-	/**
-	TODO(nasr): fix the error handling
-	*/
-	obj, _ := dbushelper.CreateSystemdObject(conn)
+	obj, err := dbushelper.CreateSystemdObject(conn)
+	if err != nil {
+		fmt.Errorf("failed to create systemd object")
+	}
 
 	in := make(chan []types.Unit)
 	out := make(chan []types.Unit)
@@ -174,22 +200,15 @@ func RunRetrieval(
 	return MapLoadedUnits(conn), nil
 }
 
-func GetStatus(obj dbus.BusObject, name string) (string, error) {
-	var result string
+func UnitStatus(
+	obj dbus.BusObject,
+	name string) (string, error) {
 
-	call := obj.Call(
-		"org.freedesktop.systemd1.Manager.GetUnitFileState",
-		0,
-		name,
-	)
+		out, err := systemd.GetStatusCall(obj, name)
+		if err != nil {
+			return "Failed", fmt.Errorf("failed to execute status call ", err)
+		}
 
-	if call.Err != nil {
-		return "call error: ", call.Err
-	}
+		return out, nil 
 
-	if err := call.Store(&result); err != nil {
-		return "call store: ", err
-	}
-
-	return result, nil
 }
