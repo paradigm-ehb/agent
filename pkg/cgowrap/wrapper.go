@@ -3,7 +3,138 @@ package wrapper
 /*
 #cgo CFLAGS:  -I${SRCDIR}/../agent-resources
 #cgo LDFLAGS: -L${SRCDIR}/../agent-resources/build -lagent_resources
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include "resources.h"
+
+int
+process_read2(i32 pid, Process *out)
+{
+  char path[PATH_MAX_LEN];
+  snprintf(path, sizeof(path), "/proc/%d/status", pid);
+
+  FILE *fp = fopen(path, "r");
+  if (!fp)
+  {
+    return ERR_IO;
+  }
+
+  char buf[BUFFER_SIZE_LARGE];
+
+  out->pid = pid;
+
+  while (fgets(
+    buf,
+    sizeof(buf),
+    fp))
+  {
+    char *colon = strchr(buf, ':');
+    if (!colon)
+    {
+      continue;
+    }
+
+    char *val = colon + 1;
+    while (*val == ' ' || *val == '\t')
+    {
+      ++val;
+    }
+
+    size_t len = strcspn(val, "\n");
+
+    printf("lenght: %lu", len);
+
+    if (!strncmp(buf, "Name:", 5))
+    {
+
+      memcpy(out->name, val, len);
+      printf("\nout name %s\n", out->name);
+    }
+    printf("name: %s", out->name);
+    if (!strncmp(buf, "State:", 6))
+    {
+      char state_char = 0;
+      for (char *p = val; *p; ++p)
+      {
+        if (*p >= 'A' && *p <= 'Z' || *p == 't')
+        {
+          state_char = *p;
+          break;
+        }
+      }
+
+
+      printf("\nstate char: %d\n", out->pid);
+      printf("\nstate char: %c\n", state_char);
+      switch (state_char)
+      {
+        case 'R':
+        {
+          out->state = PROCESS_RUNNING;
+          break;
+        }
+        case 'S':
+        {
+          out->state = PROCESS_SLEEPING;
+          break;
+        }
+        case 'D':
+        {
+          out->state = PROCESS_DISK_SLEEP;
+          break;
+        }
+        case 'T':
+        {
+          out->state = PROCESS_STOPPED;
+          break;
+        }
+        case 't':
+        {
+          out->state = PROCESS_TRACING_STOPPED;
+          break;
+        }
+        case 'Z':
+        {
+          out->state = PROCESS_ZOMBIE;
+          break;
+        }
+        case 'X':
+        {
+          out->state = PROCESS_DEAD;
+          break;
+        }
+        case 'I':
+        {
+          out->state = PROCESS_IDLE;
+          break;
+        }
+        default:
+        {
+          out->state = PROCESS_UNDEFINED;
+          break;
+        }
+      }
+    }
+
+    if (!strncmp(buf, "Threads:", 8))
+    {
+      out->num_threads = (u32)strtoul(val, 0, 10);
+    }
+  }
+
+  printf("sizeof(Process) = %zu\n", sizeof(Process));
+
+  int error = fclose(fp);
+  if (error != 0)
+  {
+    return ERR_IO;
+  }
+
+  printf("\n\n\n\nout state: %d\n", out->state);
+  return OK;
+}
 */
 import "C"
 import (
@@ -18,15 +149,15 @@ import (
 type ProcessState C.int32_t
 
 const (
-	ProcessUndefined      ProcessState = C.PROCESS_UNDEFINED
-	ProcessRunning        ProcessState = C.PROCESS_RUNNING
-	ProcessSleeping       ProcessState = C.PROCESS_SLEEPING
-	ProcessDiskSleep      ProcessState = C.PROCESS_DISK_SLEEP
-	ProcessStopped        ProcessState = C.PROCESS_STOPPED
-	ProcessTracingStopped ProcessState = C.PROCESS_TRACING_STOPPED
-	ProcessZombie         ProcessState = C.PROCESS_ZOMBIE
-	ProcessDead           ProcessState = C.PROCESS_DEAD
-	ProcessIdle           ProcessState = C.PROCESS_IDLE
+	ProcessUndefined      ProcessState = ProcessState(C.PROCESS_UNDEFINED)
+	ProcessRunning        ProcessState = ProcessState(C.PROCESS_RUNNING)
+	ProcessSleeping       ProcessState = ProcessState(C.PROCESS_SLEEPING)
+	ProcessDiskSleep      ProcessState = ProcessState(C.PROCESS_DISK_SLEEP)
+	ProcessStopped        ProcessState = ProcessState(C.PROCESS_STOPPED)
+	ProcessTracingStopped ProcessState = ProcessState(C.PROCESS_TRACING_STOPPED)
+	ProcessZombie         ProcessState = ProcessState(C.PROCESS_ZOMBIE)
+	ProcessDead           ProcessState = ProcessState(C.PROCESS_DEAD)
+	ProcessIdle           ProcessState = ProcessState(C.PROCESS_IDLE)
 )
 
 // Process represents a single process with its attributes.
@@ -393,6 +524,7 @@ Returns:
 */
 func ReadProcesses(device *C.Device) ([]Process, error) {
 
+
 	if device == nil {
 		return nil, fmt.Errorf("dvice null pointer")
 	}
@@ -411,20 +543,28 @@ func ReadProcesses(device *C.Device) ([]Process, error) {
 	for i := 0; i < count; i++ {
 		// p := &slice[i]
 
+
 	p := (*C.Process)(unsafe.Pointer(uintptr(unsafe.Pointer(items)) + uintptr(i)*unsafe.Sizeof(*items)))
 
 
-		err := C.process_read(p.pid, p)
+		err := C.process_read2(p.pid, p)
 		if err != C.OK {
 			fmt.Errorf("failed reading processes")
 		}
 
-		if p.state == C.PROCESS_UNDEFINED {
-
-			C.process_read(p.pid, p)
-		}
+	fmt.Println("Reading processes...", device.processes)
 
 
+		fmt.Println("pid:",p.pid)
+		fmt.Println("state:", p.state)
+
+		// if p.state == C.PROCESS_UNDEFINED {
+		//
+		// 	C.process_read(p.pid, p)
+		// }
+		//
+
+		fmt.Println("\t\t\t\tstate: ", C.GoString(&p.name[0]))
 		fmt.Println(unsafe.Sizeof(C.Process{}))
 
 
