@@ -10,7 +10,7 @@ service HandlerService {
   rpc PerformUnitFileAction (UnitFileActionRequest) returns (UnitFileActionReply);
   rpc GetAllUnits (GetUnitsRequest) returns (GetUnitsReply);
   rpc GetLoadedUnits (GetUnitsRequest) returns (GetUnitsReply);
-  rpc GetFilteredUnits (GetUnitsRequest) returns (GetUnitsReply);
+  rpc GetFilteredUnits (GetUnitsFilteredRequest) returns (GetUnitsReply);
   rpc GetUnitStatus (GetUnitStatusRequest) returns (GetUnitStatusReply);
 }
 
@@ -102,7 +102,7 @@ message GetUnitsFilteredRequest {
     MASKED = 5;
   }
   
-  UnitFileState state = 1;
+  repeated UnitFileState filters = 1;
 
 }
 
