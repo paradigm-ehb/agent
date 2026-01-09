@@ -5,14 +5,47 @@ import (
 	"fmt"
 
 	v3 "paradigm-ehb/agent/gen/services/v3"
+
 	manager "paradigm-ehb/agent/internal/dbusservices"
 	dh "paradigm-ehb/agent/internal/dbusservices/dbus"
 	servicecontrol "paradigm-ehb/agent/internal/dbusservices/systemd"
+	types "paradigm-ehb/agent/internal/dbusservices/types"
 )
 
 type HandlerServicev3 struct {
 	v3.UnimplementedHandlerServiceServer
 }
+
+
+func mapLoadedUnit(u *types.LoadedUnit) *v3.LoadedUnit {
+	if u == nil {
+		return nil
+	}
+
+	return &v3.LoadedUnit{
+		Name:         u.Name,
+		Description:  u.Description,
+		LoadState:    u.LoadState,
+		SubState:     u.SubState,
+		ActiveState:  u.ActiveState,
+		DepUnit:      u.DepUnit,
+		ObjectPath:   string(u.ObjectPath),
+		QueuedJob:    u.QueudJob,
+		JobType:      u.JobType,
+		JobPath:      string(u.JobPath),
+	}
+}
+
+func mapLoadedUnits(units []*types.LoadedUnit) []*v3.LoadedUnit {
+	out := make([]*v3.LoadedUnit, 0, len(units))
+	for _, u := range units {
+		if pu := mapLoadedUnit(u); pu != nil {
+			out = append(out, pu)
+		}
+	}
+	return out
+}
+
 
 func (s *HandlerServicev3) PerformUnitAction(
 	_ context.Context,
@@ -47,8 +80,7 @@ func (s *HandlerServicev3) PerformUnitAction(
 		}, nil
 	}
 
-	err = manager.RunAction(conn, action, in.UnitName)
-	if err != nil {
+	if err := manager.RunAction(conn, action, in.UnitName); err != nil {
 		return &v3.UnitActionReply{
 			Status:       []byte(fmt.Sprintf("failed to %s unit", actionName)),
 			Success:      false,
@@ -89,15 +121,13 @@ func (s *HandlerServicev3) PerformUnitFileAction(
 		}, nil
 	}
 
-	err = manager.RunSymlinkAction(
+	if err := manager.RunSymlinkAction(
 		conn,
 		action,
 		in.Runtime,
 		in.Force,
 		[]string{in.UnitName},
-	)
-
-	if err != nil {
+	); err != nil {
 		return &v3.UnitFileActionReply{
 			Status:       []byte("unit file action failed"),
 			Success:      false,
@@ -111,13 +141,13 @@ func (s *HandlerServicev3) PerformUnitFileAction(
 	}, nil
 }
 
+
 func (s *HandlerServicev3) GetAllUnits(
 	_ context.Context,
 	_ *v3.GetUnitsRequest,
 ) (*v3.GetUnitsReply, error) {
 
 	conn, err := dh.CreateSystemBus()
-
 	if err != nil {
 		return &v3.GetUnitsReply{
 			Success:      false,
@@ -125,23 +155,16 @@ func (s *HandlerServicev3) GetAllUnits(
 		}, nil
 	}
 
-	/**
-		
-	Handle error hanlding
-	*/
-	_, err = manager.RunRetrieval(conn, true)
+	units, err := manager.RunRetrieval(conn, true)
 	if err != nil {
 		return &v3.GetUnitsReply{
 			Success:      false,
 			ErrorMessage: err.Error(),
 		}, nil
 	}
-
-	// mappedUnits := make(*v3.GetUnitsReply, 0, len(units))
-	// mappedUnits = &units{}
 
 	return &v3.GetUnitsReply{
-		Units:   nil,
+		Units:   mapLoadedUnits(units),
 		Success: true,
 	}, nil
 }
@@ -159,10 +182,7 @@ func (s *HandlerServicev3) GetLoadedUnits(
 		}, nil
 	}
 
-	/**
-		TODO(nasr): handle error
-	*/
-	_, err = manager.RunRetrieval(conn, false)
+	units, err := manager.RunRetrieval(conn, false)
 	if err != nil {
 		return &v3.GetUnitsReply{
 			Success:      false,
@@ -171,10 +191,58 @@ func (s *HandlerServicev3) GetLoadedUnits(
 	}
 
 	return &v3.GetUnitsReply{
-		Units:   nil,
+		Units:   mapLoadedUnits(units),
 		Success: true,
 	}, nil
 }
+
+func (s *HandlerServicev3) GetFilteredUnits(
+	_ context.Context,
+	in *v3.GetUnitsFilteredRequest,
+) (*v3.GetUnitsReply, error) {
+
+	conn, err := dh.CreateSystemBus()
+	if err != nil {
+		return &v3.GetUnitsReply{
+			Success:      false,
+			ErrorMessage: err.Error(),
+		}, nil
+	}
+
+	var filters []string
+
+	switch in.State {
+	case v3.GetUnitsFilteredRequest_LOADED:
+		filters = []string{"loaded"}
+	case v3.GetUnitsFilteredRequest_NOT_FOUND:
+		filters = []string{"not-found"}
+	case v3.GetUnitsFilteredRequest_BAD_SETTING:
+		filters = []string{"bad-setting"}
+	case v3.GetUnitsFilteredRequest_ERROR:
+		filters = []string{"error"}
+	case v3.GetUnitsFilteredRequest_MASKED:
+		filters = []string{"masked"}
+	default:
+		return &v3.GetUnitsReply{
+			Success:      false,
+			ErrorMessage: "unspecified filter state",
+		}, nil
+	}
+
+	units, err := manager.MapFilteredUnits(conn, filters)
+	if err != nil {
+		return &v3.GetUnitsReply{
+			Success:      false,
+			ErrorMessage: err.Error(),
+		}, nil
+	}
+
+	return &v3.GetUnitsReply{
+		Units:   mapLoadedUnits(units),
+		Success: true,
+	}, nil
+}
+
 
 func (s *HandlerServicev3) GetUnitStatus(
 	_ context.Context,
@@ -189,10 +257,13 @@ func (s *HandlerServicev3) GetUnitStatus(
 		}, nil
 	}
 
-	/**
-		TODO(nasr): todo handle error
-	*/
-	obj, _ := dh.CreateSystemdObject(conn)
+	obj, err := dh.CreateSystemdObject(conn)
+	if err != nil {
+		return &v3.GetUnitStatusReply{
+			Success:      false,
+			ErrorMessage: err.Error(),
+		}, fmt.Errorf("failed to create systemd object")
+	}
 
 	state, err := manager.GetStatus(obj, in.UnitName)
 	if err != nil {
@@ -207,35 +278,4 @@ func (s *HandlerServicev3) GetUnitStatus(
 		Success: true,
 	}, nil
 }
-
-func (s *HandlerServicev3) GetFilteredUnits(
-	_ context.Context,
-	in *v3.GetUnitsFilteredRequest,
-) (*v3.GetUnitsReply, error) {
-
-	conn, err := dh.CreateSystemBus()
-
-	if err != nil {
-		return &v3.GetUnitsReply{
-			Success:      false,
-			ErrorMessage: err.Error(),
-		}, nil
-	}
-
-	/**
-		
-		TODO(nasr): handle the correct types
-		doing now
-
-	*/
-	_, err = manager.MapFilteredUnits(conn)
-	if err != nil {
-
-		return &v3.GetUnitsReply{
-			Success:      false,
-			ErrorMessage: err.Error(),
-		}, fmt.Errorf("failed to map filtered units %v: ", err)
-	}
-
-	return &v3.GetUnitsReply{}, nil
-}
+```
