@@ -108,11 +108,12 @@ message Process {
   uint32 num_threads = 5;
 }
 
-message KillProcessRequest {
-  uint32 pid = 1;
+message ProcessActionRequest {
+  int32 pid = 1;
+  int32 signal = 2;
 }
 
-message KillProcessReply {
+message ProcessActionReply {
 
   bool succes = 1;
 }

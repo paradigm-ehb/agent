@@ -524,7 +524,6 @@ Returns:
 */
 func ReadProcesses(device *C.Device) ([]Process, error) {
 
-
 	if device == nil {
 		return nil, fmt.Errorf("dvice null pointer")
 	}
@@ -532,57 +531,26 @@ func ReadProcesses(device *C.Device) ([]Process, error) {
 	count := int(device.processes.count)
 	items := device.processes.items
 
-	// slice := unsafe.Slice(items, count)
-
 	procs := make([]Process, 0, count)
 
-	// p := unsafe.Pointer(&items[i])
-
-	// p := (*C.Process)(unsafe.Pointer(items), uintptr(i)*unsafe.Sizeof(*items))
-
 	for i := 0; i < count; i++ {
-		// p := &slice[i]
 
-
-	p := (*C.Process)(unsafe.Pointer(uintptr(unsafe.Pointer(items)) + uintptr(i)*unsafe.Sizeof(*items)))
-
+		p := (*C.Process)(unsafe.Pointer(uintptr(unsafe.Pointer(items)) + uintptr(i)*unsafe.Sizeof(*items)))
 
 		err := C.process_read2(p.pid, p)
 		if err != C.OK {
-			fmt.Errorf("failed reading processes")
+			fmt.Printf("failed reading processes")
 		}
-
-	fmt.Println("Reading processes...", device.processes)
-
-
-		fmt.Println("pid:",p.pid)
-		fmt.Println("state:", p.state)
-
-		// if p.state == C.PROCESS_UNDEFINED {
-		//
-		// 	C.process_read(p.pid, p)
-		// }
-		//
-
-		fmt.Println("\t\t\t\tstate: ", C.GoString(&p.name[0]))
-		fmt.Println(unsafe.Sizeof(C.Process{}))
-
-
-		fmt.Println("pid offset  ", unsafe.Offsetof(p.pid))
-		fmt.Println("state offset", unsafe.Offsetof(p.state))
-		fmt.Println("utime offset", unsafe.Offsetof(p.utime))
 
 		procs = append(procs, Process{
 			PID:        int32(p.pid),
-			State:      ProcessState(p.state), //BREAKPOINT
+			State:      ProcessState(p.state),
 			UTime:      uint64(p.utime),
 			STime:      uint64(p.stime),
 			NumThreads: uint32(p.num_threads),
 			Name:       C.GoString(&p.name[0]),
 		})
-
 	}
-
 	return procs, nil
 }
 
@@ -596,13 +564,13 @@ Parameters:
 Returns:
   - error: Error if the process cannot be killed or doesn't exist
 */
-func KillProcess(pid int) error {
+func ProcessAction(pid int, action unix.Signal) error {
 
 	if pid <= 0 {
 		return fmt.Errorf("invalid PID: %d", pid)
 	}
 
-	if C.process_kill(C.int(pid), C.int(unix.SIGTERM)) != C.OK {
+	if C.process_kill(C.int(pid), C.int(action)) != C.OK {
 		return fmt.Errorf("failed to kill process %d", pid)
 	}
 	return nil

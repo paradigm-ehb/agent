@@ -7,6 +7,8 @@ import (
 	"paradigm-ehb/agent/internal/resources"
 	cgo "paradigm-ehb/agent/pkg/cgowrap"
 
+	"golang.org/x/sys/unix"
+
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -66,18 +68,18 @@ func (s *ResourcesServiceV2) GetSystemResources(
 
 func (s *ResourcesServiceV2) KillProcess(
 	ctx context.Context,
-	req *proto.KillProcessRequest,
-) (*proto.KillProcessReply, error) {
+	req *proto.ProcessActionRequest,
+) (*proto.ProcessActionReply, error) {
 
-	err := cgo.KillProcess(int(req.Pid))
+	err := cgo.ProcessAction(int(req.Pid), unix.Signal(req.Signal))
 	if err != nil {
 
-		return &proto.KillProcessReply{
+		return &proto.ProcessActionReply{
 			Succes: false,
 		}, nil
 	}
 
-	return &proto.KillProcessReply{
+	return &proto.ProcessActionReply{
 		Succes: true,
 	}, nil
 }
@@ -91,12 +93,11 @@ func (s *ResourcesServiceV2) KillProcess(
  */
 func mapSystemResources(s *resources.SystemResources) *proto.SystemResources {
 
-
 	return &proto.SystemResources{
-		Cpu:    mapCPU(s.CPU),
-		Memory: mapMemory(s.Memory),
-		Device: mapDevice(s.Device),
-		Disks:  mapDisks(s.Disks),
+		Cpu:       mapCPU(s.CPU),
+		Memory:    mapMemory(s.Memory),
+		Device:    mapDevice(s.Device),
+		Disks:     mapDisks(s.Disks),
 		Processes: mapProcesses(s.Procs),
 	}
 }
@@ -187,7 +188,6 @@ func mapProcessState(s cgo.ProcessState) proto.ProcessState {
 
 	switch s {
 
-
 	case cgo.ProcessRunning:
 		{
 
@@ -231,7 +231,7 @@ func mapProcessState(s cgo.ProcessState) proto.ProcessState {
 	case cgo.ProcessUndefined:
 		{
 			return proto.ProcessState_PROCESS_STATE_UNSPECIFIED
-			
+
 		}
 	default:
 
@@ -258,7 +258,6 @@ func mapProcesses(ps []cgo.Process) []*proto.Process {
 			NumThreads: p.NumThreads,
 		})
 	}
-
 
 	return out
 }
