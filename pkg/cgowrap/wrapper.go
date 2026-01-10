@@ -44,15 +44,12 @@ process_read2(i32 pid, Process *out)
 
     size_t len = strcspn(val, "\n");
 
-    printf("lenght: %lu", len);
 
     if (!strncmp(buf, "Name:", 5))
     {
 
       memcpy(out->name, val, len);
-      printf("\nout name %s\n", out->name);
     }
-    printf("name: %s", out->name);
     if (!strncmp(buf, "State:", 6))
     {
       char state_char = 0;
@@ -66,8 +63,6 @@ process_read2(i32 pid, Process *out)
       }
 
 
-      printf("\nstate char: %d\n", out->pid);
-      printf("\nstate char: %c\n", state_char);
       switch (state_char)
       {
         case 'R':
@@ -124,7 +119,6 @@ process_read2(i32 pid, Process *out)
     }
   }
 
-  printf("sizeof(Process) = %zu\n", sizeof(Process));
 
   int error = fclose(fp);
   if (error != 0)
@@ -132,7 +126,6 @@ process_read2(i32 pid, Process *out)
     return ERR_IO;
   }
 
-  printf("\n\n\n\nout state: %d\n", out->state);
   return OK;
 }
 */
@@ -545,7 +538,7 @@ func ReadProcesses(device *C.Device) ([]Process, error) {
 
 		err := C.process_read2(p.pid, p)
 		if err != C.OK {
-			fmt.Printf("failed reading processes")
+			return nil, fmt.Errorf("failed reading processes %v", err)
 		}
 
 		procs = append(procs, Process{

@@ -16,7 +16,15 @@ type JournalService struct {
 func (s *JournalService) Action(in *journal.JournalRequest, srv journal.JournalService_ActionServer) error {
 
 	var val string
-	// TODO(nasr): remove the magic number enums, horrible code practice
+	/*
+	TODO(nasr):
+	- Remove magic-number–based enum handling.
+	- Replace `switch in.Field` with:
+	  - a typed protobuf enum, or
+	  - a map[JournalField]string lookup, or
+	  - explicit constants with semantic names.
+	- Ensure invalid enum values are handled (default case + error).
+	*/
 	switch in.Field {
 
 	case 0:
@@ -31,30 +39,51 @@ func (s *JournalService) Action(in *journal.JournalRequest, srv journal.JournalS
 
 	m := []sdjournal.Match{{Field: val, Value: in.Value}}
 
-	// Generated time. testing issue
-	// TODO(nasr): fix the time
-	//sinceTime, err := time.Parse(time.RFC3339, "0")
-	//
-	//if err != nil {
-	//	fmt.Println("error parsing time:", err)
-	//	return nil, nil
-	//}
-	//
-	//duration := time.Since(sinceTime)
+	/*
+	TODO(nasr):
+	- Implement proper time filtering support.
+	- Decide on API semantics:
+	  - absolute timestamp vs relative duration
+	  - server-side vs client-provided time window
+	- Validate time parsing errors and propagate them via gRPC status.
+	- Remove dead/commented-out code once design is finalized.
+	*/
 
 	var wg sync.WaitGroup
 
 	ch := make(chan []byte)
 
+	/*
+	TODO(nasr):
+	- Define clear channel ownership:
+	  - who closes `ch` and when.
+	- Consider making channel buffered to avoid producer/consumer blocking.
+	- Document lifetime guarantees between goroutines.
+	*/
+
 	wg.Add(2)
 	go func() {
 		defer wg.Done()
+		/*
+		TODO(nasr):
+		- Propagate context cancellation into GetJournalInformation.
+		- Return errors instead of silent failure.
+		- Clarify meaning of leading `0` argument.
+		*/
 		j.GetJournalInformation(0, in.NumFromTail, in.Cursor, m, in.Path, ch)
 	}()
 
 	go func() {
 		defer wg.Done()
 
+		/*
+		TODO(nasr):
+		- Fix channel consumption logic:
+		  current code ranges over `ch` but also performs `<-ch` again.
+		- Avoid double reads from the same channel.
+		- Handle channel close explicitly.
+		- Propagate send errors via context cancellation or status return.
+		*/
 		for range ch {
 			resp := journal.JournalChunk{Reply: <-ch}
 			if err := srv.Send(&resp); err != nil {
@@ -63,6 +92,12 @@ func (s *JournalService) Action(in *journal.JournalRequest, srv journal.JournalS
 		}
 	}()
 
+	/*
+	TODO(nasr):
+	- Consider early exit on client disconnect.
+	- Avoid waiting indefinitely if goroutines deadlock.
+	- Evaluate replacing WaitGroup + channels with errgroup + context.
+	*/
 	wg.Wait()
 	return nil
 }
