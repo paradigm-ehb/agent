@@ -47,7 +47,6 @@ func (m model) View() string {
 	var mem runtime.MemStats
 	runtime.ReadMemStats(&mem)
 
-	// Styles
 	titleStyle := lipgloss.NewStyle().
 		Bold(true).
 		Foreground(lipgloss.Color("39")).
@@ -68,14 +67,12 @@ func (m model) View() string {
 		Foreground(lipgloss.Color("241")).
 		MarginTop(1)
 
-	// Helper function to format rows
 	row := func(label, value string) string {
 		return fmt.Sprintf("%s %s",
 			labelStyle.Width(20).Render(label+":"),
 			valueStyle.Render(value))
 	}
 
-	// Build the view
 	var s string
 
 	s += titleStyle.Render("Runtime Diagnostics") + "\n"
