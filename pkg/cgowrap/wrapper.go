@@ -321,6 +321,9 @@ func CpuRead(c *C.Cpu) (Cpu, error) {
 		Model:     C.GoString(&c.model[0]),
 		Frequency: C.GoString(&c.frequency[0]),
 		MaxCore:   uint32(c.cores),
+		TotalTime: uint64(c.total_time),
+		IdleTime: uint64(c.idle_time),
+
 	}
 	return cpu, nil
 }

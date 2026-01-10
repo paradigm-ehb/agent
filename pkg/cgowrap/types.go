@@ -6,6 +6,8 @@ type Cpu struct {
 	Model     string
 	Frequency string
 	MaxCore   uint32
+	TotalTime uint64
+	IdleTime uint64
 }
 
 // Ram represents RAM information including total and free memory.

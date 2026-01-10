@@ -42,6 +42,8 @@ message Cpu {
   string model = 2;
   string frequency = 3;
   uint32 max_core = 4;
+  uint64 total_time = 5;
+  uint64 idle_time = 6;
 }
 
 /**
