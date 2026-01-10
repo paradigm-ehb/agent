@@ -23,6 +23,8 @@ import (
 	"paradigm-ehb/agent/gen/greet"
 	"paradigm-ehb/agent/gen/journal/v1"
 
+	"log"
+
 	servicesV1 "paradigm-ehb/agent/gen/services/v1"
 	servicesV2 "paradigm-ehb/agent/gen/services/v2"
 	servicesV3 "paradigm-ehb/agent/gen/services/v3"
@@ -116,7 +118,7 @@ func main() {
 			/**
 			Any error other than "address already in use" is fatal.
 			*/
-			fmt.Println("failed to listen:", err)
+			log.Printf("failed to listen:", err)
 			return
 		}
 		break

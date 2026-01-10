@@ -113,6 +113,8 @@ func mapCPU(c cgo.Cpu) *proto.Cpu {
 		Model:     c.Model,
 		Frequency: c.Frequency,
 		MaxCore:   c.MaxCore,
+		TotalTime: c.TotalTime,
+		IdleTime:  c.IdleTime,
 	}
 
 }

@@ -316,14 +316,17 @@ func CpuRead(c *C.Cpu) (Cpu, error) {
 		return Cpu{}, fmt.Errorf("failed to read CPU information")
 	}
 
+	if C.cpu_read_usage(c) != C.OK {
+		return Cpu{}, fmt.Errorf("failed to read CPU information")
+	}
+
 	cpu := Cpu{
 		Vendor:    C.GoString(&c.vendor[0]),
 		Model:     C.GoString(&c.model[0]),
 		Frequency: C.GoString(&c.frequency[0]),
 		MaxCore:   uint32(c.cores),
 		TotalTime: uint64(c.total_time),
-		IdleTime: uint64(c.idle_time),
-
+		IdleTime:  uint64(c.idle_time),
 	}
 	return cpu, nil
 }

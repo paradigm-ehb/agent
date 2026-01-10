@@ -38,10 +38,13 @@ func RunSymlinkAction(
 	enableForce bool,
 	service []string) error {
 
-	obj, _ := dbushelper.CreateSystemdObject(conn)
+	obj, err := dbushelper.CreateSystemdObject(conn)
+	if err != nil {
+		return fmt.Errorf("failed to create systemd object %v", err)
+	}
 
 	if !obj.Path().IsValid() {
-		fmt.Println("invalid systemd path")
+		return fmt.Errorf("invalid systemd path")
 	}
 
 	/** EnableUnitFiles(in  as files, in  b runtime, in  b force, out b carries_install_info, out a(sss) changes); */
