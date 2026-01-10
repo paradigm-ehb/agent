@@ -193,10 +193,10 @@ func MapUnits(conn *dbus.Conn) ([]*types.LoadedUnit, error) {
  */
 func RunRetrieval(requestAllUnitsOnDisk bool) ([]*types.LoadedUnit, error) {
 	conn, err := dbushelper.CreateSystemBus()
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to create system bus connection: %w", err)
 	}
-	defer conn.Close()
 	
 	if requestAllUnitsOnDisk {
 		return MapUnits(conn)

@@ -22,7 +22,6 @@ func toGrpcUnits(units []*types.LoadedUnit) ([]*v3.LoadedUnit, error) {
 		return nil, fmt.Errorf("passed input is nil")
 	}
 
-	fmt.Println("input  :", units)
 
 	out := make([]*v3.LoadedUnit, 0, len(units))
 
@@ -45,7 +44,6 @@ func toGrpcUnits(units []*types.LoadedUnit) ([]*v3.LoadedUnit, error) {
 		})
 	}
 
-	fmt.Println("out -> ", out)
 
 	return out, nil
 }
@@ -156,6 +154,7 @@ func (s *HandlerServicev3) GetAllUnits(
 		}, nil
 	}
 
+
 	mapped, err := toGrpcUnits(units)
 	if err != nil {
 		return &v3.GetUnitsReply{
@@ -163,6 +162,7 @@ func (s *HandlerServicev3) GetAllUnits(
 			ErrorMessage: err.Error(),
 		}, nil
 	}
+
 
 	return &v3.GetUnitsReply{
 		Units:   mapped,
@@ -245,6 +245,8 @@ func (s *HandlerServicev3) GetFilteredUnits(
 	}
 
 	result, err := toGrpcUnits(units)
+
+	fmt.Print("result: ", result)
 
 	if err != nil {
 		return &v3.GetUnitsReply{
