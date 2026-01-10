@@ -8,44 +8,34 @@ import (
 
 // TODO(nasr): implement interfaces maybe
 
-// Method
-// @param chan a(ss), chan a(ss)
-// @param chan UnitFileEntry, chan UnitFileEntry
-// @return nil
+// ParseUnits filters units to only include services
+// @param input []types.Unit
+// @return []types.Unit, error
 func ParseUnits(input []types.Unit) ([]types.Unit, error) {
 	/**
 	filter the units on services and remove devices etc
 	*/
-
 	buffer := make([]types.Unit, 0, len(input))
 	for _, value := range input {
-
 		if strings.HasSuffix(value.Name, ".service") {
 			buffer = append(buffer, value)
 		}
 	}
-
 	return buffer, nil
-
 }
 
-func ParseLoadedUnits(in chan []types.LoadedUnit, out chan []types.LoadedUnit) {
-
-	input := <-in
-
+// ParseLoadedUnits filters loaded units to only include services
+// @param input []types.LoadedUnit
+// @return []types.LoadedUnit, error
+func ParseLoadedUnits(input []types.LoadedUnit) ([]types.LoadedUnit, error) {
 	/**
 	filter the units on services and remove devices etc
 	*/
 	buffer := make([]types.LoadedUnit, 0, len(input))
 	for _, value := range input {
-
-		if strings.HasSuffix(".service", string(value.Name)) {
+		if strings.HasSuffix(value.Name, ".service") {
 			buffer = append(buffer, value)
 		}
 	}
-
-	out <- buffer
-
-	return
-
+	return buffer, nil
 }
