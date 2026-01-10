@@ -57,7 +57,7 @@ var (
 		NOTE: When enabled, diagnostics must never block the gRPC server.
 	 **/
 
-	diagnostics = flag.Bool("diagnostics", true, "run runtime diagnostics")
+	diagnostics = flag.Bool("diagnostics", false, "run runtime diagnostics")
 
 	/**
 	portFlag is the preferred TCP port to bind the gRPC server to.
@@ -159,8 +159,6 @@ func main() {
 	servicesV3.RegisterHandlerServiceServer(
 		server,
 		&servicesHandlerV3.HandlerServicev3{})
-		
-
 
 	journal.RegisterJournalServiceServer(
 		server,
@@ -177,7 +175,6 @@ func main() {
 	devacpb.RegisterActionServiceServer(
 		server,
 		&grpc_handler.DeviceActionsService{})
-
 
 	/**
 	Enable gRPC reflection unconditionally.
