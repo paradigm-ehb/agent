@@ -7,6 +7,9 @@ option go_package = "paradigm-ehb/agent/gen/resources/v2;resourcespb";
 service ResourcesService {
   rpc GetSystemResources(GetSystemResourcesRequest)
       returns (GetSystemResourcesResponse);
+  rpc ProcessAction(ProcessActionRequest)
+    returns (ProcessActionReply);
+
 }
 
 message GetSystemResourcesRequest {}

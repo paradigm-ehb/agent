@@ -16,7 +16,7 @@ type HandlerServicev3 struct {
 	v3.UnimplementedHandlerServiceServer
 }
 
-func mapLoadedUnits(units []*types.LoadedUnit) ([]*v3.LoadedUnit, error) {
+func toGrpcUnits(units []*types.LoadedUnit) ([]*v3.LoadedUnit, error) {
 
 	if units == nil {
 		return nil, fmt.Errorf("passed input is nil")
@@ -148,7 +148,7 @@ func (s *HandlerServicev3) GetAllUnits(
 	_ *v3.GetUnitsRequest,
 ) (*v3.GetUnitsReply, error) {
 
-	conn, err := dh.CreateSystemBus()
+	units, err := manager.RunRetrieval(true)
 	if err != nil {
 		return &v3.GetUnitsReply{
 			Success:      false,
@@ -156,18 +156,7 @@ func (s *HandlerServicev3) GetAllUnits(
 		}, nil
 	}
 
-	units, err := manager.RunRetrieval(conn, true)
-	if err != nil {
-		return &v3.GetUnitsReply{
-			Success:      false,
-			ErrorMessage: err.Error(),
-		}, nil
-	}
-
-	/***
-	units is empty here!
-	*/
-	mapped, err := mapLoadedUnits(units)
+	mapped, err := toGrpcUnits(units)
 	if err != nil {
 		return &v3.GetUnitsReply{
 			Success:      false,
@@ -186,24 +175,28 @@ func (s *HandlerServicev3) GetLoadedUnits(
 	_ *v3.GetUnitsRequest,
 ) (*v3.GetUnitsReply, error) {
 
-	_, err := dh.CreateSystemBus()
+	in, err := manager.RunRetrieval(false)
+
 	if err != nil {
+
 		return &v3.GetUnitsReply{
-			Success:      false,
-			ErrorMessage: err.Error(),
-		}, nil
+			Units:   nil,
+			Success: true,
+		}, fmt.Errorf("failed to run retrieval")
 	}
 
-	// units, err := manager.RunRetrieval(conn, false)
+	out, err := toGrpcUnits(in)
+
 	if err != nil {
+
 		return &v3.GetUnitsReply{
-			Success:      false,
-			ErrorMessage: err.Error(),
-		}, nil
+			Units:   nil,
+			Success: true,
+		}, fmt.Errorf("failed to map to grpc types")
 	}
 
 	return &v3.GetUnitsReply{
-		Units:   nil,
+		Units:   out,
 		Success: true,
 	}, nil
 }
@@ -243,7 +236,7 @@ func (s *HandlerServicev3) GetFilteredUnits(
 		}
 	}
 
-	_, err = manager.MapFilteredUnits(conn, filters)
+	units, err := manager.MapFilteredUnits(conn, filters)
 	if err != nil {
 		return &v3.GetUnitsReply{
 			Success:      false,
@@ -251,8 +244,17 @@ func (s *HandlerServicev3) GetFilteredUnits(
 		}, nil
 	}
 
+	result, err := toGrpcUnits(units)
+
+	if err != nil {
+		return &v3.GetUnitsReply{
+			Units:   nil,
+			Success: false,
+		}, fmt.Errorf("failed to parse to grpc units")
+	}
+
 	return &v3.GetUnitsReply{
-		Units:   nil,
+		Units:   result,
 		Success: true,
 	}, nil
 }

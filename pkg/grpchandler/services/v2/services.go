@@ -134,7 +134,7 @@ func (s *HandlerServiceV2) GetAllUnits(
 		from the correct namespace
 
 	*/
-	_, err = manager.RunRetrieval(conn, true)
+	_, err = manager.RunRetrievalDeprecated(conn, true)
 	if err != nil {
 		return &v2.GetUnitsReply{
 			Success:      false,
@@ -166,7 +166,7 @@ func (s *HandlerServiceV2) GetLoadedUnits(
 		from the correct namespace
 
 	*/
-	_, err = manager.RunRetrieval(conn, false)
+	_, err = manager.RunRetrievalDeprecated(conn, false)
 	if err != nil {
 		return &v2.GetUnitsReply{
 			Success:      false,
