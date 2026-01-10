@@ -2,7 +2,6 @@ package dbus_services
 
 import (
 	"fmt"
-	"log"
 
 	dbushelper "paradigm-ehb/agent/internal/dbusservices/dbus"
 	systemd "paradigm-ehb/agent/internal/dbusservices/systemd"
@@ -136,26 +135,40 @@ func MapFilteredUnits(conn *dbus.Conn, filters []string) ([]*types.LoadedUnit, e
 	return units, nil
 }
 
-func MapUnits(conn *dbus.Conn) []*types.LoadedUnit {
+func MapUnits(conn *dbus.Conn) ([]*types.LoadedUnit, error) {
 
 	obj, err := dbushelper.CreateSystemdObject(conn)
 	if err != nil {
-		fmt.Errorf("failed to create systemd object")
+		return nil, fmt.Errorf("failed to create systemd object")
 	}
 
-	in := make(chan []types.Unit)
-	out := make(chan []types.Unit)
+	// in := make(chan []types.Unit)
+	// out := make(chan []types.Unit)
 
-	go systemd.GetUnits(obj, in)
-	go dbushelper.ParseUnits(in, out)
+	var result []types.Unit
 
-	var entries []types.Unit
+	result, err = systemd.GetUnits(obj)
 
-	units := make([]*types.LoadedUnit, 0, len(entries))
+	if err != nil {
+		return nil, fmt.Errorf("failed in the Map Units function")
+	}
 
-	entries = <-out
+	/**
+	* TODO(nasr): remove channel impelmentetation
+	 */
 
-	for _, e := range entries {
+	parsedUnits, err := dbushelper.ParseUnits(result)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse units")
+	}
+
+	// var entries []types.Unit
+
+	units := make([]*types.LoadedUnit, 0, len(parsedUnits))
+
+	for _, e := range parsedUnits {
+
+		fmt.Println("unit: -> ", e)
 
 		units = append(units, &types.LoadedUnit{
 			Name:        e.Name,
@@ -171,7 +184,7 @@ func MapUnits(conn *dbus.Conn) []*types.LoadedUnit {
 		})
 	}
 
-	return units
+	return units, nil
 }
 
 /*
@@ -190,11 +203,14 @@ func RunRetrieval(
 	conn, err := dbushelper.CreateSystemBus()
 
 	if err != nil {
-		log.Printf("failed to create a system bus connection for retrieving units %v", err)
+		return nil, fmt.Errorf("failed to create a system bus connection for retrieving units %v", err)
 	}
 
 	if requestAllUnitsOnDisk {
-		return MapUnits(conn), nil
+		result, err := MapUnits(conn)
+		if err != nil {
+			return result, fmt.Errorf("failed to request stuff")
+		}
 	}
 
 	return MapLoadedUnits(conn), nil
@@ -204,11 +220,11 @@ func UnitStatus(
 	obj dbus.BusObject,
 	name string) (string, error) {
 
-		out, err := systemd.GetStatusCall(obj, name)
-		if err != nil {
-			return "Failed", fmt.Errorf("failed to execute status call ", err)
-		}
+	out, err := systemd.GetStatusCall(obj, name)
+	if err != nil {
+		return "Failed", fmt.Errorf("failed to execute status call %v", err)
+	}
 
-		return out, nil 
+	return out, nil
 
 }
