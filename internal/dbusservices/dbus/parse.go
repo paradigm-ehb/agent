@@ -12,24 +12,20 @@ import (
 // @param chan a(ss), chan a(ss)
 // @param chan UnitFileEntry, chan UnitFileEntry
 // @return nil
-func ParseUnits(in chan []types.Unit, out chan []types.Unit) {
-
-	input := <-in
-
+func ParseUnits(input []types.Unit) ([]types.Unit, error) {
 	/**
 	filter the units on services and remove devices etc
 	*/
+
 	buffer := make([]types.Unit, 0, len(input))
 	for _, value := range input {
 
-		if strings.HasSuffix(".service", value.Name) {
+		if strings.HasSuffix(value.Name, ".service") {
 			buffer = append(buffer, value)
 		}
 	}
 
-	out <- buffer
-
-	return
+	return buffer, nil
 
 }
 
