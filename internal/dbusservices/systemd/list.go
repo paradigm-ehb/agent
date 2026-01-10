@@ -38,7 +38,7 @@ func GetLoadedUnits(
 
 func GetUnits(
 	obj dbus.BusObject,
-	out chan []types.Unit) {
+) ([]types.Unit, error) {
 
 	// ListUnitFiles(out a(ss) files);
 	// an array of struct string string
@@ -48,16 +48,26 @@ func GetUnits(
 	call := obj.Call("org.freedesktop.systemd1.Manager.ListUnitFiles", 0)
 
 	if call.Err != nil {
-		fmt.Println("failed to call all units loaded on disk")
-		return
+
+		return nil, fmt.Errorf("failed to call all units loaded on disk")
 	}
 
 	err := call.Store(&result)
 	if err != nil {
-		return
+		return nil, fmt.Errorf("failed to store services ")
 	}
 
-	out <- result
+	/**
+	* THIS IS WORKING
+	* fmt.Println("channel result: \n", result)
+	 */
+
+	/**
+	* THIS ISNT
+	* out <- result
+	 */
+
+	return result, nil
 }
 
 func GetUnitsFiltered(
@@ -83,7 +93,6 @@ func GetUnitsFiltered(
 
 }
 
-
 func GetStatusCall(obj dbus.BusObject, name string) (string, error) {
 	var result string
 
@@ -103,5 +112,3 @@ func GetStatusCall(obj dbus.BusObject, name string) (string, error) {
 
 	return result, nil
 }
-
-
