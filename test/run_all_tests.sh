@@ -204,7 +204,6 @@ grpcurl -plaintext \
   -d '{
     "field": 1,
     "value": "1",
-    "num_from_tail": 50,
     "cursor": "",
     "path": ""
   }' \
@@ -217,7 +216,7 @@ grpcurl -plaintext \
   -d '{
     "field": 2,
     "value": "0",
-    "num_from_tail": 100,
+    "numFromTail": 100,
     "cursor": "",
     "path": ""
   }' \
@@ -230,7 +229,7 @@ grpcurl -plaintext \
   -d '{
     "field": 3,
     "value": "0",
-    "num_from_tail": 100,
+    "numFromTail": 100,
     "cursor": "",
     "path": ""
   }' \
