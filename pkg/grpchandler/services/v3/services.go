@@ -16,37 +16,39 @@ type HandlerServicev3 struct {
 	v3.UnimplementedHandlerServiceServer
 }
 
+func mapLoadedUnits(units []*types.LoadedUnit) ([]*v3.LoadedUnit, error) {
 
-func mapLoadedUnit(u *types.LoadedUnit) *v3.LoadedUnit {
-	if u == nil {
-		return nil
+	if units == nil {
+		return nil, fmt.Errorf("passed input is nil")
 	}
 
-	return &v3.LoadedUnit{
-		Name:        u.Name,
-		Description: u.Description,
-		LoadState:   u.LoadState,
-		SubState:    u.SubState,
-		ActiveState: u.ActiveState,
-		DepUnit:     u.DepUnit,
-		ObjectPath:  string(u.ObjectPath),
-		QueuedJob:   u.QueudJob,
-		JobType:     u.JobType,
-		JobPath:     string(u.JobPath),
-	}
-}
+	fmt.Println("input  :", units)
 
-func mapLoadedUnits(units []*types.LoadedUnit) []*v3.LoadedUnit {
 	out := make([]*v3.LoadedUnit, 0, len(units))
+
 	for _, u := range units {
-		if pu := mapLoadedUnit(u); pu != nil {
-			out = append(out, pu)
+		if u == nil {
+			continue
 		}
+
+		out = append(out, &v3.LoadedUnit{
+			Name:        u.Name,
+			Description: u.Description,
+			LoadState:   u.LoadState,
+			SubState:    u.SubState,
+			ActiveState: u.ActiveState,
+			DepUnit:     u.DepUnit,
+			ObjectPath:  string(u.ObjectPath),
+			QueuedJob:   u.QueudJob,
+			JobType:     u.JobType,
+			JobPath:     string(u.JobPath),
+		})
 	}
-	return out
+
+	fmt.Println("out -> ", out)
+
+	return out, nil
 }
-
-
 func (s *HandlerServicev3) PerformUnitAction(
 	_ context.Context,
 	in *v3.UnitActionRequest,
@@ -141,7 +143,6 @@ func (s *HandlerServicev3) PerformUnitFileAction(
 	}, nil
 }
 
-
 func (s *HandlerServicev3) GetAllUnits(
 	_ context.Context,
 	_ *v3.GetUnitsRequest,
@@ -163,8 +164,19 @@ func (s *HandlerServicev3) GetAllUnits(
 		}, nil
 	}
 
+	/***
+	units is empty here!
+	*/
+	mapped, err := mapLoadedUnits(units)
+	if err != nil {
+		return &v3.GetUnitsReply{
+			Success:      false,
+			ErrorMessage: err.Error(),
+		}, nil
+	}
+
 	return &v3.GetUnitsReply{
-		Units:   mapLoadedUnits(units),
+		Units:   mapped,
 		Success: true,
 	}, nil
 }
@@ -174,7 +186,7 @@ func (s *HandlerServicev3) GetLoadedUnits(
 	_ *v3.GetUnitsRequest,
 ) (*v3.GetUnitsReply, error) {
 
-	conn, err := dh.CreateSystemBus()
+	_, err := dh.CreateSystemBus()
 	if err != nil {
 		return &v3.GetUnitsReply{
 			Success:      false,
@@ -182,7 +194,7 @@ func (s *HandlerServicev3) GetLoadedUnits(
 		}, nil
 	}
 
-	units, err := manager.RunRetrieval(conn, false)
+	// units, err := manager.RunRetrieval(conn, false)
 	if err != nil {
 		return &v3.GetUnitsReply{
 			Success:      false,
@@ -191,7 +203,7 @@ func (s *HandlerServicev3) GetLoadedUnits(
 	}
 
 	return &v3.GetUnitsReply{
-		Units:   mapLoadedUnits(units),
+		Units:   nil,
 		Success: true,
 	}, nil
 }
@@ -231,7 +243,7 @@ func (s *HandlerServicev3) GetFilteredUnits(
 		}
 	}
 
-	units, err := manager.MapFilteredUnits(conn, filters)
+	_, err = manager.MapFilteredUnits(conn, filters)
 	if err != nil {
 		return &v3.GetUnitsReply{
 			Success:      false,
@@ -240,7 +252,7 @@ func (s *HandlerServicev3) GetFilteredUnits(
 	}
 
 	return &v3.GetUnitsReply{
-		Units:   mapLoadedUnits(units),
+		Units:   nil,
 		Success: true,
 	}, nil
 }
