@@ -13,7 +13,7 @@ command -v grpcurl >/dev/null 2>&1 || {
 }
 
 echo "== Checking service availability =="
-grpcurl -plaintext "$ADDR" list resources.v1.ResourcesService >/dev/null
+grpcurl -plaintext "$ADDR" list resources.v2.ResourcesService >/dev/null
 echo "OK"
 echo
 
@@ -21,7 +21,7 @@ echo "== Calling GetSystemResources =="
 grpcurl -plaintext \
   -format text \
   "$ADDR" \
-  resources.v1.ResourcesService/GetSystemResources
+  resources.v2.ResourcesService/GetSystemResources
 echo
 
 echo "== Test completed =="

@@ -191,7 +191,7 @@ grpcurl -plaintext \
   -d '{
     "field": 0,
     "value": "nginx.service",
-    "num_from_tail": 100,
+    "numFromTail": 100,
     "cursor": "",
     "path": ""
   }' \
