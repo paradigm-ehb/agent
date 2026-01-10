@@ -64,21 +64,40 @@ func RunSymlinkAction(
 	return nil
 }
 
-// MapLoadedUnits /*
-func MapLoadedUnits(conn *dbus.Conn) []*types.LoadedUnit {
+func UnitStatus(
+	obj dbus.BusObject,
+	name string) (string, error) {
 
-	obj, _ := dbushelper.CreateSystemdObject(conn)
-	ch := make(chan []types.LoadedUnit)
-	parse := make(chan []types.LoadedUnit)
+	out, err := systemd.GetStatusCall(obj, name)
+	if err != nil {
+		return "Failed", fmt.Errorf("failed to execute status call %v", err)
+	}
 
-	go systemd.GetLoadedUnits(obj, ch)
-	go dbushelper.ParseLoadedUnits(ch, parse)
+	return out, nil
 
-	loaded := <-parse
+}
 
-	units := make([]*types.LoadedUnit, 0, len(loaded))
-
-	for _, u := range loaded {
+/**
+ * Map to the correct types
+ */
+func MapLoadedUnits(conn *dbus.Conn) ([]*types.LoadedUnit, error) {
+	obj, err := dbushelper.CreateSystemdObject(conn)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create systemd object: %w", err)
+	}
+	
+	loaded, err := systemd.GetLoadedUnits(obj)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get loaded units: %w", err)
+	}
+	
+	parsed, err := dbushelper.ParseLoadedUnits(loaded)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse loaded units: %w", err)
+	}
+	
+	units := make([]*types.LoadedUnit, 0, len(parsed))
+	for _, u := range parsed {
 		units = append(units, &types.LoadedUnit{
 			Name:        u.Name,
 			Description: u.Description,
@@ -87,37 +106,32 @@ func MapLoadedUnits(conn *dbus.Conn) []*types.LoadedUnit {
 			ActiveState: u.ActiveState,
 			DepUnit:     u.DepUnit,
 			ObjectPath:  u.ObjectPath,
-			/*oops typo in queued job :)*/
-			QueudJob: u.QueudJob,
-			JobType:  u.JobType,
-			JobPath:  u.JobPath,
+			QueudJob:    u.QueudJob, // Keep the typo for consistency
+			JobType:     u.JobType,
+			JobPath:     u.JobPath,
 		})
 	}
-
-	return units
+	return units, nil
 }
 
 func MapFilteredUnits(conn *dbus.Conn, filters []string) ([]*types.LoadedUnit, error) {
-
 	obj, err := dbushelper.CreateSystemdObject(conn)
 	if err != nil {
-		fmt.Errorf("failed to create systemd object")
+		return nil, fmt.Errorf("failed to create systemd object: %w", err)
 	}
-
-	in := make(chan []types.LoadedUnit)
-	out := make(chan []types.LoadedUnit)
-
-	go systemd.GetUnitsFiltered(obj, in, filters)
-	go dbushelper.ParseLoadedUnits(in, out)
-
-	var entries []types.LoadedUnit
-
-	units := make([]*types.LoadedUnit, 0, len(entries))
-
-	entries = <-out
-
-	for _, e := range entries {
-
+	
+	entries, err := systemd.GetUnitsFiltered(obj, filters)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get filtered units: %w", err)
+	}
+	
+	parsed, err := dbushelper.ParseLoadedUnits(entries)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse filtered units: %w", err)
+	}
+	
+	units := make([]*types.LoadedUnit, 0, len(parsed))
+	for _, e := range parsed {
 		units = append(units, &types.LoadedUnit{
 			Name:        e.Name,
 			Description: "Not available",
@@ -131,45 +145,30 @@ func MapFilteredUnits(conn *dbus.Conn, filters []string) ([]*types.LoadedUnit, e
 			JobPath:     "Not Available",
 		})
 	}
-
 	return units, nil
 }
 
+/**
+ * Fill in proper unit types
+ */
 func MapUnits(conn *dbus.Conn) ([]*types.LoadedUnit, error) {
-
 	obj, err := dbushelper.CreateSystemdObject(conn)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create systemd object")
+		return nil, fmt.Errorf("failed to create systemd object: %w", err)
 	}
-
-	// in := make(chan []types.Unit)
-	// out := make(chan []types.Unit)
-
-	var result []types.Unit
-
-	result, err = systemd.GetUnits(obj)
-
+	
+	result, err := systemd.GetUnits(obj)
 	if err != nil {
-		return nil, fmt.Errorf("failed in the Map Units function")
+		return nil, fmt.Errorf("failed to get units: %w", err)
 	}
-
-	/**
-	* TODO(nasr): remove channel impelmentetation
-	 */
-
+	
 	parsedUnits, err := dbushelper.ParseUnits(result)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse units")
+		return nil, fmt.Errorf("failed to parse units: %w", err)
 	}
-
-	// var entries []types.Unit
-
+	
 	units := make([]*types.LoadedUnit, 0, len(parsedUnits))
-
 	for _, e := range parsedUnits {
-
-		fmt.Println("unit: -> ", e)
-
 		units = append(units, &types.LoadedUnit{
 			Name:        e.Name,
 			Description: "Not available",
@@ -183,48 +182,34 @@ func MapUnits(conn *dbus.Conn) ([]*types.LoadedUnit, error) {
 			JobPath:     "Not Available",
 		})
 	}
-
 	return units, nil
 }
 
-/*
-*
-* @param, true for all on disk, false for loaded units
-* a loaded unit is a unit that has been activated before
-* and is available in memoery for the server to start up
-* or something like that
-* @return []*types.LoadedUnit, error
+/**
+ * @param requestAllUnitsOnDisk: true for all units on disk, false for loaded units
+ * A loaded unit is a unit that has been activated before and is available in memory
+ * for the server to start up
+ * @return []*types.LoadedUnit, error
  */
-func RunRetrieval(
-	conn *dbus.Conn,
-	requestAllUnitsOnDisk bool,
-) ([]*types.LoadedUnit, error) {
-
+func RunRetrieval(requestAllUnitsOnDisk bool) ([]*types.LoadedUnit, error) {
 	conn, err := dbushelper.CreateSystemBus()
-
 	if err != nil {
-		return nil, fmt.Errorf("failed to create a system bus connection for retrieving units %v", err)
+		return nil, fmt.Errorf("failed to create system bus connection: %w", err)
 	}
-
+	defer conn.Close()
+	
 	if requestAllUnitsOnDisk {
-		result, err := MapUnits(conn)
-		if err != nil {
-			return result, fmt.Errorf("failed to request stuff")
-		}
+		return MapUnits(conn)
 	}
-
-	return MapLoadedUnits(conn), nil
+	
+	return MapLoadedUnits(conn)
 }
 
-func UnitStatus(
-	obj dbus.BusObject,
-	name string) (string, error) {
-
-	out, err := systemd.GetStatusCall(obj, name)
-	if err != nil {
-		return "Failed", fmt.Errorf("failed to execute status call %v", err)
+func RunRetrievalDeprecated(conn *dbus.Conn, requestAllUnitsOnDisk bool) ([]*types.LoadedUnit, error) {
+	
+	if requestAllUnitsOnDisk {
+		return MapUnits(conn)
 	}
-
-	return out, nil
-
+	
+	return MapLoadedUnits(conn)
 }
