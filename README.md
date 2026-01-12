@@ -91,3 +91,7 @@ grpcurl -plaintext localhost:50051 agent.Greeter/SayHello -d '{"name":"Appie"}'
 Useful during debugging or when testing connectivity between Agent and Command Center.
 
 
+
+### Resources
+
+https://medium.com/@ejaebbang/exploring-mtls-with-golang-and-openssl-a34c3d99aa78
