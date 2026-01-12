@@ -17,23 +17,23 @@ grpcurl -plaintext \
   resources.v2.ResourcesService/GetSystemResources
 
 # Kill Process (replace with actual PID)
-echo -e "\n[2] KillProcess (SIGTERM - signal 15)"
+echo -e "\n[2] ProcessAction (SIGTERM - signal 15)"
 grpcurl -plaintext \
   -d '{
     "pid": 12345,
     "signal": 15
   }' \
   $SERVER \
-  resources.v2.ResourcesService/KillProcess
+  resources.v2.ResourcesService/ProcessAction
 
-echo -e "\n[3] KillProcess (SIGKILL - signal 9)"
+echo -e "\n[3] ProcessAction (SIGKILL - signal 9)"
 grpcurl -plaintext \
   -d '{
     "pid": 12345,
     "signal": 9
   }' \
   $SERVER \
-  resources.v2.ResourcesService/KillProcess
+  resources.v2.ResourcesService/ProcessAction
 
 echo "======================================"
 echo "HandlerServicev3 Tests (Systemd)"

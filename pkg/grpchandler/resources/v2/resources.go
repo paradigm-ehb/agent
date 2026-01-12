@@ -66,7 +66,7 @@ func (s *ResourcesServiceV2) GetSystemResources(
 * TODO(nasr): update individual resources
  */
 
-func (s *ResourcesServiceV2) KillProcess(
+func (s *ResourcesServiceV2) ProcessAction(
 	ctx context.Context,
 	req *proto.ProcessActionRequest,
 ) (*proto.ProcessActionReply, error) {
