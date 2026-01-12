@@ -97,8 +97,8 @@ func mapCPU(c wr.Cpu) *proto.Cpu {
  */
 func mapMemory(m wr.Ram) *proto.Memory {
 	return &proto.Memory{
-		Total: m.Total,
-		Free:  m.Free,
+		Total: string(m.Total),
+		Free:  string(m.Free),
 	}
 }
 

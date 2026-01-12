@@ -92,9 +92,11 @@ OUT_DIR="$AGENT_RES_DIR/build"
 
 SRC_RES="$AGENT_RES_DIR/resources.c"
 SRC_ARENA="$AGENT_RES_DIR/arena.c"
+SRC_BASE="$AGENT_RES_DIR/base.c"
 
 OUT_OBJ_RES="$OUT_DIR/resources.o"
 OUT_OBJ_ARENA="$OUT_DIR/arena.o"
+OUT_OBJ_BASE="$OUT_DIR/base.o"
 
 OUT_LIB="$OUT_DIR/libagent_resources.a"
 
@@ -133,10 +135,13 @@ $CC $CFLAGS -c "$SRC_RES" -o "$OUT_OBJ_RES"
 echo "Compiling arena.c..."
 $CC $CFLAGS -c "$SRC_ARENA" -o "$OUT_OBJ_ARENA"
 
+echo "Compiling base.c..."
+$CC $CFLAGS -c "$SRC_BASE" -o "$OUT_OBJ_BASE"
+
 echo "Creating static library..."
 # $AR rcs "$OUT_LIB" "$OUT_OBJ"
 
-$AR rcs "$OUT_LIB" "$OUT_OBJ_RES" "$OUT_OBJ_ARENA"
+$AR rcs "$OUT_LIB" "$OUT_OBJ_RES" "$OUT_OBJ_ARENA" "$OUT_OBJ_BASE"
 
 echo "Done: $OUT_LIB"
 
