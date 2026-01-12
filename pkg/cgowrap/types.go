@@ -24,6 +24,15 @@ type DiskPartition struct {
 	Blocks uint64
 }
 
+type DiskUsage struct {
+
+   total uint64 
+   free uint64
+   available uint64
+   used uint64
+}
+
+
 // Disk represents disk information containing multiple partitions.
 type Disk struct {
 	Partitions []DiskPartition

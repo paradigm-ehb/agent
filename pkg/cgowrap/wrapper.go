@@ -430,6 +430,8 @@ func DiskRead(disk *C.Disk) (Disk, error) {
 			Blocks: uint64(part.blocks),
 		})
 	}
+
+	
 	return d, nil
 }
 
@@ -480,6 +482,21 @@ func DeviceRead(device *C.Device, arena *C.mem_arena) (Device, error) {
 		Uptime:    C.GoString(&device.uptime[0]),
 	}
 	return de, nil
+}
+
+func FileSystemUsage(path string, disk *C.Disk) error {
+
+	/*
+	* Replace this manual allocation
+	*/
+	cPath := C.CString(path)
+	defer C.free(unsafe.Pointer(cPath))
+
+	err := C.fs_usage(cPath, disk)
+	if err != C.OK {
+		return fmt.Errorf("failed to read the file system usage")
+	}
+	return nil
 }
 
 /*

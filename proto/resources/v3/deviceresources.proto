@@ -1,0 +1,162 @@
+syntax = "proto3";
+
+package resources.v3;
+
+option go_package = "paradigm-ehb/agent/gen/resources/v3;resourcespb";
+
+service ResourcesService {
+
+  rpc GetSystemResources(GetSystemResourcesRequest)
+      returns (GetSystemResourcesResponse);
+
+  rpc GetCpu(GetCpuRequest)
+      returns (GetCpuReply);
+
+  rpc GetMemory(GetMemoryRequest)
+      returns (GetMemoryReply);
+
+  rpc GetDevice(GetDeviceRequest)
+      returns (GetDeviceReply);
+
+  rpc GetDisks(GetDisksRequest)
+      returns (GetDisksReply);
+
+  rpc GetFileSystems(GetFileSystemsRequest)
+      returns (GetFileSystemsReply);
+
+  rpc GetProcesses(GetProcessesRequest)
+      returns (GetProcessesReply);
+
+  rpc ProcessAction(ProcessActionRequest)
+      returns (ProcessActionReply);
+}
+
+message GetSystemResourcesRequest {}
+
+message GetSystemResourcesResponse {
+  SystemResources resources = 1;
+}
+
+/**
+ *
+ * Get a complete system snapshots
+ * @return Cpu, Memory, Device, Disk ( partitions ) and processes
+ *
+ * */
+message SystemResources {
+  Cpu cpu = 1;
+  Memory memory = 2;
+  Device device = 3;
+  repeated Disk disks = 4;
+  repeated Process processes = 5;
+}
+
+
+message GetCpuRequest {}
+
+message GetCpuReply {
+  Cpu cpu = 1;
+}
+
+message Cpu {
+  string vendor = 1;        
+  string model = 2;         
+  string frequency = 3;     
+  uint32 cores = 4;         
+  uint64 total_time = 5;    
+  uint64 idle_time = 6;     
+}
+
+message GetMemoryRequest {}
+
+message GetMemoryReply {
+  Memory memory = 1;
+}
+
+message Memory {
+  uint64 total = 1;       
+  uint64 available = 2;  
+}
+
+
+message GetDeviceRequest {}
+
+message GetDeviceReply {
+  Device device = 1;
+}
+
+message Device {
+  string os_version = 1;
+  string uptime = 2;   
+}
+
+
+message GetDisksRequest {}
+
+message GetDisksReply {
+  repeated Disk disks = 1;
+}
+
+message Disk {
+  string device = 1;
+  repeated DiskPartition partitions = 2;
+}
+
+message DiskPartition {
+  string name = 1;          
+  uint32 major = 2;
+  uint32 minor = 3;
+  uint64 blocks = 4;
+}
+
+
+message GetFileSystemsRequest {}
+
+message GetFileSystemsReply {
+  repeated FileSystem filesystems = 1;
+}
+
+message FileSystem {
+  uint64 total = 1;         
+  uint64 used = 2;          
+  uint64 free = 3;          
+  uint64 available = 4;     
+}
+
+
+message GetProcessesRequest {}
+
+message GetProcessesReply {
+  repeated Process processes = 1;
+}
+
+enum ProcessState {
+  PROCESS_STATE_UNSPECIFIED = 0;
+  PROCESS_STATE_RUNNING = 1;
+  PROCESS_STATE_SLEEPING = 2;
+  PROCESS_STATE_DISK_SLEEPING = 3;
+  PROCESS_STATE_STOPPED = 4;
+  PROCESS_STATE_TRACING_STOPPED = 5;
+  PROCESS_STATE_ZOMBIE = 6;
+  PROCESS_STATE_DEAD = 7;
+  PROCESS_STATE_IDLE = 8;
+  PROCESS_STATE_UNDEFINED = 9;
+}
+
+message Process {
+  int32 pid = 1;
+  string name = 2;
+  ProcessState state = 3;
+  uint64 utime = 4;         
+  uint32 num_threads = 5;
+}
+
+
+message ProcessActionRequest {
+  int32 pid = 1;
+  int32 signal = 2;         
+}
+
+message ProcessActionReply {
+  bool success = 1;
+}
