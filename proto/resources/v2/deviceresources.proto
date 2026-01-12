@@ -51,8 +51,8 @@ message Cpu {
  * @return total memory on system, available memory on system 
  * */
 message Memory {
-  string total = 1;
-  string free = 2;
+  uint64 total = 1;
+  uint64 free = 2;
 }
 
 /**

@@ -364,9 +364,10 @@ func RamRead(ram *C.Ram) (Ram, error) {
 	}
 
 	r := Ram{
-		Total: C.GoString(&ram.total[0]),
-		Free:  C.GoString(&ram.free[0]),
+		Total: uint64(ram.total),
+		Free:  uint64(ram.free),
 	}
+
 	return r, nil
 }
 

@@ -12,8 +12,8 @@ type Cpu struct {
 
 // Ram represents RAM information including total and free memory.
 type Ram struct {
-	Total string
-	Free  string
+	Total uint64 
+	Free  uint64
 }
 
 // DiskPartition represents a single disk partition with device identifiers and block count.

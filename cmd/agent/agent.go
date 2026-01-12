@@ -67,7 +67,7 @@ var (
 	NOTE:
 	When enabled, diagnostics must never block the gRPC server.
 	*/
-	diagnostics = flag.Bool("diagnostics", true, "run runtime diagnostics")
+	diagnostics = flag.Bool("diagnostics", false, "run runtime diagnostics")
 
 	/*
 	portFlag is the preferred TCP port to bind the gRPC server to.
