@@ -413,10 +413,10 @@ func DiskRead(disk *C.Disk) (Disk, error) {
 	}
 
 	d := Disk{
-		Partitions: make([]DiskPartition, 0, disk.count),
+		Partitions: make([]DiskPartition, 0, disk.part_count),
 	}
 
-	for i := C.size_t(0); i < disk.count; i++ {
+	for i := C.size_t(0); i < disk.part_count; i++ {
 		part := (*C.Partition)(
 			unsafe.Pointer(
 				uintptr(unsafe.Pointer(disk.partitions)) +
