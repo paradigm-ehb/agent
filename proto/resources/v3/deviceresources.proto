@@ -75,7 +75,7 @@ message GetMemoryReply {
 
 message Memory {
   uint64 total = 1;       
-  uint64 available = 2;  
+  uint64 free = 2;  
 }
 
 
@@ -110,7 +110,9 @@ message DiskPartition {
 }
 
 
-message GetFileSystemsRequest {}
+message GetFileSystemsRequest {
+  string path = 1;
+}
 
 message GetFileSystemsReply {
   repeated FileSystem filesystems = 1;

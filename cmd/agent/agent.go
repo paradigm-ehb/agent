@@ -33,6 +33,7 @@ import (
 
 	resourcesv1 "paradigm-ehb/agent/gen/resources/v1"
 	resourcesv2 "paradigm-ehb/agent/gen/resources/v2"
+	resourcesv3 "paradigm-ehb/agent/gen/resources/v3"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
@@ -45,6 +46,7 @@ import (
 
 	resourcesHandlerV1 "paradigm-ehb/agent/pkg/grpchandler/resources/v1"
 	resourcesHandlerV2 "paradigm-ehb/agent/pkg/grpchandler/resources/v2"
+	resourcesHandlerV3 "paradigm-ehb/agent/pkg/grpchandler/resources/v3"
 
 	servicesHandlerV1 "paradigm-ehb/agent/pkg/grpchandler/services/v1"
 	servicesHandlerV2 "paradigm-ehb/agent/pkg/grpchandler/services/v2"
@@ -216,6 +218,12 @@ func main() {
 		server,
 		&resourcesHandlerV2.ResourcesServiceV2{},
 	)
+
+	resourcesv3.RegisterResourcesServiceServer(
+		server,
+		&resourcesHandlerV3.ResourcesServiceV3{},
+	)
+
 
 	devacpb.RegisterActionServiceServer(
 		server,

@@ -3,7 +3,7 @@ package grpc_handler
 import (
 	"context"
 
-	proto "paradigm-ehb/agent/gen/resources/v2"
+	proto "paradigm-ehb/agent/gen/resources/v3"
 	"paradigm-ehb/agent/internal/resources"
 	cgo "paradigm-ehb/agent/pkg/cgowrap"
 
@@ -75,12 +75,12 @@ func (s *ResourcesServiceV3) ProcessAction(
 	if err != nil {
 
 		return &proto.ProcessActionReply{
-			Succes: false,
+			Success: false,
 		}, nil
 	}
 
 	return &proto.ProcessActionReply{
-		Succes: true,
+		Success: true,
 	}, nil
 }
 
@@ -112,7 +112,7 @@ func mapCPU(c cgo.Cpu) *proto.Cpu {
 		Vendor:    c.Vendor,
 		Model:     c.Model,
 		Frequency: c.Frequency,
-		MaxCore:   c.MaxCore,
+		Cores:     c.MaxCore,
 		TotalTime: c.TotalTime,
 		IdleTime:  c.IdleTime,
 	}
@@ -264,8 +264,6 @@ func mapProcesses(ps []cgo.Process) []*proto.Process {
 	return out
 }
 
-
-
 func (s *ResourcesServiceV3) GetCpu(
 	ctx context.Context,
 	_ *proto.GetCpuRequest,
@@ -371,10 +369,9 @@ func (s *ResourcesServiceV3) GetProcesses(
 	}, nil
 }
 
-
 func (s *ResourcesServiceV3) GetFileSystems(
 	ctx context.Context,
-	_ *proto.GetFileSystemsRequest,
+	req *proto.GetFileSystemsRequest,
 ) (*proto.GetFileSystemsReply, error) {
 
 	select {
@@ -383,7 +380,6 @@ func (s *ResourcesServiceV3) GetFileSystems(
 	default:
 	}
 
-	// Reuse the canonical snapshot
 	snap, err := resources.GetCompleteSystemResources()
 	if err != nil {
 		return nil, status.Errorf(
@@ -393,11 +389,23 @@ func (s *ResourcesServiceV3) GetFileSystems(
 		)
 	}
 
+	fs := snap.FileSystems
+
+	// Optional filtering by path
+	if req.Path != "" {
+		filtered := fs[:0]
+		for _, f := range fs {
+			if f.MountPoint == req.Path {
+				filtered = append(filtered, f)
+			}
+		}
+		fs = filtered
+	}
+
 	return &proto.GetFileSystemsReply{
-		Filesystems: mapFileSystems(snap.FileSystems),
+		Filesystems: mapFileSystems(fs),
 	}, nil
 }
-
 
 func mapFileSystems(fs []cgo.FileSystem) []*proto.FileSystem {
 
@@ -405,10 +413,10 @@ func mapFileSystems(fs []cgo.FileSystem) []*proto.FileSystem {
 
 	for _, f := range fs {
 		out = append(out, &proto.FileSystem{
-			Total:      f.Total,
-			Used:       f.Used,
-			Free:       f.Free,
-			Available:  f.Available,
+			Total:     f.Total,
+			Used:      f.Used,
+			Free:      f.Free,
+			Available: f.Available,
 		})
 	}
 
