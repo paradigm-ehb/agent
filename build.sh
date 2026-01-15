@@ -83,11 +83,8 @@ echo "-------------------------------------------------------------------------"
 
 CC=cc
 AR=ar
-AGENT_RES_DIR="pkg/agent-resources"
-# SRC="$AGENT_RES_DIR/resources.c"
+AGENT_RES_DIR="pkg/resources"
 OUT_DIR="$AGENT_RES_DIR/build"
-# OUT_OBJ="$OUT_DIR/resources.o"
-# OUT_LIB="$OUT_DIR/libagent_resources.a"
 
 
 SRC_RES="$AGENT_RES_DIR/resources.c"
@@ -98,7 +95,7 @@ OUT_OBJ_RES="$OUT_DIR/resources.o"
 OUT_OBJ_ARENA="$OUT_DIR/arena.o"
 OUT_OBJ_BASE="$OUT_DIR/base.o"
 
-OUT_LIB="$OUT_DIR/libagent_resources.a"
+OUT_LIB="$OUT_DIR/libresources.a"
 
 CFLAGS="
 -std=c99

@@ -1,8 +1,8 @@
 package wrapper
 
 /*
-#cgo CFLAGS:  -I${SRCDIR}/../agent-resources
-#cgo LDFLAGS: -L${SRCDIR}/../agent-resources/build -lagent_resources
+#cgo CFLAGS:  -I${SRCDIR}/../resources
+#cgo LDFLAGS: -L${SRCDIR}/../resources/build -lresources
 
 #include <stdio.h>
 #include <string.h>
