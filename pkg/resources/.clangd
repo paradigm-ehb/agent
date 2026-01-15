@@ -1,0 +1,68 @@
+CompileFlags:
+  Add:
+    - -Iinclude
+
+  Remove:
+    - -std=*
+    - -O*
+    - -march=*
+    - -mtune=*
+
+# C configuration
+If:
+  Language: C
+Then:
+  CompileFlags:
+    Add:
+      - -std=c99
+      - -xc
+      - -Wall
+      - -Wextra
+      - -Wpedantic
+      - -Wshadow
+      - -Wconversion
+      - -Wsign-conversion
+      - -Wmissing-declarations
+      - -Wundef
+      - -Wpointer-arith
+      - -Wcast-align
+      - -Wcast-qual
+      - -Wwrite-strings
+      - -Wswitch-enum
+      - -Wformat=2
+      - -Wstrict-aliasing=2
+      - -Werror=implicit-function-declaration
+      - -Werror=implicit-int
+      - -Werror=incompatible-pointer-types
+      - -Werror=return-type
+      - -Wformat-security
+      - -Wnull-dereference
+      - -Wmisleading-indentation
+      - -Wunused
+      - -Wuninitialized
+      - -Wdouble-promotion
+      - -Wstrict-overflow=2
+      - -D_POSIX_C_SOURCE=200809L
+      - -ldnf5
+
+# C++ configuration
+If:
+  Language: Cpp
+Then:
+  CompileFlags:
+    Add:
+      - -std=c++20
+      - -Wall
+      - -Wextra
+      - -Wpedantic
+      - -Wshadow
+      - -Wconversion
+      - -Wsign-conversion
+      - -Wundef
+      - -Wpointer-arith
+      - -Wcast-align
+      - -Wcast-qual
+      - -Wformat=2
+      - -Wformat-security
+      - -Wnull-dereference
+      - -Wmisleading-indentation
