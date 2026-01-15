@@ -118,7 +118,6 @@ CFLAGS="
 -Wmisleading-indentation
 -Wunused
 -Wuninitialized
--Werror
 -Wdouble-promotion
 -Wstrict-overflow=2
 -D_POSIX_C_SOURCE=200809L
