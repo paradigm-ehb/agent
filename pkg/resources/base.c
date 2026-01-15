@@ -18,7 +18,8 @@ parse_u64(char *buf, size_t len)
     {
       break;
     }
-    value = value * 10 + (c - '0');
+    u64 digit = (u64)(c - '0');
+    value = value * 10 + digit;
   }
 
   return value;
