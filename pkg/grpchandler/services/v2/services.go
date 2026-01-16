@@ -128,7 +128,13 @@ func (s *HandlerServiceV2) GetAllUnits(
 		}, nil
 	}
 
-	units, err := manager.RunRetrieval(conn, true)
+	/**
+		
+		TODO(nasr): fix the design issue and return the correct mapped types
+		from the correct namespace
+
+	*/
+	_, err = manager.RunRetrievalDeprecated(conn, true)
 	if err != nil {
 		return &v2.GetUnitsReply{
 			Success:      false,
@@ -137,7 +143,7 @@ func (s *HandlerServiceV2) GetAllUnits(
 	}
 
 	return &v2.GetUnitsReply{
-		Units:   units,
+		Units:   nil,
 		Success: true,
 	}, nil
 }
@@ -154,8 +160,13 @@ func (s *HandlerServiceV2) GetLoadedUnits(
 			ErrorMessage: err.Error(),
 		}, nil
 	}
+	/**
+		
+		TODO(nasr): fix the design issue and return the correct mapped types
+		from the correct namespace
 
-	units, err := manager.RunRetrieval(conn, false)
+	*/
+	_, err = manager.RunRetrievalDeprecated(conn, false)
 	if err != nil {
 		return &v2.GetUnitsReply{
 			Success:      false,
@@ -164,7 +175,7 @@ func (s *HandlerServiceV2) GetLoadedUnits(
 	}
 
 	return &v2.GetUnitsReply{
-		Units:   units,
+		Units:   nil,
 		Success: true,
 	}, nil
 }
@@ -183,9 +194,12 @@ func (s *HandlerServiceV2) GetUnitStatus(
 		}, nil
 	}
 
-	obj := dh.CreateSystemdObject(conn)
+	obj, err := dh.CreateSystemdObject(conn)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create system object")
+	}
 
-	state, err := manager.GetStatus(obj, in.UnitName)
+	state, err := manager.UnitStatus(obj, in.UnitName)
 	if err != nil {
 		return &v2.GetUnitStatusReply{
 			Success:      false,

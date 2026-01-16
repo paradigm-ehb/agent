@@ -1,0 +1,104 @@
+BasedOnStyle: LLVM
+Language: Cpp
+
+# -------------------------------------------------------------------
+# Indentation & layout
+# -------------------------------------------------------------------
+IndentWidth: 2
+TabWidth: 2
+UseTab: Never
+ContinuationIndentWidth: 2
+
+IndentCaseLabels: true
+IndentGotoLabels: true
+IndentPPDirectives: None
+IndentExternBlock: NoIndent
+
+# -------------------------------------------------------------------
+# Line breaking
+# -------------------------------------------------------------------
+ColumnLimit: 0
+
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowAllArgumentsOnNextLine: false
+
+AllowShortFunctionsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine:  false 
+AllowShortBlocksOnASingleLine: Never
+AllowShortCaseLabelsOnASingleLine: false
+
+AlwaysBreakAfterReturnType: All
+AlwaysBreakTemplateDeclarations: No   # harmless for C
+
+BreakBeforeBinaryOperators: None
+
+# -------------------------------------------------------------------
+# Braces (Allman style)
+# -------------------------------------------------------------------
+BreakBeforeBraces: Allman
+
+BraceWrapping:
+  AfterCaseLabel: true
+  BeforeElse: true
+  BeforeCatch: true
+  SplitEmptyFunction: true
+  SplitEmptyRecord: true
+  SplitEmptyNamespace: true
+
+# NOTE:
+# AfterControlStatement / AfterFunction / AfterStruct / AfterEnum / AfterUnion
+# are IMPLIED by Allman and must NOT be redundantly specified.
+
+# -------------------------------------------------------------------
+# Spacing
+# -------------------------------------------------------------------
+SpaceBeforeParens: ControlStatements
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeRangeBasedForLoopColon: true   # 
+
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+SpacesInAngles: false
+SpaceInEmptyParentheses: false
+SpacesBeforeTrailingComments: 1
+
+PointerAlignment: Right
+DerivePointerAlignment: false
+
+# -------------------------------------------------------------------
+# Alignment (explicitly disabled)
+# -------------------------------------------------------------------
+AlignAfterOpenBracket: DontAlign
+AlignOperands: false
+AlignTrailingComments: false
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignEscapedNewlines: DontAlign
+
+# -------------------------------------------------------------------
+# Comments
+# -------------------------------------------------------------------
+ReflowComments: false
+CommentPragmas: '^ dont touch:'
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 1
+
+# -------------------------------------------------------------------
+# Includes
+# -------------------------------------------------------------------
+SortIncludes: Never
+IncludeBlocks: Preserve
+
+# -------------------------------------------------------------------
+# Macros & preprocessor
+# -------------------------------------------------------------------
+MacroBlockBegin: ''
+MacroBlockEnd: ''
+SpaceAfterCStyleCast: false
+
+# -------------------------------------------------------------------
+# C-specific
+# -------------------------------------------------------------------
+Cpp11BracedListStyle: false
+DisableFormat: false

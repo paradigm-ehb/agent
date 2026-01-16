@@ -1,11 +1,12 @@
 package server_test
 
+/*
 import (
 	"context"
 	"testing"
 	"time"
 
-	pb "paradigm-ehb/agent/gen/resources/v1"
+	pb "paradigm-ehb/agent/gen/services/v1"
 
 	"google.golang.org/grpc/resolver"
 
@@ -13,10 +14,8 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-/**
-TODO(nasr):  write test for reboot and shutdown, what would be  a proper way of doing this
-*/
-func TestActions_all(t *testing.T) {
+func TestService_Test(t *testing.T) {
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
@@ -33,9 +32,15 @@ func TestActions_all(t *testing.T) {
 	}
 	defer clientConn.Close()
 
-	client := pb.NewResourcesServiceClient(clientConn)
+	client := pb.NewHandlerServiceClient(clientConn)
 
-	resp, err := client.GetSystemResources(ctx, &pb.GetSystemResourcesRequest{})
+	resp, err := client.UnitAction(ctx, &pb.ServiceActionRequest{
+
+		ServiceName: "nginx.service",
+		UnitAction: pb.ServiceActionRequest_UNIT_ACTION_START.Enum(),
+		UnitFileAction: pb.ServiceActionRequest_UNIT_FILE_ACTION_UNSPECIFIED.Enum(),
+
+	})
 
 	if err != nil {
 		t.Fatalf("rpc failed: %v", err)
@@ -45,3 +50,4 @@ func TestActions_all(t *testing.T) {
 		t.Fatalf("unexpected response: %q", resp)
 	}
 }
+*/

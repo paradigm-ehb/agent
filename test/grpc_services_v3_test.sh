@@ -4,10 +4,9 @@ set -euo pipefail
 HOST="${HOST:-localhost}"
 PORT="${PORT:-5000}"
 ADDR="${HOST}:${PORT}"
+SERVICE="services.v3.HandlerService"
 
-SERVICE="services.v2.HandlerService"
-
-echo "== gRPC integration test =="
+echo "== gRPC v3 integration test =="
 echo "Target: ${ADDR}"
 echo
 
@@ -48,6 +47,17 @@ grpcurl -plaintext \
   "${SERVICE}/GetLoadedUnits"
 echo
 
+echo "== GetFilteredUnits (loaded, masked) =="
+
+grpcurl -plaintext \
+  -d '{
+    "filters": ["LOADED", "MASKED"]
+  }' \
+  localhost:5000 \
+  services.v3.HandlerService/GetFilteredUnits
+
+echo
+
 echo "== GetUnitStatus (tailscaled.service) =="
 grpcurl -plaintext \
   -d '{
@@ -83,13 +93,11 @@ echo "== PerformUnitAction: STOP tailscaled.service =="
 grpcurl -plaintext \
   -d '{
     "unitName": "tailscaled.service",
-    "action": "UNIT_ACTION_STOP",
-    "force": true
+    "action": "UNIT_ACTION_STOP"
   }' \
   "${ADDR}" \
   "${SERVICE}/PerformUnitAction"
 echo
-
 
 echo "== PerformUnitFileAction: DISABLE tailscaled.service =="
 grpcurl -plaintext \
@@ -103,4 +111,4 @@ grpcurl -plaintext \
   "${SERVICE}/PerformUnitFileAction"
 echo
 
-echo "== All gRPC v2 tests passed =="
+echo "== All gRPC v3 tests passed =="

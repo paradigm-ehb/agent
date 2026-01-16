@@ -91,7 +91,7 @@ func (s *HandlerService) UnitAction(_ context.Context, in *v1.ServiceActionReque
 		out = "external bad input"
 	}
 
-	_, err = manager.RunRetrieval(conn, true)
+	_, err = manager.RunRetrievalDeprecated(conn, true)
 	if err != nil {
 		log.Println("failed to do everything")
 		out = "failed even more"

@@ -6,12 +6,14 @@ type Cpu struct {
 	Model     string
 	Frequency string
 	MaxCore   uint32
+	TotalTime uint64
+	IdleTime uint64
 }
 
 // Ram represents RAM information including total and free memory.
 type Ram struct {
-	Total string
-	Free  string
+	Total uint64 
+	Free  uint64
 }
 
 // DiskPartition represents a single disk partition with device identifiers and block count.
@@ -33,48 +35,4 @@ type Device struct {
 	Uptime    string
 }
 
-// ProcessState represents the state of a process.
-type ProcessState uint32
 
-const (
-	ProcessUndefined      ProcessState = 0
-	ProcessRunning        ProcessState = 1
-	ProcessSleeping       ProcessState = 2
-	ProcessDiskSleep      ProcessState = 3
-	ProcessStopped        ProcessState = 4
-	ProcessTracingStopped ProcessState = 5
-	ProcessZombie         ProcessState = 6
-	ProcessDead           ProcessState = 7
-)
-
-// String returns a human-readable representation of the process state.
-func (ps ProcessState) String() string {
-	switch ps {
-	case ProcessRunning:
-		return "Running"
-	case ProcessSleeping:
-		return "Sleeping"
-	case ProcessDiskSleep:
-		return "Disk Sleep"
-	case ProcessStopped:
-		return "Stopped"
-	case ProcessTracingStopped:
-		return "Tracing Stopped"
-	case ProcessZombie:
-		return "Zombie"
-	case ProcessDead:
-		return "Dead"
-	default:
-		return "Undefined"
-	}
-}
-
-// Process represents a single process with its attributes.
-type Process struct {
-	PID        uint32
-	Name       string
-	State      ProcessState
-	UTime      uint64
-	STime      uint64
-	NumThreads uint32
-}

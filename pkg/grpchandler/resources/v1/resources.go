@@ -97,8 +97,8 @@ func mapCPU(c wr.Cpu) *proto.Cpu {
  */
 func mapMemory(m wr.Ram) *proto.Memory {
 	return &proto.Memory{
-		Total: m.Total,
-		Free:  m.Free,
+		Total: string(m.Total),
+		Free:  string(m.Free),
 	}
 }
 
@@ -152,7 +152,7 @@ func mapProcesses(ps []wr.Process) []*proto.Process {
 
 	for _, p := range ps {
 		out = append(out, &proto.Process{
-			Pid:        p.PID,
+			Pid:        uint32(p.PID),
 			Name:       p.Name,
 			State:      mapProcessState(p.State),
 			Utime:      p.UTime,

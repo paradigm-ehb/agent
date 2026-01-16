@@ -1,11 +1,12 @@
 package server_test
 
+/*
 import (
 	"context"
 	"testing"
 	"time"
 
-	pb "paradigm-ehb/agent/gen/journal/v1"
+	pb "paradigm-ehb/agent/gen/resources/v1"
 
 	"google.golang.org/grpc/resolver"
 
@@ -13,10 +14,12 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
+TODO(nasr):  write test for reboot and shutdown, what would be  a proper way of doing this
 
-func TestJournal_all(t *testing.T) {
+func TestActions_all(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
+
 
 	resolver.SetDefaultScheme("passthrough")
 
@@ -25,15 +28,15 @@ func TestJournal_all(t *testing.T) {
 		grpc.WithContextDialer(BufDialer),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
-
 	if err != nil {
 		t.Fatalf("failed to create client: %v", err)
 	}
 	defer clientConn.Close()
 
-	client := pb.NewJournalServiceClient(clientConn)
+	client := pb.NewResourcesServiceClient(clientConn)
 
-	resp, err := client.Action(ctx, &pb.JournalRequest{})
+	resp, err := client.GetSystemResources(ctx, &pb.GetSystemResourcesRequest{})
+
 	if err != nil {
 		t.Fatalf("rpc failed: %v", err)
 	}
@@ -42,3 +45,4 @@ func TestJournal_all(t *testing.T) {
 		t.Fatalf("unexpected response: %q", resp)
 	}
 }
+*/

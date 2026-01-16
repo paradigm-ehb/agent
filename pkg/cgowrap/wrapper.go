@@ -1,9 +1,133 @@
 package wrapper
 
 /*
-#cgo CFLAGS:  -I${SRCDIR}/../agent-resources
-#cgo LDFLAGS: -L${SRCDIR}/../agent-resources/build -lagent_resources
+#cgo CFLAGS:  -I${SRCDIR}/../resources
+#cgo LDFLAGS: -L${SRCDIR}/../resources/build -lresources
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include "resources.h"
+
+int
+process_read2(i32 pid, Process *out)
+{
+  char path[PATH_MAX_LEN];
+  snprintf(path, sizeof(path), "/proc/%d/status", pid);
+
+  FILE *fp = fopen(path, "r");
+  if (!fp)
+  {
+    return ERR_IO;
+  }
+
+  char buf[BUFFER_SIZE_LARGE];
+
+  out->pid = pid;
+
+  while (fgets(
+    buf,
+    sizeof(buf),
+    fp))
+  {
+    char *colon = strchr(buf, ':');
+    if (!colon)
+    {
+      continue;
+    }
+
+    char *val = colon + 1;
+    while (*val == ' ' || *val == '\t')
+    {
+      ++val;
+    }
+
+    size_t len = strcspn(val, "\n");
+
+
+    if (!strncmp(buf, "Name:", 5))
+    {
+
+      memcpy(out->name, val, len);
+    }
+    if (!strncmp(buf, "State:", 6))
+    {
+      char state_char = 0;
+      for (char *p = val; *p; ++p)
+      {
+        if (*p >= 'A' && *p <= 'Z' || *p == 't')
+        {
+          state_char = *p;
+          break;
+        }
+      }
+
+
+      switch (state_char)
+      {
+        case 'R':
+        {
+          out->state = PROCESS_RUNNING;
+          break;
+        }
+        case 'S':
+        {
+          out->state = PROCESS_SLEEPING;
+          break;
+        }
+        case 'D':
+        {
+          out->state = PROCESS_DISK_SLEEP;
+          break;
+        }
+        case 'T':
+        {
+          out->state = PROCESS_STOPPED;
+          break;
+        }
+        case 't':
+        {
+          out->state = PROCESS_TRACING_STOPPED;
+          break;
+        }
+        case 'Z':
+        {
+          out->state = PROCESS_ZOMBIE;
+          break;
+        }
+        case 'X':
+        {
+          out->state = PROCESS_DEAD;
+          break;
+        }
+        case 'I':
+        {
+          out->state = PROCESS_IDLE;
+          break;
+        }
+        default:
+        {
+          out->state = PROCESS_UNDEFINED;
+          break;
+        }
+      }
+    }
+
+    if (!strncmp(buf, "Threads:", 8))
+    {
+      out->num_threads = (u32)strtoul(val, 0, 10);
+    }
+  }
+
+
+  int error = fclose(fp);
+  if (error != 0)
+  {
+    return ERR_IO;
+  }
+
+  return OK;
+}
 */
 import "C"
 import (
@@ -12,6 +136,56 @@ import (
 
 	"golang.org/x/sys/unix"
 )
+
+// ProcessState represents the state of a process.
+
+type ProcessState C.int32_t
+
+const (
+	ProcessUndefined      ProcessState = ProcessState(C.PROCESS_UNDEFINED)
+	ProcessRunning        ProcessState = ProcessState(C.PROCESS_RUNNING)
+	ProcessSleeping       ProcessState = ProcessState(C.PROCESS_SLEEPING)
+	ProcessDiskSleep      ProcessState = ProcessState(C.PROCESS_DISK_SLEEP)
+	ProcessStopped        ProcessState = ProcessState(C.PROCESS_STOPPED)
+	ProcessTracingStopped ProcessState = ProcessState(C.PROCESS_TRACING_STOPPED)
+	ProcessZombie         ProcessState = ProcessState(C.PROCESS_ZOMBIE)
+	ProcessDead           ProcessState = ProcessState(C.PROCESS_DEAD)
+	ProcessIdle           ProcessState = ProcessState(C.PROCESS_IDLE)
+)
+
+// Process represents a single process with its attributes.
+type Process struct {
+	PID        int32
+	State      ProcessState
+	UTime      uint64
+	STime      uint64
+	NumThreads uint32
+	Name       string
+}
+
+func (s ProcessState) String() string {
+
+	switch s {
+	case ProcessRunning:
+		return "Running"
+	case ProcessSleeping:
+		return "Sleeping"
+	case ProcessDiskSleep:
+		return "Disk Sleep"
+	case ProcessStopped:
+		return "Stopped"
+	case ProcessTracingStopped:
+		return "Tracing Stopped"
+	case ProcessZombie:
+		return "Zombie"
+	case ProcessDead:
+		return "Dead"
+	case ProcessIdle:
+		return "Idle"
+	default:
+		return "Undefined"
+	}
+}
 
 // TODO(nasr): research this, interesting, alias vs true aliasing
 type Arena = C.mem_arena
@@ -57,6 +231,14 @@ func AllocateArena(size uint64) (*C.mem_arena, error) {
 		return nil, fmt.Errorf("failed to allocate the arena")
 	}
 	return arena, nil
+}
+
+func PushArena(arena *C.mem_arena, size uint64) {
+
+	if arena != nil {
+		C.arena_push(arena, C.ulong(size), 1)
+	}
+
 }
 
 /*
@@ -127,11 +309,17 @@ func CpuRead(c *C.Cpu) (Cpu, error) {
 		return Cpu{}, fmt.Errorf("failed to read CPU information")
 	}
 
+	if C.cpu_read_usage(c) != C.OK {
+		return Cpu{}, fmt.Errorf("failed to read CPU information")
+	}
+
 	cpu := Cpu{
 		Vendor:    C.GoString(&c.vendor[0]),
 		Model:     C.GoString(&c.model[0]),
 		Frequency: C.GoString(&c.frequency[0]),
 		MaxCore:   uint32(c.cores),
+		TotalTime: uint64(c.total_time),
+		IdleTime:  uint64(c.idle_time),
 	}
 	return cpu, nil
 }
@@ -176,9 +364,10 @@ func RamRead(ram *C.Ram) (Ram, error) {
 	}
 
 	r := Ram{
-		Total: C.GoString(&ram.total[0]),
-		Free:  C.GoString(&ram.free[0]),
+		Total: uint64(ram.total),
+		Free:  uint64(ram.free),
 	}
+
 	return r, nil
 }
 
@@ -224,10 +413,10 @@ func DiskRead(disk *C.Disk) (Disk, error) {
 	}
 
 	d := Disk{
-		Partitions: make([]DiskPartition, 0, disk.count),
+		Partitions: make([]DiskPartition, 0, disk.part_count),
 	}
 
-	for i := C.size_t(0); i < disk.count; i++ {
+	for i := C.size_t(0); i < disk.part_count; i++ {
 		part := (*C.Partition)(
 			unsafe.Pointer(
 				uintptr(unsafe.Pointer(disk.partitions)) +
@@ -334,39 +523,34 @@ Returns:
   - error: Error if device pointer is nil
 */
 func ReadProcesses(device *C.Device) ([]Process, error) {
+
 	if device == nil {
-		return nil, fmt.Errorf("nil Device pointer")
+		return nil, fmt.Errorf("dvice null pointer")
 	}
 
-	procs := make([]Process, 0, device.processes.count)
+	count := int(device.processes.count)
 	items := device.processes.items
 
-	for i := C.size_t(0); i < device.processes.count; i++ {
-		p := (*C.Process)(
-			unsafe.Pointer(
-				uintptr(unsafe.Pointer(items)) +
-					uintptr(i)*unsafe.Sizeof(*items),
-			),
-		)
+	procs := make([]Process, 0, count)
 
-		/**
-		Read detailed process information
-		Skip processes that can't be read
-		*/
-		if C.process_read(p.pid, p) != C.OK {
-			continue
+	for i := 0; i < count; i++ {
+
+		p := (*C.Process)(unsafe.Pointer(uintptr(unsafe.Pointer(items)) + uintptr(i)*unsafe.Sizeof(*items)))
+
+		err := C.process_read2(p.pid, p)
+		if err != C.OK {
+			return nil, fmt.Errorf("failed reading processes %v", err)
 		}
 
 		procs = append(procs, Process{
-			PID:        uint32(p.pid),
-			Name:       C.GoString(&p.name[0]),
+			PID:        int32(p.pid),
 			State:      ProcessState(p.state),
 			UTime:      uint64(p.utime),
 			STime:      uint64(p.stime),
 			NumThreads: uint32(p.num_threads),
+			Name:       C.GoString(&p.name[0]),
 		})
 	}
-
 	return procs, nil
 }
 
@@ -380,12 +564,13 @@ Parameters:
 Returns:
   - error: Error if the process cannot be killed or doesn't exist
 */
-func KillProcess(pid int) error {
+func ProcessAction(pid int, action unix.Signal) error {
+
 	if pid <= 0 {
 		return fmt.Errorf("invalid PID: %d", pid)
 	}
 
-	if C.process_kill(C.int(pid), C.int(unix.SIGTERM)) != C.OK {
+	if C.process_kill(C.int(pid), C.int(action)) != C.OK {
 		return fmt.Errorf("failed to kill process %d", pid)
 	}
 	return nil

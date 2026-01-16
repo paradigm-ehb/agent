@@ -2,42 +2,40 @@
 package dbushandler
 
 import (
-	"fmt"
-	svctypes "paradigm-ehb/agent/internal/dbusservices/types"
+	types "paradigm-ehb/agent/internal/dbusservices/types"
+	"strings"
 )
 
-// TODO: implement interfaces maybe
+// TODO(nasr): implement interfaces maybe
 
-// Method
-// @param chan a(ss), chan a(ss)
-// @param chan UnitFileEntry, chan UnitFileEntry
-// @return nil
-func ParseUnitFileEntries(in chan []svctypes.UnitFileEntry, out chan []svctypes.UnitFileEntry) {
-
-	input := <-in
-
-	for i := range input {
-
-		if input[i].State == "enabled" {
-			fmt.Println(input[i].Name)
-		} else {
-
-			fmt.Println(input[i].Name)
+// ParseUnits filters units to only include services
+// @param input []types.Unit
+// @return []types.Unit, error
+func ParseUnits(input []types.Unit) ([]types.Unit, error) {
+	/**
+	filter the units on services and remove devices etc
+	*/
+	buffer := make([]types.Unit, 0, len(input))
+	for _, value := range input {
+		if strings.HasSuffix(value.Name, ".service") {
+			buffer = append(buffer, value)
 		}
 	}
-	out <- input
-
+	return buffer, nil
 }
 
-func ParseLoadedUnits(in chan []svctypes.LoadedUnit, out chan []svctypes.LoadedUnit) {
-
-	input := <-in
-
-	for i := range input {
-
-		fmt.Println(input[i])
+// ParseLoadedUnits filters loaded units to only include services
+// @param input []types.LoadedUnit
+// @return []types.LoadedUnit, error
+func ParseLoadedUnits(input []types.LoadedUnit) ([]types.LoadedUnit, error) {
+	/**
+	filter the units on services and remove devices etc
+	*/
+	buffer := make([]types.LoadedUnit, 0, len(input))
+	for _, value := range input {
+		if strings.HasSuffix(value.Name, ".service") {
+			buffer = append(buffer, value)
+		}
 	}
-
-	out <- input
-
+	return buffer, nil
 }

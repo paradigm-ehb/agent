@@ -2,7 +2,7 @@ package servicecontrol
 
 import (
 	"fmt"
-	svctypes "paradigm-ehb/agent/internal/dbusservices/types"
+	types "paradigm-ehb/agent/internal/dbusservices/types"
 
 	"github.com/godbus/dbus"
 )
@@ -14,45 +14,70 @@ import (
 // files (templates) cannot directly be loaded as units but need to be instantiated.
 // ---------------------------------------------------------------------------------------
 // Method returns an array of all currently loaded units,
-//
-func GetLoadedUnits(obj dbus.BusObject, out chan []svctypes.LoadedUnit) {
 
-	var result []svctypes.LoadedUnit
-
+func GetLoadedUnits(obj dbus.BusObject) ([]types.LoadedUnit, error) {
+	var result []types.LoadedUnit
 	call := obj.Call("org.freedesktop.systemd1.Manager.ListUnits", 0)
 	if call.Err != nil {
-		fmt.Printf("failed to list unit files that are loaded in memory %v", call.Err)
-		return
+		return nil, fmt.Errorf("failed to list unit files that are loaded in memory: %w", call.Err)
 	}
-
-
+	
 	err := call.Store(&result)
-
 	if err != nil {
-		return
+		return nil, fmt.Errorf("failed to store loaded units: %w", err)
 	}
-
-	out <- result
-
+	
+	return result, nil
 }
 
-func GetAllUnits(obj dbus.BusObject, out chan []svctypes.UnitFileEntry) {
-
+func GetUnits(obj dbus.BusObject) ([]types.Unit, error) {
 	// ListUnitFiles(out a(ss) files);
 	// an array of struct string string
-
-	var result []svctypes.UnitFileEntry
-
+	var result []types.Unit
 	call := obj.Call("org.freedesktop.systemd1.Manager.ListUnitFiles", 0)
-
 	if call.Err != nil {
-		fmt.Println("failed to call all units loaded on disk")
-		return
+		return nil, fmt.Errorf("failed to call all units loaded on disk: %w", call.Err)
 	}
-
+	
 	err := call.Store(&result)
 	if err != nil {
-		return
+		return nil, fmt.Errorf("failed to store services: %w", err)
 	}
-	out <- result
+	
+	return result, nil
+}
+
+func GetUnitsFiltered(obj dbus.BusObject, states []string) ([]types.LoadedUnit, error) {
+	var result []types.LoadedUnit
+	call := obj.Call("org.freedesktop.systemd1.Manager.ListUnitsFiltered", 0, states)
+	if call.Err != nil {
+		return nil, fmt.Errorf("failed to call filtered list of units: %w", call.Err)
+	}
+	
+	err := call.Store(&result)
+	if err != nil {
+		return nil, fmt.Errorf("failed to store filtered units: %w", err)
+	}
+	
+	return result, nil
+}
+
+func GetStatusCall(obj dbus.BusObject, name string) (string, error) {
+	var result string
+
+	call := obj.Call(
+		"org.freedesktop.systemd1.Manager.GetUnitFileState",
+		0,
+		name,
+	)
+
+	if call.Err != nil {
+		return "call error: ", call.Err
+	}
+
+	if err := call.Store(&result); err != nil {
+		return "call store: ", err
+	}
+
+	return result, nil
 }

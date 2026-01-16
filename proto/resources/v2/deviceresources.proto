@@ -1,12 +1,15 @@
 syntax = "proto3";
 
-package resources.v1;
+package resources.v2;
 
-option go_package = "paradigm-ehb/agent/gen/resources/v1;resourcespb";
+option go_package = "paradigm-ehb/agent/gen/resources/v2;resourcespb";
 
 service ResourcesService {
   rpc GetSystemResources(GetSystemResourcesRequest)
       returns (GetSystemResourcesResponse);
+  rpc ProcessAction(ProcessActionRequest)
+    returns (ProcessActionReply);
+
 }
 
 message GetSystemResourcesRequest {}
@@ -39,6 +42,8 @@ message Cpu {
   string model = 2;
   string frequency = 3;
   uint32 max_core = 4;
+  uint64 total_time = 5;
+  uint64 idle_time = 6;
 }
 
 /**
@@ -46,8 +51,8 @@ message Cpu {
  * @return total memory on system, available memory on system 
  * */
 message Memory {
-  string total = 1;
-  string free = 2;
+  uint64 total = 1;
+  uint64 free = 2;
 }
 
 /**
@@ -92,6 +97,8 @@ enum ProcessState {
   PROCESS_STATE_TRACING_STOPPED = 5;
   PROCESS_STATE_ZOMBIE = 6;
   PROCESS_STATE_DEAD = 7;
+  PROCESS_STATE_IDLE = 8;
+  PROCESS_STATE_UNDEFINED = 9;
 }
 
 /**
@@ -99,9 +106,19 @@ enum ProcessState {
  * @return pid ( process identifier ), process name, the state, todo :)
  * */
 message Process {
-  uint32 pid = 1;
+  int32 pid = 1;
   string name = 2;
   ProcessState state = 3;
   uint64 utime = 4;
   uint32 num_threads = 5;
+}
+
+message ProcessActionRequest {
+  int32 pid = 1;
+  int32 signal = 2;
+}
+
+message ProcessActionReply {
+
+  bool succes = 1;
 }
