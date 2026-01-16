@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>paradigm-ehb Agent</title>
+    <link rel="stylesheet" href="static/mystyles.css" />
+    <script src="static/fontawesome.js"></script>
+    <script src="static/lunr.js"></script>
+    <script src="static/theme.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <nav class="level pt-6 mb-5 pb-2 bottom-border">
+        <div class="level-left">
+          <p class="level-item has-text-centered is-size-3 has-text-weight-medium">
+            <a class="link is-info" href="index.html">
+              paradigm-ehb Agent
+            </a>
+          </p>
+        </div>
+
+        <div class="level-right">
+          
+          <form action="search.html" class="mr-2 has-text-centered">
+            <input type="text" name="query" class="input mr-3 navbar-search-query-input" placeholder="Search">
+            <input type="submit" class="button is-primary mr-5" value="Search" />
+          </form>
+          
+
+          <p class="level-item has-text-centered is-size-5">
+            <a href="https://github.com/paradigm-ehb/agent" class="link is-info mr-5" target="_blank">
+              
+              <span class="icon">
+                <i class="fa-brands fa-github"></i>
+              </span>
+              
+              <span>Source</span>
+            </a>
+
+            <button class="theme-toggle" id="theme-toggle" title="Toggles light & dark" aria-label="auto" aria-live="polite" type="button">
+              <svg class="sun-and-moon" aria-hidden="true" width="24" height="24" viewBox="0 0 24 24">
+                <mask class="moon" id="moon-mask">
+                  <rect x="0" y="0" width="100%" height="100%" fill="white" />
+                  <circle cx="24" cy="10" r="6" fill="black" />
+                </mask>
+                <circle class="sun" cx="12" cy="12" r="6" mask="url(#moon-mask)" fill="currentColor" />
+                <g class="sun-beams" stroke="currentColor">
+                  <line x1="12" y1="1" x2="12" y2="3" />
+                  <line x1="12" y1="21" x2="12" y2="23" />
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                  <line x1="1" y1="12" x2="3" y2="12" />
+                  <line x1="21" y1="12" x2="23" y2="12" />
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                </g>
+              </svg>
+            </button>
+          </p>
+        </div>
+      </nav>
+    </div>
+
+    <div id="main-content" class="container mb-6">
+  <p class="mb-2">
+    <a style="font-size: 0.9em" href="index.html">← Back to packages</a>
+  </p>
+  <h3 class="title is-3">
+    
+    Package <code>services.v3</code>
+    
+  </h3>
+
+  <div class="block">
+    
+    <p>
+      <a href="#service-services.v3.HandlerService">
+        <span class="tag" style="min-width: 6em">Service</span>
+        <code>HandlerService</code> 
+      </a>
+    </p>
+    
+
+    
+      
+      <p>
+        <a href="#message-services.v3.GetUnitStatusReply">
+          <span class="tag" style="min-width: 6em">Message</span>
+          <code>GetUnitStatusReply</code> 
+        </a>
+      </p>
+      
+    
+      
+      <p>
+        <a href="#message-services.v3.GetUnitStatusRequest">
+          <span class="tag" style="min-width: 6em">Message</span>
+          <code>GetUnitStatusRequest</code> 
+        </a>
+      </p>
+      
+    
+      
+      <p>
+        <a href="#message-services.v3.GetUnitsFilteredRequest">
+          <span class="tag" style="min-width: 6em">Message</span>
+          <code>GetUnitsFilteredRequest</code> 
+        </a>
+      </p>
+      
+    
+      
+      <p>
+        <a href="#message-services.v3.GetUnitsReply">
+          <span class="tag" style="min-width: 6em">Message</span>
+          <code>GetUnitsReply</code> 
+        </a>
+      </p>
+      
+    
+      
+      <p>
+        <a href="#message-services.v3.GetUnitsRequest">
+          <span class="tag" style="min-width: 6em">Message</span>
+          <code>GetUnitsRequest</code> 
+        </a>
+      </p>
+      
+    
+      
+      <p>
+        <a href="#message-services.v3.LoadedUnit">
+          <span class="tag" style="min-width: 6em">Message</span>
+          <code>LoadedUnit</code> 
+        </a>
+      </p>
+      
+    
+      
+      <p>
+        <a href="#message-services.v3.Unit">
+          <span class="tag" style="min-width: 6em">Message</span>
+          <code>Unit</code> 
+        </a>
+      </p>
+      
+    
+      
+      <p>
+        <a href="#message-services.v3.UnitActionReply">
+          <span class="tag" style="min-width: 6em">Message</span>
+          <code>UnitActionReply</code> 
+        </a>
+      </p>
+      
+    
+      
+      <p>
+        <a href="#message-services.v3.UnitActionRequest">
+          <span class="tag" style="min-width: 6em">Message</span>
+          <code>UnitActionRequest</code> 
+        </a>
+      </p>
+      
+    
+      
+      <p>
+        <a href="#message-services.v3.UnitFileActionReply">
+          <span class="tag" style="min-width: 6em">Message</span>
+          <code>UnitFileActionReply</code> 
+        </a>
+      </p>
+      
+    
+      
+      <p>
+        <a href="#message-services.v3.UnitFileActionRequest">
+          <span class="tag" style="min-width: 6em">Message</span>
+          <code>UnitFileActionRequest</code> 
+        </a>
+      </p>
+      
+    
+
+    
+      <p>
+        <a href="#enum-services.v3.UnitActionRequest.UnitAction">
+          <span class="tag" style="min-width: 6em">Enum</span>
+          <code>UnitAction</code> 
+        </a>
+      </p>
+    
+      <p>
+        <a href="#enum-services.v3.UnitFileActionRequest.UnitFileAction">
+          <span class="tag" style="min-width: 6em">Enum</span>
+          <code>UnitFileAction</code> 
+        </a>
+      </p>
+    
+      <p>
+        <a href="#enum-services.v3.GetUnitsFilteredRequest.UnitFileState">
+          <span class="tag" style="min-width: 6em">Enum</span>
+          <code>UnitFileState</code> 
+        </a>
+      </p>
+    
+      <p>
+        <a href="#enum-services.v3.GetUnitsRequest.UnitState">
+          <span class="tag" style="min-width: 6em">Enum</span>
+          <code>UnitState</code> 
+        </a>
+      </p>
+    
+  </div>
+
+  <div class="block">
+      
+  </div>
+
+  
+
+  <div class="block">
+    <h3 class="title is-3">
+      Services
+    </h3>
+
+    
+    <div>
+      
+
+<h4 class="title is-4 type-heading" id="service-services.v3.HandlerService">
+  <a href="#service-services.v3.HandlerService" title="services.v3.HandlerService">service HandlerService</a>
+  
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/services/v3/services.proto#L8">services/v3/services.proto</a>
+  
+</h4>
+
+<div class="block content">
+  <p></p>
+</div>
+
+
+<div class="box">
+  <div class="block">
+    <h5 class="title is-5" id="service-services.v3.HandlerService-PerformUnitAction">
+      <a href="#service-services.v3.HandlerService-PerformUnitAction">
+        rpc <code>PerformUnitAction</code>
+      </a>
+    </h5>
+    Request: <code><a href="services.v3.html#message-services.v3.UnitActionRequest"><span title="services.v3.UnitActionRequest">services.v3.UnitActionRequest</span>
+    </a></code><br>
+    Response: <code><a href="services.v3.html#message-services.v3.UnitActionReply"><span title="services.v3.UnitActionReply">services.v3.UnitActionReply</span>
+    </a></code><br>
+  </div>
+
+  
+</div>
+
+<div class="box">
+  <div class="block">
+    <h5 class="title is-5" id="service-services.v3.HandlerService-PerformUnitFileAction">
+      <a href="#service-services.v3.HandlerService-PerformUnitFileAction">
+        rpc <code>PerformUnitFileAction</code>
+      </a>
+    </h5>
+    Request: <code><a href="services.v3.html#message-services.v3.UnitFileActionRequest"><span title="services.v3.UnitFileActionRequest">services.v3.UnitFileActionRequest</span>
+    </a></code><br>
+    Response: <code><a href="services.v3.html#message-services.v3.UnitFileActionReply"><span title="services.v3.UnitFileActionReply">services.v3.UnitFileActionReply</span>
+    </a></code><br>
+  </div>
+
+  
+</div>
+
+<div class="box">
+  <div class="block">
+    <h5 class="title is-5" id="service-services.v3.HandlerService-GetAllUnits">
+      <a href="#service-services.v3.HandlerService-GetAllUnits">
+        rpc <code>GetAllUnits</code>
+      </a>
+    </h5>
+    Request: <code><a href="services.v3.html#message-services.v3.GetUnitsRequest"><span title="services.v3.GetUnitsRequest">services.v3.GetUnitsRequest</span>
+    </a></code><br>
+    Response: <code><a href="services.v3.html#message-services.v3.GetUnitsReply"><span title="services.v3.GetUnitsReply">services.v3.GetUnitsReply</span>
+    </a></code><br>
+  </div>
+
+  
+</div>
+
+<div class="box">
+  <div class="block">
+    <h5 class="title is-5" id="service-services.v3.HandlerService-GetLoadedUnits">
+      <a href="#service-services.v3.HandlerService-GetLoadedUnits">
+        rpc <code>GetLoadedUnits</code>
+      </a>
+    </h5>
+    Request: <code><a href="services.v3.html#message-services.v3.GetUnitsRequest"><span title="services.v3.GetUnitsRequest">services.v3.GetUnitsRequest</span>
+    </a></code><br>
+    Response: <code><a href="services.v3.html#message-services.v3.GetUnitsReply"><span title="services.v3.GetUnitsReply">services.v3.GetUnitsReply</span>
+    </a></code><br>
+  </div>
+
+  
+</div>
+
+<div class="box">
+  <div class="block">
+    <h5 class="title is-5" id="service-services.v3.HandlerService-GetFilteredUnits">
+      <a href="#service-services.v3.HandlerService-GetFilteredUnits">
+        rpc <code>GetFilteredUnits</code>
+      </a>
+    </h5>
+    Request: <code><a href="services.v3.html#message-services.v3.GetUnitsFilteredRequest"><span title="services.v3.GetUnitsFilteredRequest">services.v3.GetUnitsFilteredRequest</span>
+    </a></code><br>
+    Response: <code><a href="services.v3.html#message-services.v3.GetUnitsReply"><span title="services.v3.GetUnitsReply">services.v3.GetUnitsReply</span>
+    </a></code><br>
+  </div>
+
+  
+</div>
+
+<div class="box">
+  <div class="block">
+    <h5 class="title is-5" id="service-services.v3.HandlerService-GetUnitStatus">
+      <a href="#service-services.v3.HandlerService-GetUnitStatus">
+        rpc <code>GetUnitStatus</code>
+      </a>
+    </h5>
+    Request: <code><a href="services.v3.html#message-services.v3.GetUnitStatusRequest"><span title="services.v3.GetUnitStatusRequest">services.v3.GetUnitStatusRequest</span>
+    </a></code><br>
+    Response: <code><a href="services.v3.html#message-services.v3.GetUnitStatusReply"><span title="services.v3.GetUnitStatusReply">services.v3.GetUnitStatusReply</span>
+    </a></code><br>
+  </div>
+
+  
+</div>
+ 
+    </div>
+    
+  </div>
+
+  
+
+  
+
+    <h3 class="title is-3">
+      Messages
+    </h3>
+
+    
+      
+      <div class="block">
+        
+
+<h4 class="title is-4 type-heading" id="message-services.v3.GetUnitStatusReply">
+  <span>
+    <a href="#message-services.v3.GetUnitStatusReply" title="services.v3.GetUnitStatusReply">message GetUnitStatusReply</a>
+  
+  </span>
+  
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/services/v3/services.proto#L120">services/v3/services.proto</a>
+  
+</h4>
+
+<div class="block content">
+  
+</div>
+
+<table class="table is-fullwidth is-hoverable is-bordered">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Field</th>
+      <th>Type</th>
+      <th>Description</th>
+      
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>1</td>
+      <td>
+        state
+      </td>
+      <td>
+        <code title="string">
+          
+          <span>string</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>2</td>
+      <td>
+        success
+      </td>
+      <td>
+        <code title="bool">
+          
+          <span>bool</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>3</td>
+      <td>
+        error_message
+      </td>
+      <td>
+        <code title="string">
+          
+          <span>string</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    
+  </tbody>
+</table>
+ 
+      </div>
+      
+    
+      
+      <div class="block">
+        
+
+<h4 class="title is-4 type-heading" id="message-services.v3.GetUnitStatusRequest">
+  <span>
+    <a href="#message-services.v3.GetUnitStatusRequest" title="services.v3.GetUnitStatusRequest">message GetUnitStatusRequest</a>
+  
+  </span>
+  
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/services/v3/services.proto#L116">services/v3/services.proto</a>
+  
+</h4>
+
+<div class="block content">
+  
+</div>
+
+<table class="table is-fullwidth is-hoverable is-bordered">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Field</th>
+      <th>Type</th>
+      <th>Description</th>
+      
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>1</td>
+      <td>
+        unit_name
+      </td>
+      <td>
+        <code title="string">
+          
+          <span>string</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    
+  </tbody>
+</table>
+ 
+      </div>
+      
+    
+      
+      <div class="block">
+        
+
+<h4 class="title is-4 type-heading" id="message-services.v3.GetUnitsFilteredRequest">
+  <span>
+    <a href="#message-services.v3.GetUnitsFilteredRequest" title="services.v3.GetUnitsFilteredRequest">message GetUnitsFilteredRequest</a>
+  
+  </span>
+  
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/services/v3/services.proto#L93">services/v3/services.proto</a>
+  
+</h4>
+
+<div class="block content">
+  
+</div>
+
+<table class="table is-fullwidth is-hoverable is-bordered">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Field</th>
+      <th>Type</th>
+      <th>Description</th>
+      
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>1</td>
+      <td>
+        filters
+      </td>
+      <td>
+        <code title="services.v3.GetUnitsFilteredRequest.UnitFileState">
+          
+            repeated
+          
+          <a href="services.v3.html#enum-services.v3.GetUnitsFilteredRequest.UnitFileState"><span title="services.v3.GetUnitsFilteredRequest.UnitFileState">services.v3.GetUnitsFilteredRequest.UnitFileState</span>
+    </a>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    
+  </tbody>
+</table>
+ 
+      </div>
+      
+    
+      
+      <div class="block">
+        
+
+<h4 class="title is-4 type-heading" id="message-services.v3.GetUnitsReply">
+  <span>
+    <a href="#message-services.v3.GetUnitsReply" title="services.v3.GetUnitsReply">message GetUnitsReply</a>
+  
+  </span>
+  
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/services/v3/services.proto#L109">services/v3/services.proto</a>
+  
+</h4>
+
+<div class="block content">
+  
+</div>
+
+<table class="table is-fullwidth is-hoverable is-bordered">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Field</th>
+      <th>Type</th>
+      <th>Description</th>
+      
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>1</td>
+      <td>
+        units
+      </td>
+      <td>
+        <code title="services.v3.LoadedUnit">
+          
+            repeated
+          
+          <a href="services.v3.html#message-services.v3.LoadedUnit"><span title="services.v3.LoadedUnit">services.v3.LoadedUnit</span>
+    </a>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>2</td>
+      <td>
+        success
+      </td>
+      <td>
+        <code title="bool">
+          
+          <span>bool</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>3</td>
+      <td>
+        error_message
+      </td>
+      <td>
+        <code title="string">
+          
+          <span>string</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    
+  </tbody>
+</table>
+ 
+      </div>
+      
+    
+      
+      <div class="block">
+        
+
+<h4 class="title is-4 type-heading" id="message-services.v3.GetUnitsRequest">
+  <span>
+    <a href="#message-services.v3.GetUnitsRequest" title="services.v3.GetUnitsRequest">message GetUnitsRequest</a>
+  
+  </span>
+  
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/services/v3/services.proto#L81">services/v3/services.proto</a>
+  
+</h4>
+
+<div class="block content">
+  
+</div>
+
+<table class="table is-fullwidth is-hoverable is-bordered">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Field</th>
+      <th>Type</th>
+      <th>Description</th>
+      
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>1</td>
+      <td>
+        name
+      </td>
+      <td>
+        <code title="string">
+          
+          <span>string</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>2</td>
+      <td>
+        state
+      </td>
+      <td>
+        <code title="services.v3.GetUnitsRequest.UnitState">
+          
+          <a href="services.v3.html#enum-services.v3.GetUnitsRequest.UnitState"><span title="services.v3.GetUnitsRequest.UnitState">services.v3.GetUnitsRequest.UnitState</span>
+    </a>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    
+  </tbody>
+</table>
+ 
+      </div>
+      
+    
+      
+      <div class="block">
+        
+
+<h4 class="title is-4 type-heading" id="message-services.v3.LoadedUnit">
+  <span>
+    <a href="#message-services.v3.LoadedUnit" title="services.v3.LoadedUnit">message LoadedUnit</a>
+  
+  </span>
+  
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/services/v3/services.proto#L60">services/v3/services.proto</a>
+  
+</h4>
+
+<div class="block content">
+  
+</div>
+
+<table class="table is-fullwidth is-hoverable is-bordered">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Field</th>
+      <th>Type</th>
+      <th>Description</th>
+      
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>1</td>
+      <td>
+        name
+      </td>
+      <td>
+        <code title="string">
+          
+          <span>string</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>2</td>
+      <td>
+        description
+      </td>
+      <td>
+        <code title="string">
+          
+          <span>string</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>3</td>
+      <td>
+        load_state
+      </td>
+      <td>
+        <code title="string">
+          
+          <span>string</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>4</td>
+      <td>
+        sub_state
+      </td>
+      <td>
+        <code title="string">
+          
+          <span>string</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>5</td>
+      <td>
+        active_state
+      </td>
+      <td>
+        <code title="string">
+          
+          <span>string</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>6</td>
+      <td>
+        dep_unit
+      </td>
+      <td>
+        <code title="string">
+          
+          <span>string</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>7</td>
+      <td>
+        object_path
+      </td>
+      <td>
+        <code title="string">
+          
+          <span>string</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>8</td>
+      <td>
+        queued_job
+      </td>
+      <td>
+        <code title="uint32">
+          
+          <span>uint32</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>9</td>
+      <td>
+        job_type
+      </td>
+      <td>
+        <code title="string">
+          
+          <span>string</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>10</td>
+      <td>
+        job_path
+      </td>
+      <td>
+        <code title="string">
+          
+          <span>string</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    
+  </tbody>
+</table>
+ 
+      </div>
+      
+    
+      
+      <div class="block">
+        
+
+<h4 class="title is-4 type-heading" id="message-services.v3.Unit">
+  <span>
+    <a href="#message-services.v3.Unit" title="services.v3.Unit">message Unit</a>
+  
+  </span>
+  
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/services/v3/services.proto#L75">services/v3/services.proto</a>
+  
+</h4>
+
+<div class="block content">
+  
+</div>
+
+<table class="table is-fullwidth is-hoverable is-bordered">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Field</th>
+      <th>Type</th>
+      <th>Description</th>
+      
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>1</td>
+      <td>
+        name
+      </td>
+      <td>
+        <code title="string">
+          
+          <span>string</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>2</td>
+      <td>
+        state
+      </td>
+      <td>
+        <code title="string">
+          
+          <span>string</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    
+  </tbody>
+</table>
+ 
+      </div>
+      
+    
+      
+      <div class="block">
+        
+
+<h4 class="title is-4 type-heading" id="message-services.v3.UnitActionReply">
+  <span>
+    <a href="#message-services.v3.UnitActionReply" title="services.v3.UnitActionReply">message UnitActionReply</a>
+  
+  </span>
+  
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/services/v3/services.proto#L32">services/v3/services.proto</a>
+  
+</h4>
+
+<div class="block content">
+  
+</div>
+
+<table class="table is-fullwidth is-hoverable is-bordered">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Field</th>
+      <th>Type</th>
+      <th>Description</th>
+      
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>1</td>
+      <td>
+        status
+      </td>
+      <td>
+        <code title="bytes">
+          
+          <span>bytes</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>2</td>
+      <td>
+        success
+      </td>
+      <td>
+        <code title="bool">
+          
+          <span>bool</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>3</td>
+      <td>
+        error_message
+      </td>
+      <td>
+        <code title="string">
+          
+          <span>string</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    
+  </tbody>
+</table>
+ 
+      </div>
+      
+    
+      
+      <div class="block">
+        
+
+<h4 class="title is-4 type-heading" id="message-services.v3.UnitActionRequest">
+  <span>
+    <a href="#message-services.v3.UnitActionRequest" title="services.v3.UnitActionRequest">message UnitActionRequest</a>
+  
+  </span>
+  
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/services/v3/services.proto#L18">services/v3/services.proto</a>
+  
+</h4>
+
+<div class="block content">
+  
+</div>
+
+<table class="table is-fullwidth is-hoverable is-bordered">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Field</th>
+      <th>Type</th>
+      <th>Description</th>
+      
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>1</td>
+      <td>
+        unit_name
+      </td>
+      <td>
+        <code title="string">
+          
+          <span>string</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>2</td>
+      <td>
+        action
+      </td>
+      <td>
+        <code title="services.v3.UnitActionRequest.UnitAction">
+          
+          <a href="services.v3.html#enum-services.v3.UnitActionRequest.UnitAction"><span title="services.v3.UnitActionRequest.UnitAction">services.v3.UnitActionRequest.UnitAction</span>
+    </a>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>3</td>
+      <td>
+        force
+      </td>
+      <td>
+        <code title="bool">
+          
+          <span>bool</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    
+  </tbody>
+</table>
+ 
+      </div>
+      
+    
+      
+      <div class="block">
+        
+
+<h4 class="title is-4 type-heading" id="message-services.v3.UnitFileActionReply">
+  <span>
+    <a href="#message-services.v3.UnitFileActionReply" title="services.v3.UnitFileActionReply">message UnitFileActionReply</a>
+  
+  </span>
+  
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/services/v3/services.proto#L53">services/v3/services.proto</a>
+  
+</h4>
+
+<div class="block content">
+  
+</div>
+
+<table class="table is-fullwidth is-hoverable is-bordered">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Field</th>
+      <th>Type</th>
+      <th>Description</th>
+      
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>1</td>
+      <td>
+        status
+      </td>
+      <td>
+        <code title="bytes">
+          
+          <span>bytes</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>2</td>
+      <td>
+        success
+      </td>
+      <td>
+        <code title="bool">
+          
+          <span>bool</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>3</td>
+      <td>
+        error_message
+      </td>
+      <td>
+        <code title="string">
+          
+          <span>string</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    
+  </tbody>
+</table>
+ 
+      </div>
+      
+    
+      
+      <div class="block">
+        
+
+<h4 class="title is-4 type-heading" id="message-services.v3.UnitFileActionRequest">
+  <span>
+    <a href="#message-services.v3.UnitFileActionRequest" title="services.v3.UnitFileActionRequest">message UnitFileActionRequest</a>
+  
+  </span>
+  
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/services/v3/services.proto#L39">services/v3/services.proto</a>
+  
+</h4>
+
+<div class="block content">
+  
+</div>
+
+<table class="table is-fullwidth is-hoverable is-bordered">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Field</th>
+      <th>Type</th>
+      <th>Description</th>
+      
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>1</td>
+      <td>
+        unit_name
+      </td>
+      <td>
+        <code title="string">
+          
+          <span>string</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>2</td>
+      <td>
+        action
+      </td>
+      <td>
+        <code title="services.v3.UnitFileActionRequest.UnitFileAction">
+          
+          <a href="services.v3.html#enum-services.v3.UnitFileActionRequest.UnitFileAction"><span title="services.v3.UnitFileActionRequest.UnitFileAction">services.v3.UnitFileActionRequest.UnitFileAction</span>
+    </a>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>3</td>
+      <td>
+        runtime
+      </td>
+      <td>
+        <code title="bool">
+          
+          <span>bool</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>4</td>
+      <td>
+        force
+      </td>
+      <td>
+        <code title="bool">
+          
+          <span>bool</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    
+  </tbody>
+</table>
+ 
+      </div>
+      
+    
+
+  
+
+  
+
+    <h3 class="title is-3">
+      Enums
+    </h3>
+
+    
+    <div class="block">
+      <h4 class="title is-4 type-heading" id="enum-services.v3.UnitActionRequest.UnitAction">
+  <a href="#enum-services.v3.UnitActionRequest.UnitAction" title="services.v3.UnitActionRequest.UnitAction">enum UnitAction</a>
+  
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/services/v3/services.proto#L21">services/v3/services.proto</a>
+  
+</h4>
+
+<div class="block content">
+  <p></p>
+</div>
+
+<table class="table is-fullwidth is-hoverable is-bordered">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Number</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td><code>UNIT_ACTION_UNSPECIFIED</code></td>
+      <td>0</td>
+      <td class="content"></td>
+    </tr>
+    
+    <tr>
+      <td><code>UNIT_ACTION_START</code></td>
+      <td>1</td>
+      <td class="content"></td>
+    </tr>
+    
+    <tr>
+      <td><code>UNIT_ACTION_STOP</code></td>
+      <td>2</td>
+      <td class="content"></td>
+    </tr>
+    
+    <tr>
+      <td><code>UNIT_ACTION_RESTART</code></td>
+      <td>3</td>
+      <td class="content"></td>
+    </tr>
+    
+  </tbody>
+</table> 
+    </div>
+    
+    <div class="block">
+      <h4 class="title is-4 type-heading" id="enum-services.v3.UnitFileActionRequest.UnitFileAction">
+  <a href="#enum-services.v3.UnitFileActionRequest.UnitFileAction" title="services.v3.UnitFileActionRequest.UnitFileAction">enum UnitFileAction</a>
+  
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/services/v3/services.proto#L42">services/v3/services.proto</a>
+  
+</h4>
+
+<div class="block content">
+  <p></p>
+</div>
+
+<table class="table is-fullwidth is-hoverable is-bordered">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Number</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td><code>UNIT_FILE_ACTION_UNSPECIFIED</code></td>
+      <td>0</td>
+      <td class="content"></td>
+    </tr>
+    
+    <tr>
+      <td><code>UNIT_FILE_ACTION_ENABLE</code></td>
+      <td>1</td>
+      <td class="content"></td>
+    </tr>
+    
+    <tr>
+      <td><code>UNIT_FILE_ACTION_DISABLE</code></td>
+      <td>2</td>
+      <td class="content"></td>
+    </tr>
+    
+  </tbody>
+</table> 
+    </div>
+    
+    <div class="block">
+      <h4 class="title is-4 type-heading" id="enum-services.v3.GetUnitsFilteredRequest.UnitFileState">
+  <a href="#enum-services.v3.GetUnitsFilteredRequest.UnitFileState" title="services.v3.GetUnitsFilteredRequest.UnitFileState">enum UnitFileState</a>
+  
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/services/v3/services.proto#L95">services/v3/services.proto</a>
+  
+</h4>
+
+<div class="block content">
+  <p></p>
+</div>
+
+<table class="table is-fullwidth is-hoverable is-bordered">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Number</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td><code>UNIT_FILE_STATE_UNSPECIFIED</code></td>
+      <td>0</td>
+      <td class="content"></td>
+    </tr>
+    
+    <tr>
+      <td><code>LOADED</code></td>
+      <td>1</td>
+      <td class="content"></td>
+    </tr>
+    
+    <tr>
+      <td><code>NOT_FOUND</code></td>
+      <td>2</td>
+      <td class="content"></td>
+    </tr>
+    
+    <tr>
+      <td><code>BAD_SETTING</code></td>
+      <td>3</td>
+      <td class="content"></td>
+    </tr>
+    
+    <tr>
+      <td><code>ERROR</code></td>
+      <td>4</td>
+      <td class="content"></td>
+    </tr>
+    
+    <tr>
+      <td><code>MASKED</code></td>
+      <td>5</td>
+      <td class="content"></td>
+    </tr>
+    
+  </tbody>
+</table> 
+    </div>
+    
+    <div class="block">
+      <h4 class="title is-4 type-heading" id="enum-services.v3.GetUnitsRequest.UnitState">
+  <a href="#enum-services.v3.GetUnitsRequest.UnitState" title="services.v3.GetUnitsRequest.UnitState">enum UnitState</a>
+  
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/services/v3/services.proto#L83">services/v3/services.proto</a>
+  
+</h4>
+
+<div class="block content">
+  <p></p>
+</div>
+
+<table class="table is-fullwidth is-hoverable is-bordered">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Number</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td><code>UNIT_STATE_UNSPECIFIED</code></td>
+      <td>0</td>
+      <td class="content"></td>
+    </tr>
+    
+    <tr>
+      <td><code>ENABLED</code></td>
+      <td>1</td>
+      <td class="content"></td>
+    </tr>
+    
+    <tr>
+      <td><code>DISABLED</code></td>
+      <td>2</td>
+      <td class="content"></td>
+    </tr>
+    
+  </tbody>
+</table> 
+    </div>
+    
+
+  
+
+</div>
+
+    <footer class="footer">
+      <div class="content has-text-centered">
+        
+          <p>© 2025 paradigm-ehb. All rights reserved.</p>
+        
+        <p>Built with <strong><a href="https://github.com/markvincze/sabledocs" target="_blank">sabledocs</a></strong>.</p>
+      </div>
+    </footer>
+  </body>
+</html>

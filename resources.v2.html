@@ -68,14 +68,14 @@
   </p>
   <h3 class="title is-3">
     
-    Package <code>resources.v1</code>
+    Package <code>resources.v2</code>
     
   </h3>
 
   <div class="block">
     
     <p>
-      <a href="#service-resources.v1.ResourcesService">
+      <a href="#service-resources.v2.ResourcesService">
         <span class="tag" style="min-width: 6em">Service</span>
         <code>ResourcesService</code> 
       </a>
@@ -85,7 +85,7 @@
     
       
       <p>
-        <a href="#message-resources.v1.Cpu">
+        <a href="#message-resources.v2.Cpu">
           <span class="tag" style="min-width: 6em">Message</span>
           <code>Cpu</code> 
         </a>
@@ -94,7 +94,7 @@
     
       
       <p>
-        <a href="#message-resources.v1.Device">
+        <a href="#message-resources.v2.Device">
           <span class="tag" style="min-width: 6em">Message</span>
           <code>Device</code> 
         </a>
@@ -103,7 +103,7 @@
     
       
       <p>
-        <a href="#message-resources.v1.Disk">
+        <a href="#message-resources.v2.Disk">
           <span class="tag" style="min-width: 6em">Message</span>
           <code>Disk</code> 
         </a>
@@ -112,7 +112,7 @@
     
       
       <p>
-        <a href="#message-resources.v1.DiskPartition">
+        <a href="#message-resources.v2.DiskPartition">
           <span class="tag" style="min-width: 6em">Message</span>
           <code>DiskPartition</code> 
         </a>
@@ -121,7 +121,7 @@
     
       
       <p>
-        <a href="#message-resources.v1.GetSystemResourcesRequest">
+        <a href="#message-resources.v2.GetSystemResourcesRequest">
           <span class="tag" style="min-width: 6em">Message</span>
           <code>GetSystemResourcesRequest</code> 
         </a>
@@ -130,7 +130,7 @@
     
       
       <p>
-        <a href="#message-resources.v1.GetSystemResourcesResponse">
+        <a href="#message-resources.v2.GetSystemResourcesResponse">
           <span class="tag" style="min-width: 6em">Message</span>
           <code>GetSystemResourcesResponse</code> 
         </a>
@@ -139,7 +139,7 @@
     
       
       <p>
-        <a href="#message-resources.v1.Memory">
+        <a href="#message-resources.v2.Memory">
           <span class="tag" style="min-width: 6em">Message</span>
           <code>Memory</code> 
         </a>
@@ -148,7 +148,7 @@
     
       
       <p>
-        <a href="#message-resources.v1.Process">
+        <a href="#message-resources.v2.Process">
           <span class="tag" style="min-width: 6em">Message</span>
           <code>Process</code> 
         </a>
@@ -157,7 +157,25 @@
     
       
       <p>
-        <a href="#message-resources.v1.SystemResources">
+        <a href="#message-resources.v2.ProcessActionReply">
+          <span class="tag" style="min-width: 6em">Message</span>
+          <code>ProcessActionReply</code> 
+        </a>
+      </p>
+      
+    
+      
+      <p>
+        <a href="#message-resources.v2.ProcessActionRequest">
+          <span class="tag" style="min-width: 6em">Message</span>
+          <code>ProcessActionRequest</code> 
+        </a>
+      </p>
+      
+    
+      
+      <p>
+        <a href="#message-resources.v2.SystemResources">
           <span class="tag" style="min-width: 6em">Message</span>
           <code>SystemResources</code> 
         </a>
@@ -167,7 +185,7 @@
 
     
       <p>
-        <a href="#enum-resources.v1.ProcessState">
+        <a href="#enum-resources.v2.ProcessState">
           <span class="tag" style="min-width: 6em">Enum</span>
           <code>ProcessState</code> 
         </a>
@@ -190,10 +208,10 @@
     <div>
       
 
-<h4 class="title is-4 type-heading" id="service-resources.v1.ResourcesService">
-  <a href="#service-resources.v1.ResourcesService" title="resources.v1.ResourcesService">service ResourcesService</a>
+<h4 class="title is-4 type-heading" id="service-resources.v2.ResourcesService">
+  <a href="#service-resources.v2.ResourcesService" title="resources.v2.ResourcesService">service ResourcesService</a>
   
-    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v1/deviceresources.proto#L7">resources/v1/deviceresources.proto</a>
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v2/deviceresources.proto#L7">resources/v2/deviceresources.proto</a>
   
 </h4>
 
@@ -204,14 +222,30 @@
 
 <div class="box">
   <div class="block">
-    <h5 class="title is-5" id="service-resources.v1.ResourcesService-GetSystemResources">
-      <a href="#service-resources.v1.ResourcesService-GetSystemResources">
+    <h5 class="title is-5" id="service-resources.v2.ResourcesService-GetSystemResources">
+      <a href="#service-resources.v2.ResourcesService-GetSystemResources">
         rpc <code>GetSystemResources</code>
       </a>
     </h5>
-    Request: <code><a href="resources.v1.html#message-resources.v1.GetSystemResourcesRequest"><span title="resources.v1.GetSystemResourcesRequest">resources.v1.GetSystemResourcesRequest</span>
+    Request: <code><a href="resources.v2.html#message-resources.v2.GetSystemResourcesRequest"><span title="resources.v2.GetSystemResourcesRequest">resources.v2.GetSystemResourcesRequest</span>
     </a></code><br>
-    Response: <code><a href="resources.v1.html#message-resources.v1.GetSystemResourcesResponse"><span title="resources.v1.GetSystemResourcesResponse">resources.v1.GetSystemResourcesResponse</span>
+    Response: <code><a href="resources.v2.html#message-resources.v2.GetSystemResourcesResponse"><span title="resources.v2.GetSystemResourcesResponse">resources.v2.GetSystemResourcesResponse</span>
+    </a></code><br>
+  </div>
+
+  
+</div>
+
+<div class="box">
+  <div class="block">
+    <h5 class="title is-5" id="service-resources.v2.ResourcesService-ProcessAction">
+      <a href="#service-resources.v2.ResourcesService-ProcessAction">
+        rpc <code>ProcessAction</code>
+      </a>
+    </h5>
+    Request: <code><a href="resources.v2.html#message-resources.v2.ProcessActionRequest"><span title="resources.v2.ProcessActionRequest">resources.v2.ProcessActionRequest</span>
+    </a></code><br>
+    Response: <code><a href="resources.v2.html#message-resources.v2.ProcessActionReply"><span title="resources.v2.ProcessActionReply">resources.v2.ProcessActionReply</span>
     </a></code><br>
   </div>
 
@@ -235,13 +269,13 @@
       <div class="block">
         
 
-<h4 class="title is-4 type-heading" id="message-resources.v1.Cpu">
+<h4 class="title is-4 type-heading" id="message-resources.v2.Cpu">
   <span>
-    <a href="#message-resources.v1.Cpu" title="resources.v1.Cpu">message Cpu</a>
+    <a href="#message-resources.v2.Cpu" title="resources.v2.Cpu">message Cpu</a>
   
   </span>
   
-    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v1/deviceresources.proto#L37">resources/v1/deviceresources.proto</a>
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v2/deviceresources.proto#L40">resources/v2/deviceresources.proto</a>
   
 </h4>
 
@@ -323,6 +357,36 @@ Cpu information</p>
       
     </tr>
     
+    <tr>
+      <td>5</td>
+      <td>
+        total_time
+      </td>
+      <td>
+        <code title="uint64">
+          
+          <span>uint64</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>6</td>
+      <td>
+        idle_time
+      </td>
+      <td>
+        <code title="uint64">
+          
+          <span>uint64</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
     
   </tbody>
 </table>
@@ -334,13 +398,13 @@ Cpu information</p>
       <div class="block">
         
 
-<h4 class="title is-4 type-heading" id="message-resources.v1.Device">
+<h4 class="title is-4 type-heading" id="message-resources.v2.Device">
   <span>
-    <a href="#message-resources.v1.Device" title="resources.v1.Device">message Device</a>
+    <a href="#message-resources.v2.Device" title="resources.v2.Device">message Device</a>
   
   </span>
   
-    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v1/deviceresources.proto#L59">resources/v1/deviceresources.proto</a>
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v2/deviceresources.proto#L64">resources/v2/deviceresources.proto</a>
   
 </h4>
 
@@ -401,13 +465,13 @@ Cpu information</p>
       <div class="block">
         
 
-<h4 class="title is-4 type-heading" id="message-resources.v1.Disk">
+<h4 class="title is-4 type-heading" id="message-resources.v2.Disk">
   <span>
-    <a href="#message-resources.v1.Disk" title="resources.v1.Disk">message Disk</a>
+    <a href="#message-resources.v2.Disk" title="resources.v2.Disk">message Disk</a>
   
   </span>
   
-    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v1/deviceresources.proto#L71">resources/v1/deviceresources.proto</a>
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v2/deviceresources.proto#L76">resources/v2/deviceresources.proto</a>
   
 </h4>
 
@@ -433,11 +497,11 @@ Cpu information</p>
         partitions
       </td>
       <td>
-        <code title="resources.v1.DiskPartition">
+        <code title="resources.v2.DiskPartition">
           
             repeated
           
-          <a href="resources.v1.html#message-resources.v1.DiskPartition"><span title="resources.v1.DiskPartition">resources.v1.DiskPartition</span>
+          <a href="resources.v2.html#message-resources.v2.DiskPartition"><span title="resources.v2.DiskPartition">resources.v2.DiskPartition</span>
     </a>
         </code>
       </td>
@@ -456,13 +520,13 @@ Cpu information</p>
       <div class="block">
         
 
-<h4 class="title is-4 type-heading" id="message-resources.v1.DiskPartition">
+<h4 class="title is-4 type-heading" id="message-resources.v2.DiskPartition">
   <span>
-    <a href="#message-resources.v1.DiskPartition" title="resources.v1.DiskPartition">message DiskPartition</a>
+    <a href="#message-resources.v2.DiskPartition" title="resources.v2.DiskPartition">message DiskPartition</a>
   
   </span>
   
-    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v1/deviceresources.proto#L79">resources/v1/deviceresources.proto</a>
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v2/deviceresources.proto#L84">resources/v2/deviceresources.proto</a>
   
 </h4>
 
@@ -555,13 +619,13 @@ Partition
       <div class="block">
         
 
-<h4 class="title is-4 type-heading" id="message-resources.v1.GetSystemResourcesRequest">
+<h4 class="title is-4 type-heading" id="message-resources.v2.GetSystemResourcesRequest">
   <span>
-    <a href="#message-resources.v1.GetSystemResourcesRequest" title="resources.v1.GetSystemResourcesRequest">message GetSystemResourcesRequest</a>
+    <a href="#message-resources.v2.GetSystemResourcesRequest" title="resources.v2.GetSystemResourcesRequest">message GetSystemResourcesRequest</a>
   
   </span>
   
-    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v1/deviceresources.proto#L12">resources/v1/deviceresources.proto</a>
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v2/deviceresources.proto#L15">resources/v2/deviceresources.proto</a>
   
 </h4>
 
@@ -592,13 +656,13 @@ Partition
       <div class="block">
         
 
-<h4 class="title is-4 type-heading" id="message-resources.v1.GetSystemResourcesResponse">
+<h4 class="title is-4 type-heading" id="message-resources.v2.GetSystemResourcesResponse">
   <span>
-    <a href="#message-resources.v1.GetSystemResourcesResponse" title="resources.v1.GetSystemResourcesResponse">message GetSystemResourcesResponse</a>
+    <a href="#message-resources.v2.GetSystemResourcesResponse" title="resources.v2.GetSystemResourcesResponse">message GetSystemResourcesResponse</a>
   
   </span>
   
-    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v1/deviceresources.proto#L14">resources/v1/deviceresources.proto</a>
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v2/deviceresources.proto#L17">resources/v2/deviceresources.proto</a>
   
 </h4>
 
@@ -624,9 +688,9 @@ Partition
         resources
       </td>
       <td>
-        <code title="resources.v1.SystemResources">
+        <code title="resources.v2.SystemResources">
           
-          <a href="resources.v1.html#message-resources.v1.SystemResources"><span title="resources.v1.SystemResources">resources.v1.SystemResources</span>
+          <a href="resources.v2.html#message-resources.v2.SystemResources"><span title="resources.v2.SystemResources">resources.v2.SystemResources</span>
     </a>
         </code>
       </td>
@@ -645,13 +709,13 @@ Partition
       <div class="block">
         
 
-<h4 class="title is-4 type-heading" id="message-resources.v1.Memory">
+<h4 class="title is-4 type-heading" id="message-resources.v2.Memory">
   <span>
-    <a href="#message-resources.v1.Memory" title="resources.v1.Memory">message Memory</a>
+    <a href="#message-resources.v2.Memory" title="resources.v2.Memory">message Memory</a>
   
   </span>
   
-    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v1/deviceresources.proto#L48">resources/v1/deviceresources.proto</a>
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v2/deviceresources.proto#L53">resources/v2/deviceresources.proto</a>
   
 </h4>
 
@@ -679,9 +743,9 @@ Memory
         total
       </td>
       <td>
-        <code title="string">
+        <code title="uint64">
           
-          <span>string</span>
+          <span>uint64</span>
         </code>
       </td>
       <td class="content"></td>
@@ -694,9 +758,9 @@ Memory
         free
       </td>
       <td>
-        <code title="string">
+        <code title="uint64">
           
-          <span>string</span>
+          <span>uint64</span>
         </code>
       </td>
       <td class="content"></td>
@@ -714,13 +778,13 @@ Memory
       <div class="block">
         
 
-<h4 class="title is-4 type-heading" id="message-resources.v1.Process">
+<h4 class="title is-4 type-heading" id="message-resources.v2.Process">
   <span>
-    <a href="#message-resources.v1.Process" title="resources.v1.Process">message Process</a>
+    <a href="#message-resources.v2.Process" title="resources.v2.Process">message Process</a>
   
   </span>
   
-    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v1/deviceresources.proto#L102">resources/v1/deviceresources.proto</a>
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v2/deviceresources.proto#L108">resources/v2/deviceresources.proto</a>
   
 </h4>
 
@@ -748,9 +812,9 @@ Process information
         pid
       </td>
       <td>
-        <code title="uint32">
+        <code title="int32">
           
-          <span>uint32</span>
+          <span>int32</span>
         </code>
       </td>
       <td class="content"></td>
@@ -778,9 +842,9 @@ Process information
         state
       </td>
       <td>
-        <code title="resources.v1.ProcessState">
+        <code title="resources.v2.ProcessState">
           
-          <a href="resources.v1.html#enum-resources.v1.ProcessState"><span title="resources.v1.ProcessState">resources.v1.ProcessState</span>
+          <a href="resources.v2.html#enum-resources.v2.ProcessState"><span title="resources.v2.ProcessState">resources.v2.ProcessState</span>
     </a>
         </code>
       </td>
@@ -829,13 +893,132 @@ Process information
       <div class="block">
         
 
-<h4 class="title is-4 type-heading" id="message-resources.v1.SystemResources">
+<h4 class="title is-4 type-heading" id="message-resources.v2.ProcessActionReply">
   <span>
-    <a href="#message-resources.v1.SystemResources" title="resources.v1.SystemResources">message SystemResources</a>
+    <a href="#message-resources.v2.ProcessActionReply" title="resources.v2.ProcessActionReply">message ProcessActionReply</a>
   
   </span>
   
-    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v1/deviceresources.proto#L24">resources/v1/deviceresources.proto</a>
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v2/deviceresources.proto#L121">resources/v2/deviceresources.proto</a>
+  
+</h4>
+
+<div class="block content">
+  
+</div>
+
+<table class="table is-fullwidth is-hoverable is-bordered">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Field</th>
+      <th>Type</th>
+      <th>Description</th>
+      
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>1</td>
+      <td>
+        succes
+      </td>
+      <td>
+        <code title="bool">
+          
+          <span>bool</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    
+  </tbody>
+</table>
+ 
+      </div>
+      
+    
+      
+      <div class="block">
+        
+
+<h4 class="title is-4 type-heading" id="message-resources.v2.ProcessActionRequest">
+  <span>
+    <a href="#message-resources.v2.ProcessActionRequest" title="resources.v2.ProcessActionRequest">message ProcessActionRequest</a>
+  
+  </span>
+  
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v2/deviceresources.proto#L116">resources/v2/deviceresources.proto</a>
+  
+</h4>
+
+<div class="block content">
+  
+</div>
+
+<table class="table is-fullwidth is-hoverable is-bordered">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Field</th>
+      <th>Type</th>
+      <th>Description</th>
+      
+    </tr>
+  </thead>
+  <tbody>
+    
+    <tr>
+      <td>1</td>
+      <td>
+        pid
+      </td>
+      <td>
+        <code title="int32">
+          
+          <span>int32</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    <tr>
+      <td>2</td>
+      <td>
+        signal
+      </td>
+      <td>
+        <code title="int32">
+          
+          <span>int32</span>
+        </code>
+      </td>
+      <td class="content"></td>
+      
+    </tr>
+    
+    
+  </tbody>
+</table>
+ 
+      </div>
+      
+    
+      
+      <div class="block">
+        
+
+<h4 class="title is-4 type-heading" id="message-resources.v2.SystemResources">
+  <span>
+    <a href="#message-resources.v2.SystemResources" title="resources.v2.SystemResources">message SystemResources</a>
+  
+  </span>
+  
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v2/deviceresources.proto#L27">resources/v2/deviceresources.proto</a>
   
 </h4>
 
@@ -863,9 +1046,9 @@ Process information
         cpu
       </td>
       <td>
-        <code title="resources.v1.Cpu">
+        <code title="resources.v2.Cpu">
           
-          <a href="resources.v1.html#message-resources.v1.Cpu"><span title="resources.v1.Cpu">resources.v1.Cpu</span>
+          <a href="resources.v2.html#message-resources.v2.Cpu"><span title="resources.v2.Cpu">resources.v2.Cpu</span>
     </a>
         </code>
       </td>
@@ -879,9 +1062,9 @@ Process information
         memory
       </td>
       <td>
-        <code title="resources.v1.Memory">
+        <code title="resources.v2.Memory">
           
-          <a href="resources.v1.html#message-resources.v1.Memory"><span title="resources.v1.Memory">resources.v1.Memory</span>
+          <a href="resources.v2.html#message-resources.v2.Memory"><span title="resources.v2.Memory">resources.v2.Memory</span>
     </a>
         </code>
       </td>
@@ -895,9 +1078,9 @@ Process information
         device
       </td>
       <td>
-        <code title="resources.v1.Device">
+        <code title="resources.v2.Device">
           
-          <a href="resources.v1.html#message-resources.v1.Device"><span title="resources.v1.Device">resources.v1.Device</span>
+          <a href="resources.v2.html#message-resources.v2.Device"><span title="resources.v2.Device">resources.v2.Device</span>
     </a>
         </code>
       </td>
@@ -911,11 +1094,11 @@ Process information
         disks
       </td>
       <td>
-        <code title="resources.v1.Disk">
+        <code title="resources.v2.Disk">
           
             repeated
           
-          <a href="resources.v1.html#message-resources.v1.Disk"><span title="resources.v1.Disk">resources.v1.Disk</span>
+          <a href="resources.v2.html#message-resources.v2.Disk"><span title="resources.v2.Disk">resources.v2.Disk</span>
     </a>
         </code>
       </td>
@@ -929,11 +1112,11 @@ Process information
         processes
       </td>
       <td>
-        <code title="resources.v1.Process">
+        <code title="resources.v2.Process">
           
             repeated
           
-          <a href="resources.v1.html#message-resources.v1.Process"><span title="resources.v1.Process">resources.v1.Process</span>
+          <a href="resources.v2.html#message-resources.v2.Process"><span title="resources.v2.Process">resources.v2.Process</span>
     </a>
         </code>
       </td>
@@ -959,10 +1142,10 @@ Process information
 
     
     <div class="block">
-      <h4 class="title is-4 type-heading" id="enum-resources.v1.ProcessState">
-  <a href="#enum-resources.v1.ProcessState" title="resources.v1.ProcessState">enum ProcessState</a>
+      <h4 class="title is-4 type-heading" id="enum-resources.v2.ProcessState">
+  <a href="#enum-resources.v2.ProcessState" title="resources.v2.ProcessState">enum ProcessState</a>
   
-    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v1/deviceresources.proto#L86">resources/v1/deviceresources.proto</a>
+    <a class="type-source-link" href="https://github.com/paradigm-ehb/agent/blob/main/internal/connection/resources/v2/deviceresources.proto#L91">resources/v2/deviceresources.proto</a>
   
 </h4>
 
@@ -1031,6 +1214,12 @@ Process information
     <tr>
       <td><code>PROCESS_STATE_IDLE</code></td>
       <td>8</td>
+      <td class="content"></td>
+    </tr>
+    
+    <tr>
+      <td><code>PROCESS_STATE_UNDEFINED</code></td>
+      <td>9</td>
       <td class="content"></td>
     </tr>
     
