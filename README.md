@@ -1,3 +1,11 @@
+> [!WARNING]
+> This repository is **archived** and permanently unmaintained.  
+>
+> Development has moved to a [**new C/C++ rewrite**](https://github.com/paradigm-ehb/agent-c), which is now the actively maintained version.
+>
+> <sub>No further updates, fixes, or support will be provided for this repository.</sub>  
+> <sub>Compatibility with our Command Center is not guaranteed.</sub>
+
 # Agent
 
 Agent is a lightweight, deployable system collector designed to run on any server or workstation.
